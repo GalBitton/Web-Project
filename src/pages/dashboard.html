@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="assets/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Tailwind</title>
+    <link rel="stylesheet" href="/src/styles/style.css" />
+</head>
+<body class="h-screen bg-gradient-to-b from-gray-900 to-slate-800 flex flex-col text-white">
+    <header id="header-menu" class="bg-gray-800 text-white p-4 flex justify-between items-center">
+        <div class="flex items-center">
+            <img src="/assets/project_icon.svg" alt="Project Icon" class="h-10 mr-4">
+            <h1 class="text-xl">Dashboard</h1>
+        </div>
+        <div class="relative">
+            <img src="/assets/top_img.svg" alt="Top Image" class="h-10 cursor-pointer" id="top-menu-button">
+            <div id="top-menu" class="absolute right-0 mt-2 w-48 bg-gray-700 text-white rounded-lg shadow-lg hidden">
+                <a href="#" class="block px-4 py-2">Theme Icon</a>
+                <a href="#" class="block px-4 py-2">Settings</a>
+                <a href="#" class="block px-4 py-2">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex flex-col items-center my-10 w-full px-6">
+        <div class="carousel-container relative flex items-center mb-10 w-full">
+            <div class="prev nav-button absolute left-0 z-10">
+                <img src="/assets/left_arrow.svg" alt="Previous">
+            </div>
+            <div class="carousel mx-12 flex justify-center w-full overflow-hidden">
+                <!-- Images will be inserted here by JavaScript -->
+                <img src="/assets/device_image.svg" alt="Device Image" class="h-40">
+            </div>
+            <div class="next nav-button absolute right-0 z-10">
+                <img src="/assets/right_arrow.svg" alt="Next">
+            </div>
+        </div>
+
+        <div class="bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-4xl mb-10">
+            <div class="flex space-x-4 mb-4">
+                <select class="bg-gray-700 text-white p-2 rounded">
+                    <option>Device 1</option>
+                    <option>Device 2</option>
+                </select>
+                <select class="bg-gray-700 text-white p-2 rounded">
+                    <option>Model 1</option>
+                    <option>Model 2</option>
+                </select>
+                <input type="text" placeholder="Type" class="bg-gray-700 text-white p-2 rounded" disabled>
+                <button class="bg-blue-500 text-white px-4 py-2 rounded">View Analytics</button>
+                <button class="bg-red-500 text-white px-4 py-2 rounded">Unlink</button>
+            </div>
+
+            <h2 class="text-xl mb-4">Average Heartrate BPM</h2>
+            <canvas id="healthDataChart" class="w-full h-64"></canvas>
+        </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white p-4 text-center">
+        © ProjectName - 2024 All Rights Reserved - Terms of Use - Privacy Policy
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="/src/scripts/dashboard.js"></script>
+    <script>
+        document.getElementById('top-menu-button').addEventListener('click', () => {
+            document.getElementById('top-menu').classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>

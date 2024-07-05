@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.carousel-container {
+    width: 640px; /* Fixed width to ensure buttons are aligned */
+    height: 480px; /* Fixed height to ensure buttons are aligned */
+    position: relative;
+}
+
+.carousel {
+    width: 100%; /* Full width of the container */
+    height: 100%; /* Full height of the container */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.carousel img.active {
+    display: block; /* Override Tailwind's display: none */
+    max-width: 100%; /* Adjust this as necessary */
+    max-height: 100%; /* Maximum height of the image */
+    object-fit: cover; /* Ensure the image covers the dimensions without distortion */
+}
+
+.nav-button {
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: 50%; /* Center vertically */
+    transform: translateY(-50%); /* Adjust vertical centering */
+}
+
+.prev {
+    left: 0; /* Position to the left */
+}
+
+.next {
+    right: 0; /* Position to the right */
+}
+
+/* TESTING
+/* Custom styles for the landing page */
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+h1 {
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+p {
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+a {
+    transition: background-color 0.3s;
+}
+
+.relative div:nth-child(2) {
+    backdrop-filter: blur(5px);
+}
+
+.hover\:scale-105:hover {
+    transform: scale(1.05);
+}
+
+.min-w-\[200px\] {
+    min-width: 200px;
+}
+
+footer p {
+    font-size: 0.875rem;
+}
+/* TILL HERE */

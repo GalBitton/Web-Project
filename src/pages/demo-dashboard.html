@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="assets/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Tailwind</title>
+    <link rel="stylesheet" href="/src/styles/style.css" />
+  </head>
+
+  <body class="h-screen bg-gradient-to-b from-gray-900 to-slate-800 flex flex-col text-white">  
+    <header id="header-menu" class="bg-gray-800 text-white p-4 flex justify-between items-center">
+      <!-- Menu will be dynamically inserted here -->
+    </header>
+
+    <div class="flex justify-center items-center my-10">
+      <div class="carousel-container relative flex items-center">
+          <div class="prev nav-button absolute left-0 z-10">
+              <img src="/assets/left_arrow.svg" alt="Previous">
+          </div>
+          <div class="carousel mx-12">
+              <!-- Images will be inserted here by JavaScript -->
+          </div>
+          <div class="next nav-button absolute right-0 z-10">
+              <img src="/assets/right_arrow.svg" alt="Next">
+          </div>
+      </div>
+    </div>
+
+      <!-- Eyal's Section -->
+      <div class="flex justify-center items-center mt-10">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-4xl">
+          <h2 class="text-xl mb-4">Health Data Analysis</h2>
+          <canvas id="healthDataChart" class="w-full h-64"></canvas>
+        </div>
+      </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="/src/scripts/main.js"></script>
+  </body>
+</html>
