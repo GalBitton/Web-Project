@@ -13,19 +13,27 @@ export class DeviceFactory {
                     return new SamsungWatch(data);
                 }
                 return new SamsungBracelet(data);
-            case 'AppleWatch':
-                return new AppleWatch(data);
+            case 'Apple':
+                if (device == 'Smartwatch') {
+                    return new AppleWatch(data);
+                }
             case 'Xiaomi':
                 if (device == 'Smartwatch') {
                     return new XiaomiWatch(data);
                 }
                 return new XiaomiBracelet(data);
-            case 'FitbitBracelet':
-                return new FitbitBracelet(data);
-            case 'DreemHeadband':
-                return new DreemHeadband(data);
-            case 'MuseHeadband':
-                return new MuseHeadband(data);
+            case 'FitBit':
+                if (device === 'Bracelet') {
+                    return new FitbitBracelet(data);
+                }
+            case 'Dreem':
+                if (device == 'Headband') {
+                    return new DreemHeadband(data);
+                }
+            case 'Muse':
+                if (device == 'Headband') {
+                    return new MuseHeadband(data);
+                }
             default:
                 throw new Error('Unsupported device type');
         }

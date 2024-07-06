@@ -7,9 +7,8 @@
     <title>Wearable Health Data Tracker Dashboard</title>
     <link rel="stylesheet" href="/src/styles/style.css" />
 </head>
-<body class="min-h-screen bg-gradient-to-b from-white to-gray-200 dark:from-gray-900 dark:to-slate-800 flex flex-col text-black dark:text-white">
+<body class="min-h-screen bg-gradient-to-b from-white to-gray-200 dark:from-gray-900 dark:to-slate-800 flex flex-col text-black dark:text-white max-w-full">
     <header id="header-menu"></header>
-
     <main class="flex-grow flex flex-col my-4 w-full px-4">
         <div class="mb-2 p-4 items-center">
             <h1 class="text-4xl">Welcome back, John</h1>
@@ -17,19 +16,11 @@
         </div>
         
         <div class="bg-gray-100 dark:bg-slate-900 mb-10 w-full">
-            <div class="flex justify-center mt-2">
+            <div class="flex justify-center mt-6">
                 <h1 class="text-3xl text-black dark:text-white">Linked Devices</h1>
             </div>
-            <div class="flex justify-center p-2 h-[12rem]">
-                <div class="flex flex-wrap justify-between items-center w-full p-2">
-                    <img src="assets/watches/apple-smartwatch.png" class="apple-smartwatch-img h-36 bg-transparent" />
-                    <img src="assets/watches/samsung-smartwatch.png" class="samsung-smartwatch-img h-36 bg-transparent" />
-                    <img src="assets/watches/samsung-bracelet.png" class="samsung-bracelet-img h-36 bg-transparent" />
-                    <img src="assets/watches/xiaomi-smartwatch.png" class="xiaomi-smartwatch-img h-36 bg-transparent" />
-                    <img src="assets/watches/xiaomi-bracelet.png" class="xiaomi-bracelet-img h-36 bg-transparent" />
-                    <img src="assets/watches/fitbit-bracelet.png" class="fitbit-bracelet-img h-36 bg-transparent" />
-                    <img src="assets/watches/dreem-headband.png" class="dreem-headband-img h-36 bg-transparent" />
-                    <img src="assets/watches/muse-headband.png" class="muse-headband-img h-36 bg-transparent" />
+            <div class="flex justify-center p-2 h-[15rem] mb-[25rem] lg:mb-10">
+                <div class="linked-devices flex flex-wrap justify-center sm:justify-between items-center w-full p-2 gap-14">
                 </div>
             </div>
         </div>
@@ -75,12 +66,12 @@
         
         <div class="flex justify-center items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full mb-10">
             <p class="text-lg text-gray-700 dark:text-slate-400 mb-4">Select Model: </p>
-            <div class="flex space-x-8 mb-4 w-[60rem]">
-                <select class="brandCmbBox bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-2 rounded w-[10rem]"></select>
-                <select class="deviceCmbBox bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-2 rounded w-[10rem]"></select>
-                <button class="unlink bg-red-500 hover:bg-red-700 dark:bg-red-300 dark:hover:bg-red-500 text-white dark:text-black px-4 py-2 rounded w-[8rem]">
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-8 mb-4 w-full sm:w-[60rem]">
+                <select class="brandCmbBox bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-2 rounded w-full sm:w-[10rem]"></select>
+                <select class="deviceCmbBox bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-2 rounded w-full sm:w-[10rem]"></select>
+                <button class="unlink bg-red-500 hover:bg-red-700 dark:bg-red-300 dark:hover:bg-red-500 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem]">
                     <div class="flex items-center gap-2">
-                        <img src="assets/unlink.svg" class="w-[2rem] h-[2rem]"/>
+                        <img src="assets/unlink.svg" class="w-[2rem] h-[2rem]" />
                         Unlink
                     </div>
                 </button>

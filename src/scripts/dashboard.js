@@ -1,3 +1,4 @@
+// Imports
 import { DeviceFactory } from '../device-classes/deviceFactory.js';
 import Device from '../device-classes/device.js';
 import '../device-classes/samsung.js';
@@ -7,61 +8,77 @@ import '../device-classes/fitbit.js';
 import '../device-classes/dreem.js';
 import '../device-classes/muse.js';
 
-document.addEventListener('DOMContentLoaded', async () => {
-    const devices = {
-        "Apple": {
-            "devices": {
-                "Smartwatch": {
-                    "status": "linked"
-                }
-            }
-        },
-        "Samsung": {
-            "devices": {
-                "Smartwatch": {
-                    "status": "linked"
-                },
-                "Bracelet": {
-                    "status": "linked"
-                }
-            }
-        },
-        "Xiaomi": {
-            "devices": {
-                "Smartwatch": {
-                    "status": "linked"
-                },
-                "Bracelet": {
-                    "status": "linked"
-                }
-            }
-        },
-        "FitBit": {
-            "devices": {
-                "Bracelet": {
-                    "status": "linked"
-                }
-            }
-        },
-        "Dreem": {
-            "devices": {
-              "Headband": {
-                    "status": "linked"
-                }
-            }
-        },
-        "Muse": {
-            "devices": {
-              "Headband": {
-                    "status": "linked"
-                }
-            }
-        }
-    }
+import { createCSV, updateGraphSummary, calculateOverallAverage } from './utils.js';
 
+const devices = {
+    "Apple": { "devices": { "Smartwatch": { "status": "linked" } } },
+    "Samsung": { "devices": { "Smartwatch": { "status": "linked" }, "Bracelet": { "status": "linked" } } },
+    "Xiaomi": { "devices": { "Smartwatch": { "status": "linked" }, "Bracelet": { "status": "linked" } } },
+    "FitBit": { "devices": { "Bracelet": { "status": "linked" } } },
+    "Dreem": { "devices": { "Headband": { "status": "linked" } } },
+    "Muse": { "devices": { "Headband": { "status": "linked" } } }
+};
+
+const linkedDevicesImages = [
+    { name: "Apple Smartwatch", src: "assets/watches/apple-smartwatch.png", hoverLeft: "50vw" },
+    { name: "Samsung Smartwatch", src: "assets/watches/samsung-smartwatch.png", hoverLeft: "38vw" },
+    { name: "Samsung Bracelet", src: "assets/watches/samsung-bracelet.png", hoverLeft: "26vw" },
+    { name: "Xiaomi Smartwatch", src: "assets/watches/xiaomi-smartwatch.png", hoverLeft: "10vw" },
+    { name: "Xiaomi Bracelet", src: "assets/watches/xiaomi-bracelet.png", hoverLeft: "-4vw" },
+    { name: "FitBit Bracelet", src: "assets/watches/fitbit-bracelet.png", hoverLeft: "-16vw" },
+    { name: "Dreem Headband", src: "assets/watches/dreem-headband.png", hoverLeft: "-28vw" },
+    { name: "Muse Headband", src: "assets/watches/muse-headband.png", hoverLeft: "-42vw" }
+];
+
+const renderLinkedDevicesImages = (containerSelector, devices) => {
+    const createDeviceHTML = (device) => {
+        const name = device.name.split(' ')
+        const brand = name[0];
+        const deviceModel = name[1];
+        return `
+            <div class="relative group m-2 ${brand}-${deviceModel}-container">
+                <div class="absolute inset-0 flex justify-center items-center w-[13rem]">
+                    <div class="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <span class="bg-slate-500 text-white px-2 py-1 rounded w-full">${device.name}</span>
+                    </div>
+                </div>
+                <img src="${device.src}" class="h-36 bg-transparent" />
+                <img src="${device.src}" class="absolute h-36 transform transition-transform duration-300 opacity-0 group-hover:opacity-100 group-hover:scale-[2] group-hover:z-50 group-hover:top-[20vh] group-hover:left-[${device.hoverLeft}] group-hover:translate-x-[-50%] group-hover:translate-y-[-50%]" />
+            </div>
+        `;
+    };
+
+    const container = document.querySelector(containerSelector);
+    devices.forEach(device => {
+        container.innerHTML += createDeviceHTML(device);
+    });
+};
+
+
+
+
+document.addEventListener('DOMContentLoaded', async () => {
     const fetchAndCreateDevice = async (brand, device, file) => {
         const data = await Device.fetchData(file);
         return DeviceFactory.createDevice(brand, device, data);
+    };
+
+    const createAllDevices = async () => {
+        const devices = [
+            { brand: 'Samsung', type: 'Smartwatch', file: '../../demo-data/samsung_watch_data_v2.json' },
+            { brand: 'Samsung', type: 'Bracelet', file: '../../demo-data/samsung_bracelet_data_v2.json' },
+            { brand: 'Apple', type: 'Smartwatch', file: '../../demo-data/apple_watch_data_v2.json' },
+            { brand: 'Xiaomi', type: 'Smartwatch', file: '../../demo-data/xiaomi_watch_data_v2.json' },
+            { brand: 'Xiaomi', type: 'Bracelet', file: '../../demo-data/xiaomi_bracelet_data_v2.json' },
+            { brand: 'FitBit', type: 'Bracelet', file: '../../demo-data/fitbit_bracelet_data_v2.json' },
+            { brand: 'Dreem', type: 'Headband', file: '../../demo-data/dreem_headband_data_v2.json' },
+            { brand: 'Muse', type: 'Headband', file: '../../demo-data/muse_headband_data_v2.json' }
+        ];
+
+        return Promise.all(devices.map(async (device) => ({
+            name: `${device.brand} ${device.type}`,
+            device: await fetchAndCreateDevice(device.brand, device.type, device.file)
+        })));
     };
 
     const destroyChart = (chart) => {
@@ -70,67 +87,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    const createCSV = (labels, dataset, fileName) => {
-        let csvContent = "data:text/csv;charset=utf-8,";
-    
-        // Create header row
-        const headers = ["Label"];
-        if (dataset.length > 0 && typeof dataset[0] === 'object') {
-            headers.push(...Object.keys(dataset[0]));
-        } else {
-            headers.push("Value");
-        }
-        csvContent += headers.join(",") + "\n";
-    
-        // Create data rows
-        for (let i = 0; i < labels.length; i++) {
-            const row = [labels[i]];
-            if (typeof dataset[i] === 'object') {
-                row.push(...Object.values(dataset[i]));
-            } else {
-                row.push(dataset[i]);
-            }
-            csvContent += row.join(",") + "\n";
-        }
-    
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", fileName + ".csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    const linkedDevices = await createAllDevices();
+    const labels = linkedDevices.map((device) => device.name);
+
+    const averageChartsData = {
+        heartRate: linkedDevices.map(device => parseFloat(device.device.calculateAverage('heartRate'))),
+        steps: linkedDevices.map(device => parseFloat(device.device.calculateAverage('steps'))),
+        calories: linkedDevices.map(device => parseFloat(device.device.calculateAverage('caloriesBurned'))),
+        sleep: linkedDevices.map(device => parseFloat(device.device.calculateAverage('sleep')))
     };
 
-    const updateSummary = (average, type) => {
-        let summaryText = '';
-    
-        switch (type) {
-            case 'heartrate':
-                summaryText = `Your average heartbeat per minute is ${average} BPM, which is ${average < 60 ? 'low' : average > 100 ? 'high' : 'normal'}.`;
-                document.getElementById('avgHeartRateSummary').textContent = summaryText;
-                break;
-            case 'steps':
-                summaryText = `Your average steps count is ${average}, which is ${average < 5000 ? 'low' : average > 10000 ? 'high' : 'normal'}.`;
-                document.getElementById('avgStepsSummary').textContent = summaryText;
-                break;
-            case 'calories':
-                summaryText = `Your average calories burned is ${average} kcal.`;
-                document.getElementById('avgCaloriesSummary').textContent = summaryText;
-                break;
-            case 'sleep':
-                summaryText = `Your average sleep duration is ${average} hours, which is ${average < 7 ? 'less than recommended' : 'within recommended range'}.`;
-                document.getElementById('avgSleepSummary').textContent = summaryText;
-                break;
-            default:
-                break;
-        }
-    };
-
-    const calculateOverallAverage = (averages) => {
-        const validAverages = averages.filter(item => typeof item === 'number' && !isNaN(item));
-        const total = validAverages.reduce((sum, value) => sum + value, 0);
-        return (total / validAverages.length).toFixed(2);
+    const overallAverages = {
+        heartRate: calculateOverallAverage(averageChartsData.heartRate),
+        steps: calculateOverallAverage(averageChartsData.steps),
+        calories: calculateOverallAverage(averageChartsData.calories),
+        sleep: calculateOverallAverage(averageChartsData.sleep)
     };
     
 
@@ -157,47 +128,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     let bloodPressureChart;
     let eegChart;
 
-    const createAllDevices = async () => {
-        const samsungWatch = await fetchAndCreateDevice('Samsung', 'Smartwatch', '../../demo-data/samsung_watch_data_v2.json');
-        const samsungBracelet = await fetchAndCreateDevice('Samsung', 'Bracelet', '../../demo-data/samsung_bracelet_data_v2.json');
-        const appleWatch = await fetchAndCreateDevice('AppleWatch', 'Smartwatch', '../../demo-data/apple_watch_data_v2.json');
-        const xiaomiWatch = await fetchAndCreateDevice('Xiaomi', 'Smartwatch', '../../demo-data/xiaomi_watch_data_v2.json');
-        const xiaomiBracelet = await fetchAndCreateDevice('Xiaomi', 'Bracelet', '../../demo-data/xiaomi_bracelet_data_v2.json');
-        const fitbitBracelet = await fetchAndCreateDevice('FitbitBracelet', 'Bracelet', '../../demo-data/fitbit_bracelet_data_v2.json');
-        const dreemHeadband = await fetchAndCreateDevice('DreemHeadband', 'Headband', '../../demo-data/dreem_headband_data_v2.json');
-        const museHeadband = await fetchAndCreateDevice('MuseHeadband', 'Headband', '../../demo-data/muse_headband_data_v2.json');
-
-        return [
-            { name: 'Samsung Smartwatch', device: samsungWatch },
-            { name: 'Samsung Bracelet', device: samsungBracelet },
-            { name: 'Apple Smartwatch', device: appleWatch },
-            { name: 'Xiaomi Smartwatch', device: xiaomiWatch },
-            { name: 'Xiaomi Bracelet', device: xiaomiBracelet },
-            { name: 'FitBit Bracelet', device: fitbitBracelet },
-            { name: 'Dreem Headband', device: dreemHeadband },
-            { name: 'Muse Headband', device: museHeadband }
-        ];
-    };
-
-    const linkedDevices = await createAllDevices();
-    const labels = linkedDevices.map((device) => device.name);
-
     const averageCharts = () => {
-        const heartRateDataAverage = linkedDevices.map(device => parseFloat(device.device.calculateAverage('heartRate')));
-        const stepsDataAverage = linkedDevices.map(device => parseFloat(device.device.calculateAverage('steps')));
-        const caloriesDataAverage = linkedDevices.map(device => parseFloat(device.device.calculateAverage('caloriesBurned')));
-        const sleepDataAverage = linkedDevices.map(device => parseFloat(device.device.calculateAverage('sleep')));
-
-        const avgHeartRate = calculateOverallAverage(heartRateDataAverage);
-        const avgSteps = calculateOverallAverage(stepsDataAverage);
-        const avgCalories = calculateOverallAverage(caloriesDataAverage);
-        const avgSleep = calculateOverallAverage(sleepDataAverage);
-
         // Update the summaries
-        updateSummary(avgHeartRate, 'heartrate');
-        updateSummary(avgSteps, 'steps');
-        updateSummary(avgCalories, 'calories');
-        updateSummary(avgSleep, 'sleep');
+        Object.keys(overallAverages).forEach(type => updateGraphSummary(overallAverages[type], type));
 
         new Chart(ctxAverageHeartRate, {
             type: 'line',
@@ -205,7 +138,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 labels: labels,
                 datasets: [{
                     label: 'Average Heartrate BPM',
-                    data: heartRateDataAverage,
+                    data: averageChartsData.heartRate,
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 1
@@ -228,7 +161,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 labels: labels,
                 datasets: [{
                     label: 'Steps Count',
-                    data: stepsDataAverage,
+                    data: averageChartsData.steps,
                     backgroundColor: 'rgba(153, 102, 255, 0.2)',
                     borderColor: 'rgba(153, 102, 255, 1)',
                     borderWidth: 1
@@ -251,7 +184,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 labels: labels,
                 datasets: [{
                     label: 'Calories Burned',
-                    data: caloriesDataAverage,
+                    data: averageChartsData.calories,
                     backgroundColor: 'rgba(255, 159, 64, 0.2)',
                     borderColor: 'rgba(255, 159, 64, 1)',
                     borderWidth: 1
@@ -274,7 +207,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 labels: labels,
                 datasets: [{
                     label: 'Average Sleep Duration (hours)',
-                    data: sleepDataAverage,
+                    data: averageChartsData.sleep,
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 1
@@ -292,16 +225,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Attach CSV export functionality to the buttons
         document.getElementById('exportAvgHeartRateCSV').addEventListener('click', () => {
-            createCSV(labels, heartRateDataAverage, "average_heartrate");
+            createCSV(labels, averageChartsData.heartRate, "average_heartrate");
         });
         document.getElementById('exportAvgStepsCSV').addEventListener('click', () => {
-            createCSV(labels, stepsDataAverage, "average_steps");
+            createCSV(labels, averageChartsData.steps, "average_steps");
         });
         document.getElementById('exportAvgCaloriesCSV').addEventListener('click', () => {
-            createCSV(labels, caloriesDataAverage, "average_calories_burned");
+            createCSV(labels, averageChartsData.calories, "average_calories_burned");
         });
         document.getElementById('exportAvgSleepCSV').addEventListener('click', () => {
-            createCSV(labels, sleepDataAverage, "average_sleep");
+            createCSV(labels, averageChartsData.sleep, "average_sleep");
         });
     }
 
@@ -735,12 +668,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateCharts(selectedBrand, selectedDevice);
     });
     
-    const unlink = document.querySelector('.unlink');
-    unlink.addEventListener('click', () => {
+    document.querySelector('.unlink').addEventListener('click', () => {
         const selectedDevice = deviceOpts.value;
         const selectedBrand = brandOpts.value;
     
-        const image = document.querySelector(`.${selectedBrand.toLowerCase()}-${selectedDevice.toLowerCase()}-img`);
+        const image = document.querySelector(`.${selectedBrand}-${selectedDevice}-container`);
         if (image) {
             image.remove();
         }
@@ -750,7 +682,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             devices[selectedBrand].devices[selectedDevice].status = 'unlinked';
     
             // Remove the device from the device options dropdown    
-            deviceOption = Array.from(deviceOpts.options).find(option => option.text === selectedDevice);;
+            const deviceOption = Array.from(deviceOpts.options).find(option => option.text === selectedDevice);;
     
             if (deviceOption) {
                 deviceOpts.removeChild(deviceOption);
@@ -771,4 +703,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     updateCharts(initialBrand, initialDevice);
     averageCharts();
+    renderLinkedDevicesImages('.linked-devices', linkedDevicesImages);
 });
