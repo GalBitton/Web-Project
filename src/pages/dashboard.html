@@ -4,26 +4,11 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="assets/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Create Tailwind</title>
+    <title>Wearable Health Data Tracker Dashboard</title>
     <link rel="stylesheet" href="/src/styles/style.css" />
 </head>
 <body class="min-h-screen bg-gradient-to-b from-white to-gray-200 dark:from-gray-900 dark:to-slate-800 flex flex-col text-black dark:text-white">
-    <header id="header-menu" class="bg-white dark:bg-gray-800 text-black dark:text-white p-4 flex justify-between items-center">
-        <div class="flex items-center">
-            <a href="/"><img src="/assets/logo1.jpg" alt="Project Icon" class="h-10 mr-6 w-18 h-16"></a>
-            <h1 class="text-lg text-[#0059ff]"><a href="/dashboard">Dashboard</a></h1>
-        </div>
-        <div class="mx-16">
-            <img src="/assets/profilePicture.webp" alt="Top Image" class="h-16 cursor-pointer" id="top-menu-button">
-            <div id="top-menu" class="items-center absolute right-0 mt-2 mx-2 w-48 bg-gray-200 dark:bg-gray-700 text-black dark:text-white rounded-lg shadow-lg hidden">
-                <a href="#" class="block px-4 py-2 theme-toggle">
-                    <img class="themeIcon h-[2rem] w-[2rem]" src="assets/dark-mode.svg" alt="Toggle Theme" />
-                </a>
-                <a href="#" class="block px-4 py-2">Settings</a>
-                <a href="#" class="block px-4 py-2">Logout</a>
-            </div>
-        </div>
-    </header>
+    <header id="header-menu"></header>
 
     <main class="flex-grow flex flex-col my-4 w-full px-4">
         <div class="mb-2 p-4 items-center">
@@ -48,13 +33,52 @@
                 </div>
             </div>
         </div>
+
+        <div class="flex flex-wrap justify-center gap-14 max-w-full">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-xl mb-10">
+                <h2 class="text-xl mb-4">Average Heartrate BPM</h2>
+                <canvas id="avghealthDataChart" class="w-full h-64"></canvas>
+                <div id="avgHeartRateSummary" class="mt-4 text-center"></div>
+                <button id="exportAvgHeartRateCSV" class="bg-transparent hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mt-2">
+                    <img src="assets/export-csv.svg" alt="Export to CSV"/>
+                </button>
+            </div>
+        
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-xl mb-10">
+                <h2 class="text-xl mb-4">Average Steps Count</h2>
+                <canvas id="avgstepsChart" class="w-full h-64"></canvas>
+                <div id="avgStepsSummary" class="mt-4 text-center"></div>
+                <button id="exportAvgStepsCSV" class="bg-transparent hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mt-2">
+                    <img src="assets/export-csv.svg" alt="Export to CSV"/>
+                </button>
+            </div>
+        
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-xl mb-10">
+                <h2 class="text-xl mb-4">Average Calories Burned</h2>
+                <canvas id="avgcaloriesChart" class="w-full h-64"></canvas>
+                <div id="avgCaloriesSummary" class="mt-4 text-center"></div>
+                <button id="exportAvgCaloriesCSV" class="bg-transparent hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mt-2">
+                    <img src="assets/export-csv.svg" alt="Export to CSV"/>
+                </button>
+            </div>
+        
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-xl mb-10">
+                <h2 class="text-xl mb-4">Average Sleep Duration</h2>
+                <canvas id="avgsleepChart" class="w-full h-64"></canvas>
+                <div id="avgSleepSummary" class="mt-4 text-center"></div>
+                <button id="exportAvgSleepCSV" class="bg-transparent hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mt-2">
+                    <img src="assets/export-csv.svg" alt="Export to CSV"/>
+                </button>
+            </div>
+        </div>
+        
         
         <div class="flex justify-center items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full mb-10">
             <p class="text-lg text-gray-700 dark:text-slate-400 mb-4">Select Model: </p>
             <div class="flex space-x-8 mb-4 w-[60rem]">
                 <select class="brandCmbBox bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-2 rounded w-[10rem]"></select>
                 <select class="deviceCmbBox bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-2 rounded w-[10rem]"></select>
-                <button class="unlink bg-red-500 dark:bg-red-300 text-white dark:text-black px-4 py-2 rounded w-[8rem]">
+                <button class="unlink bg-red-500 hover:bg-red-700 dark:bg-red-300 dark:hover:bg-red-500 text-white dark:text-black px-4 py-2 rounded w-[8rem]">
                     <div class="flex items-center gap-2">
                         <img src="assets/unlink.svg" class="w-[2rem] h-[2rem]"/>
                         Unlink
@@ -65,29 +89,67 @@
 
         <div class="flex flex-wrap justify-center gap-14 max-w-full">
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-3xl mb-10">
-                <h2 class="text-xl mb-4">Average Heartrate BPM</h2>
+                <h2 class="text-xl mb-4">Heartrate BPM</h2>
                 <canvas id="healthDataChart" class="w-full h-64"></canvas>
+                <button id="exportHeartRateCSV" class="bg-transparent hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mt-2">
+                    <img src="assets/export-csv.svg" alt="Export to CSV"/>
+                </button>
             </div>
     
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-3xl mb-10">
                 <h2 class="text-xl mb-4">Steps Count</h2>
                 <canvas id="stepsChart" class="w-full h-64"></canvas>
+                <button id="exportStepsCSV" class="bg-transparent hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mt-2">
+                    <img src="assets/export-csv.svg" alt="Export to CSV"/>
+                </button>
             </div>
     
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-3xl mb-10">
                 <h2 class="text-xl mb-4">Calories Burned</h2>
                 <canvas id="caloriesChart" class="w-full h-64"></canvas>
+                <button id="exportCaloriesCSV" class="bg-transparent hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mt-2">
+                    <img src="assets/export-csv.svg" alt="Export to CSV"/>
+                </button>
             </div>
 
             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-3xl mb-10">
-                <h2 class="text-xl mb-4">Average Sleep Duration</h2>
+                <h2 class="text-xl mb-4">Sleep Statistics</h2>
                 <canvas id="sleepChart" class="w-full h-64"></canvas>
+                <button id="exportSleepCSV" class="bg-transparent hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mt-2">
+                    <img src="assets/export-csv.svg" alt="Export to CSV"/>
+                </button>
             </div>
     
-            <!-- Fitbit Exclusive Chart -->
-            <div id="fitbitStressChartContainer" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-4xl mb-10 hidden">
+            <div id="stressChartContainer" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-4xl mb-10 hidden">
                 <h2 class="text-xl mb-4">Stress Management Score</h2>
                 <canvas id="stressChart" class="w-full h-64"></canvas>
+                <button id="exportStressCSV" class="bg-transparent hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mt-2">
+                    <img src="assets/export-csv.svg" alt="Export to CSV"/>
+                </button>
+            </div>
+
+            <div id="oxygenChartContainer" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-4xl mb-10 hidden">
+                <h2 class="text-xl mb-4">Oxygen Saturation Levels</h2>
+                <canvas id="oxygenChart" class="w-full h-64"></canvas>
+                <button id="exportOxygenCSV" class="bg-transparent hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mt-2">
+                    <img src="assets/export-csv.svg" alt="Export to CSV"/>
+                </button>
+            </div>
+
+            <div id="bloodPressureChartContainer" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-4xl mb-10 hidden">
+                <h2 class="text-xl mb-4">Blood Pressure</h2>
+                <canvas id="bloodPressureChart" class="w-full h-64"></canvas>
+                <button id="exportBloodPressureCSV" class="bg-transparent hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mt-2">
+                    <img src="assets/export-csv.svg" alt="Export to CSV"/>
+                </button>
+            </div>
+
+            <div id="eegChartContainer" class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-4xl mb-10 hidden">
+                <h2 class="text-xl mb-4">EEG Data</h2>
+                <canvas id="eegChart" class="w-full h-64"></canvas>
+                <button id="exportEEGCSV" class="bg-transparent hover:bg-gray-600 text-white font-bold py-2 px-4 rounded mt-2">
+                    <img src="assets/export-csv.svg" alt="Export to CSV"/>
+                </button>
             </div>
         </div>
     </main>

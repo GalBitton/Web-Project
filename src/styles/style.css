@@ -8,43 +8,6 @@ body {
     font-family: 'Raleway', sans-serif;
 }
 
-.carousel-container {
-    width: 640px; /* Fixed width to ensure buttons are aligned */
-    height: 480px; /* Fixed height to ensure buttons are aligned */
-    position: relative;
-}
-
-.carousel {
-    width: 100%; /* Full width of the container */
-    height: 100%; /* Full height of the container */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.carousel img.active {
-    display: block; /* Override Tailwind's display: none */
-    max-width: 100%; /* Adjust this as necessary */
-    max-height: 100%; /* Maximum height of the image */
-    object-fit: cover; /* Ensure the image covers the dimensions without distortion */
-}
-
-.nav-button {
-    cursor: pointer;
-    width: 50px;
-    height: 50px;
-    position: absolute;
-    top: 50%; /* Center vertically */
-    transform: translateY(-50%); /* Adjust vertical centering */
-}
-
-.prev {
-    left: 0; /* Position to the left */
-}
-
-.next {
-    right: 0; /* Position to the right */
-}
 
 /* TESTING
 /* Custom styles for the landing page */

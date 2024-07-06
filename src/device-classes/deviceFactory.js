@@ -15,7 +15,7 @@ export class DeviceFactory {
                 return new SamsungBracelet(data);
             case 'AppleWatch':
                 return new AppleWatch(data);
-            case 'XiaomiWatch':
+            case 'Xiaomi':
                 if (device == 'Smartwatch') {
                     return new XiaomiWatch(data);
                 }

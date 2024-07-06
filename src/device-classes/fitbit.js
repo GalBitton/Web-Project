@@ -7,7 +7,10 @@ export default class FitbitBracelet extends Device {
         } else if (field === 'caloriesBurned') {
             return entry.caloriesBurned;
         } else if (field === 'sleep') {
-            return entry.sleep.duration;
+            return {
+                "duration": entry[field].duration,
+                "quality": entry[field].quality
+            }
         } else if (field === 'stress') {
             return {
                 "score": entry.stressManagement.score,
