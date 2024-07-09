@@ -65,15 +65,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const createAllDevices = async () => {
         const devices = [
-            { brand: 'Samsung', type: 'Smartwatch', file: '../../demo-data/samsung_watch_data_v2.json' },
-            { brand: 'Samsung', type: 'Bracelet', file: '../../demo-data/samsung_bracelet_data_v2.json' },
-            { brand: 'Apple', type: 'Smartwatch', file: '../../demo-data/apple_watch_data_v2.json' },
-            { brand: 'Xiaomi', type: 'Smartwatch', file: '../../demo-data/xiaomi_watch_data_v2.json' },
-            { brand: 'Xiaomi', type: 'Bracelet', file: '../../demo-data/xiaomi_bracelet_data_v2.json' },
-            { brand: 'FitBit', type: 'Bracelet', file: '../../demo-data/fitbit_bracelet_data_v2.json' },
-            { brand: 'Dreem', type: 'Headband', file: '../../demo-data/dreem_headband_data_v2.json' },
-            { brand: 'Muse', type: 'Headband', file: '../../demo-data/muse_headband_data_v2.json' }
+            { brand: 'Samsung', type: 'Smartwatch', file: '/demo-data/samsung_watch_data_v2.json' },
+            { brand: 'Samsung', type: 'Bracelet', file: '/demo-data/samsung_bracelet_data_v2.json' },
+            { brand: 'Apple', type: 'Smartwatch', file: '/demo-data/apple_watch_data_v2.json' },
+            { brand: 'Xiaomi', type: 'Smartwatch', file: '/demo-data/xiaomi_watch_data_v2.json' },
+            { brand: 'Xiaomi', type: 'Bracelet', file: '/demo-data/xiaomi_bracelet_data_v2.json' },
+            { brand: 'FitBit', type: 'Bracelet', file: '/demo-data/fitbit_bracelet_data_v2.json' },
+            { brand: 'Dreem', type: 'Headband', file: '/demo-data/dreem_headband_data_v2.json' },
+            { brand: 'Muse', type: 'Headband', file: '/demo-data/muse_headband_data_v2.json' }
         ];
+
 
         return Promise.all(devices.map(async (device) => ({
             name: `${device.brand} ${device.type}`,
