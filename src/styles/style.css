@@ -8,9 +8,6 @@ body {
     font-family: 'Raleway', sans-serif;
 }
 
-
-/* TESTING
-/* Custom styles for the landing page */
 h1 {
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
 }
@@ -24,7 +21,7 @@ a {
 }
 
 .relative div:nth-child(2) {
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(4px);
 }
 
 .hover\:scale-105:hover {
@@ -38,4 +35,3 @@ a {
 footer p {
     font-size: 0.875rem;
 }
-/* TILL HERE */
