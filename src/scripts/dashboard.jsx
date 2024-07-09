@@ -49,9 +49,10 @@ const renderLinkedDevicesImages = (containerSelector, devices) => {
     };
 
     const container = document.querySelector(containerSelector);
-    devices.forEach(device => {
+    for (const device of devices) {
         container.innerHTML += createDeviceHTML(device);
-    });
+
+    }
 };
 
 
@@ -131,7 +132,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const averageCharts = () => {
         // Update the summaries
-        Object.keys(overallAverages).forEach(type => updateGraphSummary(overallAverages[type], type));
+        for (const type in overallAverages) {
+            updateGraphSummary(overallAverages[type], type);
+        }
 
         new Chart(ctxAverageHeartRate, {
             type: 'line',
@@ -645,20 +648,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     const brandOpts = document.querySelector('.brandCmbBox');
     const deviceOpts = document.querySelector('.deviceCmbBox');
 
-    Object.keys(devices).forEach((brand) => {
+    for (const brand in devices) {
         brandOpts.innerHTML += `<option value="${brand}">${brand}</option>`;
-    });
+    }
     
     // Handle selection change
     brandOpts.addEventListener('change', (event) => {
         const selectedBrand = event.target.value;
         deviceOpts.innerHTML = '';
-        Object.keys(devices[selectedBrand].devices).forEach((device) => {
+        for (const device in devices[selectedBrand].devices) {
             if (devices[selectedBrand].devices[device].status === 'linked') {
                 deviceOpts.innerHTML += `<option value="${device}">${device}</option>`;
             }
-        });
-    
+        }
+
         const selectedDevice = deviceOpts.value;
         updateCharts(selectedBrand, selectedDevice);
     });
@@ -698,9 +701,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load and update charts with initial data
     const initialBrand = Object.keys(devices)[0];
     const initialDevice = Object.keys(devices[initialBrand].devices)[0];
-    Object.keys(devices[initialBrand].devices).forEach((device) => {
-        deviceOpts.innerHTML += `<option>${device}</option>`;
-    });
+    for (const device in devices[initialBrand].devices) {
+            deviceOpts.innerHTML += `<option>${device}</option>`;
+    }
 
     updateCharts(initialBrand, initialDevice);
     averageCharts();

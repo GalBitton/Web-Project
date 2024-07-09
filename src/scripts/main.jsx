@@ -64,13 +64,9 @@ const renderMenu = () => {
     const logoContainer = createLogoContainer(isLoggedIn);
     headerMenu.appendChild(logoContainer);
 
-    menuItems.forEach(item => {
-        const menuItem = createMenuItem(item.href, item.name, false, item.classes, item.action);
-        headerMenu.appendChild(menuItem);
-    });
-
-
-
+    for (const item of menuItems) {
+        headerMenu.appendChild(createMenuItem(item.href, item.name, false, item.classes, item.action));
+    }
 
     if (inDashboard && isLoggedIn) {
         const profileContainer = createProfileContainer();

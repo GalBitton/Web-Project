@@ -1,8 +1,8 @@
 module.exports = {
   content: [
-    "./*.{html,js,ts}",
+    "./*.{html,js,jsx,ts}",
     "./public/*.html",
-    "./src/**/*.{html,js}",
+    "./src/**/*.{html,js,jsx}",
   ],
   darkMode: 'class',
   theme: {
@@ -11,6 +11,8 @@ module.exports = {
   plugins: [
     require("@tailwindcss/typography"),
     require("@tailwindcss/forms"),
-    require("@tailwindcss/aspect-ratio")
+    require("@tailwindcss/aspect-ratio"),
+    require("@tailwindcss/line-clamp"),
+    require("prettier-plugin-tailwindcss")
   ],
 };
