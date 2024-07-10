@@ -1,12 +1,12 @@
 // Imports
-import { DeviceFactory } from '../device-classes/deviceFactory.js';
-import Device from '../device-classes/device.js';
-import '../device-classes/samsung.js';
-import '../device-classes/apple.js';
-import '../device-classes/xiaomi.js';
-import '../device-classes/fitbit.js';
-import '../device-classes/dreem.js';
-import '../device-classes/muse.js';
+import { DeviceFactory } from '../devices/deviceFactory.js';
+import Device from '../devices/device.js';
+import '../devices/samsung.js';
+import '../devices/apple.js';
+import '../devices/xiaomi.js';
+import '../devices/fitbit.js';
+import '../devices/dreem.js';
+import '../devices/muse.js';
 
 import { createCSV, updateGraphSummary, calculateOverallAverage } from './utils.js';
 
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         calories: calculateOverallAverage(averageChartsData.calories),
         sleep: calculateOverallAverage(averageChartsData.sleep)
     };
-    
+
 
     const ctxAverageHeartRate = document.getElementById('avghealthDataChart').getContext('2d');
     const ctxAverageSteps = document.getElementById('avgstepsChart').getContext('2d');
@@ -459,7 +459,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             ctxStressContainer.classList.add('hidden');
         }
-    
+
 
         // Oxygen Saturation Levels
         if (selectedBrand === 'Samsung' && selectedDevice === 'Smartwatch') {
@@ -494,7 +494,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('exportOxygenCSV').addEventListener('click', () => {
                 createCSV(oxygenLabels, oxygenData, "oxygen_levels");
             });
-            
+
             document.getElementById('oxygenChartContainer').classList.remove('hidden');
         } else {
             document.getElementById('oxygenChartContainer').classList.add('hidden');
@@ -555,7 +555,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (selectedDevice === 'Headband') {
             const model = linkedDevices.find(device => device.name === selectedBrand + ' ' + selectedDevice).device;
             const eegData = model.data.map(entry => model.getFieldValue(entry, 'EEG'));
-            
+
             const alphaData = eegData.map(data => data.alpha);
             const betaData = eegData.map(data => data.beta);
             const gammaData = eegData.map(data => data.gamma);
@@ -643,7 +643,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             createCSV(sleepLabels, sleepData, `sleep_data_${selectedBrand}-${selectedDevice}`);
         });
     };
-    
+
     // Populate dropdowns
     const brandOpts = document.querySelector('.brandCmbBox');
     const deviceOpts = document.querySelector('.deviceCmbBox');
@@ -651,7 +651,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     for (const brand in devices) {
         brandOpts.innerHTML += `<option value="${brand}">${brand}</option>`;
     }
-    
+
     // Handle selection change
     brandOpts.addEventListener('change', (event) => {
         const selectedBrand = event.target.value;
@@ -665,33 +665,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         const selectedDevice = deviceOpts.value;
         updateCharts(selectedBrand, selectedDevice);
     });
-    
+
     deviceOpts.addEventListener('change', (event) => {
         const selectedDevice = event.target.value;
         const selectedBrand = brandOpts.value;
         updateCharts(selectedBrand, selectedDevice);
     });
-    
+
     document.querySelector('.unlink').addEventListener('click', () => {
         const selectedDevice = deviceOpts.value;
         const selectedBrand = brandOpts.value;
-    
+
         const image = document.querySelector(`.${selectedBrand}-${selectedDevice}-container`);
         if (image) {
             image.remove();
         }
-    
+
         if (selectedDevice !== '') {
             // Unlink the device in the devices object
             devices[selectedBrand].devices[selectedDevice].status = 'unlinked';
-    
-            // Remove the device from the device options dropdown    
+
+            // Remove the device from the device options dropdown
             const deviceOption = Array.from(deviceOpts.options).find(option => option.text === selectedDevice);;
-    
+
             if (deviceOption) {
                 deviceOpts.removeChild(deviceOption);
             }
-    
+
             // Update the charts with the new selection
             deviceOpts.value = '';
             updateCharts(selectedBrand, '');

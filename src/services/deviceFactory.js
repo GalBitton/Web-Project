@@ -1,9 +1,9 @@
-import { SamsungWatch, SamsungBracelet } from "./samsung.js";
-import { XiaomiWatch, XiaomiBracelet } from "./xiaomi.js";
-import AppleWatch from "./apple.js";
-import FitbitBracelet from './fitbit.js';
-import DreemHeadband from './dreem.js';
-import MuseHeadband from './muse.js';
+import { SamsungWatch, SamsungBracelet } from "./devices/samsung.js";
+import { XiaomiWatch, XiaomiBracelet } from "./devices/xiaomi.js";
+import AppleWatch from "./devices/apple.js";
+import FitbitBracelet from './devices/fitbit.js';
+import DreemHeadband from './devices/dreem.js';
+import MuseHeadband from './devices/muse.js';
 
 export class DeviceFactory {
     static createDevice(brand, device, data) {
