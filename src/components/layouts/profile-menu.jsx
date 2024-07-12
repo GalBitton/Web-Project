@@ -1,36 +1,60 @@
-import React from 'react';
-import useAuth from '../../hooks/useAuth';
+import { useState, useRef, useEffect } from 'react';
+import useAuth from '../../hooks/useAuth.jsx';
 
-const ProfileMenu = () => {
+function ProfileMenu() {
     const { logout } = useAuth();
+    const [menuOpen, setMenuOpen] = useState(false);
+    const menuRef = useRef(null);
+    const buttonRef = useRef(null);
 
-    const handleSettingsClick = (e) => {
-        e.preventDefault();
-        console.log('Settings clicked');
+    const handleToggleMenu = () => {
+        setMenuOpen(!menuOpen);
     };
 
-    const handleLogoutClick = (e) => {
-        e.preventDefault();
-        logout();
+    const handleClickOutside = (event) => {
+        if (menuRef.current && !menuRef.current.contains(event.target) && !buttonRef.current.contains(event.target)) {
+            setMenuOpen(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    const handleSettingsClick = () => {
+        // Your settings click handler here
+        console.log('Your settings click handler');
+    };
+
+    const handleLogoutClick = () => {
+        // Your logout click handler here
+        console.log('Your logout click handler');
     };
 
     return (
-        <div className="relative">
+        <div className="relative flex justify-center items-center">
             <img
+                ref={buttonRef}
                 src="/assets/profilePicture.webp"
                 alt="Profile"
-                className="h-16 cursor-pointer mx-10"
-                onClick={() => document.getElementById('top-menu').classList.toggle('hidden')}
+                className="h-16 w-16 cursor-pointer mx-16"
+                onClick={handleToggleMenu}
             />
-            <div
-                id="top-menu"
-                className="hidden absolute right-0 mt-2 w-36 bg-gray-200 dark:bg-gray-700 text-black dark:text-white rounded-lg shadow-lg divide-y flex flex-col"
-            >
-                <a href="#" className="block px-4 py-4 hover:bg-gray-300 w-full text-center" onClick={handleSettingsClick}>Settings</a>
-                <a href="#" className="block px-4 py-4 hover:bg-gray-300 w-full text-center" onClick={handleLogoutClick}>Logout</a>
-            </div>
+            {menuOpen && (
+                <div
+                    ref={menuRef}
+                    className="absolute mt-2 w-44 bg-gray-200 dark:bg-gray-700 text-black dark:text-white rounded-lg shadow-lg divide-y flex flex-col z-50"
+                    style={{ top: '100%', left: '50%', transform: 'translateX(-50%)' }}
+                >
+                    <a href="#" className="block px-4 py-2 hover:bg-gray-300 dark:hover:bg-gray-600 w-full text-center" onClick={handleSettingsClick}>Settings</a>
+                    <a href="#" className="block px-4 py-2 hover:bg-gray-300 dark:hover:bg-gray-600 w-full text-center" onClick={logout}>Logout</a>
+                </div>
+            )}
         </div>
     );
-};
+}
 
 export default ProfileMenu;

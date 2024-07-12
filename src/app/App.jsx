@@ -1,43 +1,29 @@
 import React from "react";
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { Outlet } from 'react-router-dom';
 import { Footer, AppMenu } from "../components/layouts";
-import CardText from "../components/cardtext";
-import { AppProvider } from "./AppProvider";
-import serviceData from "../../package.json";
+import { AppProvider } from "../hooks/AppProvider.jsx";
+import AuthProvider from "../hooks/AuthProvider";
+import { Maintenance } from "./views";
 
 function App() {
+    const isMaintenance = import.meta.env.VITE_MAINTENANCE === 'true';
     return (
-        <AppProvider>
-            <div className="bg-white dark:bg-slate-900 text-white">
-                <AppMenu />
-                <div className="relative flex flex-col justify-between min-h-screen">
-                    <img
-                        src="/assets/backgrounds/landingPage-transparent.png"
-                        alt="Landing Page Image"
-                        className="absolute left-1/4 inset-0 w-full h-full object-cover opacity-50"
-                    />
-                    <div className="relative z-10 flex flex-col items-start p-8 max-w-xl mt-24 ml-4 md:ml-16 dark:bg-slate-900">
-                        <h1 className="text-5xl md:text-7xl font-bold mb-4 text-black dark:text-white">
-                            {serviceData.name}
-                        </h1>
-                        <p className="text-sm md:text-lg mb-8 text-black dark:text-white">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Neque laoreet suspendisse interdum consectetur libero id faucibus. Morbi tincidunt augue interdum velit euismod in pellentesque massa placerat. Blandit turpis cursus in hac habitasse platea. Accumsan sit amet nulla facilisi morbi tempus.
-                        </p>
-                        <a
-                            href="#"
-                            className="bg-gray-300 dark:bg-slate-600 text-black dark:text-white px-6 py-3 rounded-full hover:bg-gray-300 transition duration-300"
-                        >
-                            Get started
-                        </a>
+        <GoogleOAuthProvider clientId="">
+            <AppProvider>
+                <AuthProvider>
+                    <div className="min-h-screen bg-gradient-to-b from-white to-gray-200 dark:from-gray-900 dark:to-slate-800 flex flex-col text-black dark:text-white max-w-full">
+                        {isMaintenance ? <Maintenance /> : <>
+                            <AppMenu />
+                            <main className="flex-grow flex flex-col my-4 w-full px-4">
+                                <Outlet />
+                            </main>
+                        </>}
+                        <Footer />
                     </div>
-                    <div className="relative z-10 flex flex-col md:flex-row justify-around p-4 bg-gradient-to-t from-black via-transparent to-black w-full space-y-4 md:space-y-0">
-                        {Array.from({ length: 3 }, (_, i) => (
-                            <CardText key={i} index={i + 1} text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Neque laoreet suspendisse interdum consectetur libero id faucibus. Morbi tincidunt augue interdum velit euismod in pellentesque massa placerat. Blandit turpis cursus in hac habitasse platea. Accumsan sit amet nulla facilisi morbi tempus."/>
-                        ))}
-                    </div>
-                </div>
-                <Footer />
-            </div>
-        </AppProvider>
+                </AuthProvider>
+            </AppProvider>
+        </GoogleOAuthProvider>
     );
 }
 

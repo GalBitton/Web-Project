@@ -1,24 +1,8 @@
-import { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
+import { AuthContext } from "./AuthProvider.jsx";
 
 const useAuth = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    useEffect(() => {
-        const status = JSON.parse(localStorage.getItem('loginStatus')) || false;
-        setIsLoggedIn(status);
-    }, []);
-
-    const login = () => {
-        localStorage.setItem('loginStatus', true);
-        setIsLoggedIn(true);
-    };
-
-    const logout = () => {
-        localStorage.setItem('loginStatus', false);
-        setIsLoggedIn(false);
-    };
-
-    return { isLoggedIn, login, logout };
+    return useContext(AuthContext);
 };
 
 export default useAuth;

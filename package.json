@@ -11,10 +11,16 @@
   },
   "dependencies": {
     "@katasonovyp/react-burger-menu": "^3.21.0",
+    "@react-oauth/google": "^0.12.1",
+    "chart.js": "^4.4.3",
+    "dotenv": "^16.4.5",
+    "jspdf": "^2.5.1",
+    "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
     "react-burger-menu": "^3.0.9",
     "react-dark-mode-toggle": "^0.2.0",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.24.1"
   },
   "devDependencies": {
     "@tailwindcss/aspect-ratio": "^0.4.2",

@@ -1,6 +1,6 @@
 import React from 'react';
 import { stack as Menu } from '@katasonovyp/react-burger-menu';
-import useAuth from '../../hooks/useAuth';
+import useAuth from '../../hooks/useAuth.jsx';
 import ProfileMenu from './profile-menu.jsx';
 import { ThemeProvider } from "../../hooks/ThemeProvider.jsx";
 
@@ -38,7 +38,11 @@ const menuStyles = {
     },
     bmItemList: {
         color: '#b8b7ad',
-        padding: '0.8em'
+        padding: '0.8em',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '1em'
     },
     bmOverlay: {
         background: 'rgba(0, 0, 0, 0.3)'
@@ -46,16 +50,15 @@ const menuStyles = {
 }
 
 const AppMenu = () => {
-    const { isLoggedIn, login } = useAuth();
+    const { isLoggedIn } = useAuth();
     const currentPath = window.location.pathname;
-    const inDashboard = currentPath === '/dashboard';
 
     const menuItems = [
-        { name: 'Dashboard', href: '/dashboard', visible: isLoggedIn },
-        { name: 'Sign In', href: '#', onClick: login, visible: !isLoggedIn },
-        { name: 'Sign Up', href: '#', visible: !isLoggedIn },
-        { name: 'About Us', href: '#', visible: !inDashboard },
-        { name: 'Contact', href: '#', visible: !inDashboard },
+        { name: 'Dashboard', alias: 'dashboard', href: '/dashboard', visible: isLoggedIn },
+        { name: 'Sign In', alias: 'login', href: '/login', visible: !isLoggedIn },
+        { name: 'Sign Up', alias: 'register', href: '/register', visible: !isLoggedIn },
+        { name: 'About Us', alias: 'about', href: '#', visible: true },
+        { name: 'Contact', alias: 'contact', href: '#', visible: true },
     ];
 
     const logoImage = () => {
@@ -67,13 +70,13 @@ const AppMenu = () => {
     }
 
     return (
-        <header className={`bg-gray-200 dark:bg-gray-800 text-black dark:text-white p-4 flex items-center gap-40 ${inDashboard ? 'md:justify-between' : 'md:justify-center'}`}>
+        <header className={`bg-gray-200 dark:bg-gray-800 text-black dark:text-white p-4 flex items-center gap-10 ${'md:justify-between'}`}>
             <div className="md:hidden">
                 <Menu styles={ menuStyles }>
                     {logoImage()}
                     {menuItems.map((item, index) =>
                         item.visible ? (
-                            <a key={index} href={item.href} onClick={item.onClick} className="block px-4 py-2 text-lg hover:text-[#0059ff]">{item.name}</a>
+                            <a key={index} href={item.href} onClick={item.onClick} className={`block px-4 py-2 text-lg w-full items-center hover:text-[#0059ff] ${currentPath.includes(item.alias) ? "text-[#0059ff]" : '' }`}>{item.name}</a>
                         ) : null
                     )}
                 </Menu>
@@ -82,12 +85,14 @@ const AppMenu = () => {
                 {logoImage()}
                 {menuItems.map((item, index) =>
                     item.visible ? (
-                        <a key={index} href={item.href} onClick={item.onClick} className="text-lg hover:text-[#0059ff]">{item.name}</a>
+                        <a key={index} href={item.href} onClick={item.onClick} className={`text-lg hover:text-[#0059ff] ${currentPath.includes(item.alias) ? "text-[#0059ff]" : '' }`}>{item.name}</a>
                     ) : null
                 )}
             </nav>
-            <ThemeProvider></ThemeProvider>
-            {inDashboard && isLoggedIn && <ProfileMenu />}
+            <div className="flex items-center">
+                <ThemeProvider></ThemeProvider>
+                {isLoggedIn && <ProfileMenu />}
+            </div>
         </header>
     );
 };

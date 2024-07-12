@@ -1,3 +1,5 @@
+import jsPDF from 'jspdf';
+
 export default class ExportHandler {
   exportToCSV(labels, dataset, fileName) {
       let csvContent = "data:text/csv;charset=utf-8,";
@@ -29,7 +31,26 @@ export default class ExportHandler {
       document.body.removeChild(link);
   }
 
-  exportToPDF(content, fileName) {
+  exportToPDF(labels, dataset, fileName) {
+      const doc = new jsPDF();
 
+      // Add title
+      doc.setFontSize(18);
+      doc.text(fileName, 14, 22);
+
+      // Add table headers
+      doc.setFontSize(12);
+      doc.text("Label", 14, 32);
+      doc.text("Value", 60, 32);
+
+      // Add table rows
+      labels.forEach((label, index) => {
+          const yPosition = 40 + (index * 10);
+          doc.text(label, 14, yPosition);
+          doc.text(dataset[index].toString(), 60, yPosition);
+      });
+
+      // Save the PDF
+      doc.save(fileName + '.pdf');
   }
 }
