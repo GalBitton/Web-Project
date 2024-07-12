@@ -3,8 +3,8 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Outlet } from 'react-router-dom';
 import { Footer, AppMenu } from "../components/layouts";
 import { AppProvider } from "../hooks/AppProvider.jsx";
-import AuthProvider from "../hooks/AuthProvider";
-import { Maintenance } from "./views";
+import AuthProvider from "../hooks/AuthContext.jsx";
+import { Maintenance } from "./views/index.jsx";
 
 function App() {
     const isMaintenance = import.meta.env.VITE_MAINTENANCE === 'true';

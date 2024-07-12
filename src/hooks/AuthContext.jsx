@@ -1,9 +1,9 @@
-import { useState, useEffect, createContext } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
-const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const navigate = useNavigate();
 
@@ -20,7 +20,7 @@ const AuthProvider = ({ children }) => {
     const logout = () => {
         localStorage.setItem('loginStatus', false);
         setIsLoggedIn(false);
-        navigate('/'); // Navigate to the root path after logout
+        navigate('/');
     };
 
     return (
@@ -28,6 +28,10 @@ const AuthProvider = ({ children }) => {
             {children}
         </AuthContext.Provider>
     );
+};
+
+export const useAuth = () => {
+    return useContext(AuthContext);
 };
 
 export default AuthProvider;

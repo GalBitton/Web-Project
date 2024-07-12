@@ -9,33 +9,53 @@ export class DeviceFactory {
     static createDevice(brand, device, data) {
         switch (brand) {
             case 'Samsung':
-                if (device == 'Smartwatch') {
-                    return new SamsungWatch(data);
+                switch (device) {
+                    case 'Smartwatch':
+                        return new SamsungWatch(data);
+                    case 'Bracelet':
+                        return new SamsungBracelet(data);
+                    default:
+                        throw new Error('Unsupported device type for Samsung');
                 }
-                return new SamsungBracelet(data);
             case 'Apple':
-                if (device == 'Smartwatch') {
-                    return new AppleWatch(data);
+                switch (device) {
+                    case 'Smartwatch':
+                        return new AppleWatch(data);
+                    default:
+                        throw new Error('Unsupported device type for Apple');
                 }
             case 'Xiaomi':
-                if (device == 'Smartwatch') {
-                    return new XiaomiWatch(data);
+                switch (device) {
+                    case 'Smartwatch':
+                        return new XiaomiWatch(data);
+                    case 'Bracelet':
+                        return new XiaomiBracelet(data);
+                    default:
+                        throw new Error('Unsupported device type for Xiaomi');
                 }
-                return new XiaomiBracelet(data);
             case 'FitBit':
-                if (device === 'Bracelet') {
-                    return new FitbitBracelet(data);
+                switch (device) {
+                    case 'Bracelet':
+                        return new FitbitBracelet(data);
+                    default:
+                        throw new Error('Unsupported device type for FitBit');
                 }
             case 'Dreem':
-                if (device == 'Headband') {
-                    return new DreemHeadband(data);
+                switch (device) {
+                    case 'Headband':
+                        return new DreemHeadband(data);
+                    default:
+                        throw new Error('Unsupported device type for Dreem');
                 }
             case 'Muse':
-                if (device == 'Headband') {
-                    return new MuseHeadband(data);
+                switch (device) {
+                    case 'Headband':
+                        return new MuseHeadband(data);
+                    default:
+                        throw new Error('Unsupported device type for Muse');
                 }
             default:
-                throw new Error('Unsupported device type');
+                throw new Error('Unsupported brand');
         }
     }
 }

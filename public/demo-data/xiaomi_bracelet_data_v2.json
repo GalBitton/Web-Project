@@ -1,6 +1,6 @@
 {
-    "device": "Smart Bracelet",
-    "model": "Xiaomi Mi Band 6",
+    "brand": "Xiaomi",
+    "device": "Bracelet",
     "data": [
         {
             "timestamp": "2024-06-14T21:42:02.819539Z",

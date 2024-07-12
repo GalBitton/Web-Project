@@ -85,17 +85,18 @@ neurosync/
 ├── public/                     # Static assets
 │   ├── assets/                 # Images and other assets
 ├── src/                        # Source code
+│   ├── app/                    # App components
+│       ├── views/              # Pages components
+│       ├── App.jsx             # Main App component
 │   ├── components/             # React components
-        ├── layouts/                # Layout components
+        ├── layouts/            # Layout components
         └── ...
 │   ├── hooks/                  # Custom React hooks
 │   ├── services/               # API services and data classes
 │   ├── utils/                  # Utilities and helper functions
 │   ├── test/                   # Unit tests
-│   ├── app/                    # App components
-│       ├── views/              # Pages components
-│       ├── App.jsx             # Main App component
 │   ├── main.jsx                # Entry point for React
+│   ├── index.css               # Global CSS styles
 │   └── config/                 # Environment configuration files
 │       ├── .env.development
 │       ├── .env.production
@@ -134,4 +135,3 @@ neurosync/
 - [PostCSS](https://postcss.org/): A tool for transforming CSS with JavaScript plugins.
 - [Jest](https://jestjs.io/): JavaScript testing framework.
 - [Tailwind CSS Plugins](): Additional plugins for Tailwind CSS.
-```

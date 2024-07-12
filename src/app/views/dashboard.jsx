@@ -25,21 +25,26 @@ const devicesData = [
 const Dashboard = () => {
     const [linkedDevices, setLinkedDevices] = useState([]);
     const [chartsData, setChartsData] = useState({
-        heartRate: [],
-        steps: [],
-        calories: [],
-        sleep: []
+        heartRate: { labels: [], values: [] },
+        steps: { labels: [], values: [] },
+        calories: { labels: [], values: [] },
+        sleep: { labels: [], values: [], valuesY1: [] },
+        stress: { labels: [], values: [] },
+        oxygen: { labels: [], values: [] },
+        bloodPressure: { labels: [], systolic: [], diastolic: [] },
+        eeg: { labels: [], alpha: [], beta: [], gamma: [], delta: [], theta: [] }
     });
     const [averageChartsData, setAverageChartsData] = useState({
-        heartRate: [],
-        steps: [],
-        calories: [],
-        sleep: []
+        heartRate: { labels: [], values: [] },
+        steps: { labels: [], values: [] },
+        calories: { labels: [], values: [] },
+        sleep: { labels: [], values: [] }
     });
     const [overallAverages, setOverallAverages] = useState({});
     const [selectedBrand, setSelectedBrand] = useState('');
     const [selectedDevice, setSelectedDevice] = useState('');
 
+    // useEffect to reload the brand and device options
     useEffect(() => {
         if (selectedBrand) {
             const availableDevices = devicesData.filter(device => device.brand === selectedBrand && device.status === 'linked');
@@ -52,29 +57,56 @@ const Dashboard = () => {
         }
     }, [selectedBrand]);
 
+    // useEffect to reload the charts when the brand or device changes
+    useEffect(() => {
+        updateCharts(selectedBrand, selectedDevice);
+    }, [selectedDevice]);
+
+
+    // useEffect on mount to initialize the linked devices
     useEffect(() => {
         const initializeDevices = async () => {
             const linkedDevices = await createAllDevices();
             setLinkedDevices(linkedDevices);
             if (linkedDevices.length > 0) {
-                setSelectedBrand(linkedDevices[0].brand);
-                setSelectedDevice(linkedDevices.find(device => device.brand === linkedDevices[0].brand).type);
+                const defaultBrand = linkedDevices[0].brand;
+                const defaultDevice = linkedDevices.find(device => device.brand === defaultBrand).type;
+
+                setSelectedBrand(defaultBrand);
+                setSelectedDevice(defaultDevice);
             }
 
-            const averageChartsData = {
-                heartRate: linkedDevices.map(device => ({ label: device.name, value: parseFloat(device.device.calculateAverage('heartRate')) })),
-                steps: linkedDevices.map(device => ({ label: device.name, value: parseFloat(device.device.calculateAverage('steps')) })),
-                calories: linkedDevices.map(device => ({ label: device.name, value: parseFloat(device.device.calculateAverage('caloriesBurned')) })),
-                sleep: linkedDevices.map(device => ({ label: device.name, value: parseFloat(device.device.calculateAverage('sleep')) }))
-            };
+            const avgHeartRate = { labels: [], values: [] };
+            const avgSteps = { labels: [], values: [] };
+            const avgCalories = { labels: [], values: [] };
+            const avgSleep = { labels: [], values: [] };
 
-            setAverageChartsData(averageChartsData);
+            linkedDevices.forEach(device => {
+                avgHeartRate.labels.push(device.name);
+                avgHeartRate.values.push(parseFloat(device.device.calculateAverage('heartRate')));
+
+                avgSteps.labels.push(device.name);
+                avgSteps.values.push(parseFloat(device.device.calculateAverage('steps')));
+
+                avgCalories.labels.push(device.name);
+                avgCalories.values.push(parseFloat(device.device.calculateAverage('caloriesBurned')));
+
+                avgSleep.labels.push(device.name);
+                avgSleep.values.push(parseFloat(device.device.calculateAverage('sleep')));
+            });
+
+            setAverageChartsData({
+                heartRate: avgHeartRate,
+                steps: avgSteps,
+                calories: avgCalories,
+                sleep: avgSleep
+            });
 
             const overallAverages = {
-                heartRate: calculateOverallAverage(averageChartsData.heartRate.map(device => device.value)),
-                steps: calculateOverallAverage(averageChartsData.steps.map(device => device.value)),
-                calories: calculateOverallAverage(averageChartsData.calories.map(device => device.value)),
-                sleep: calculateOverallAverage(averageChartsData.sleep.map(device => device.value))
+                heartRate: calculateOverallAverage(avgHeartRate.values),
+                steps: calculateOverallAverage(avgSteps.values),
+                calories: calculateOverallAverage(avgCalories.values),
+                sleep: calculateOverallAverage(avgSleep.values)
             };
 
             setOverallAverages(overallAverages);
@@ -97,15 +129,21 @@ const Dashboard = () => {
     };
 
     const getDataEntry = (brand, type, dataEntry) => {
-        const model = linkedDevices.find(device => device.brand === brand && device.type === type).device;
+        const model = linkedDevices.find(device => device.brand === brand && device.type === type);
+        if (model && model.device) {
+            const values = model.device.data.map(entry => model.device.getFieldValue(entry, dataEntry));
+            if (values.every(value => value === 0)) {
+                return { labels: [], values: [] };
+            }
 
-        const values = model.data.map(entry => model.getFieldValue(entry, dataEntry));
-        const labels = model.data.map(entry => {
-            const date = new Date(entry.timestamp);
-            return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-        });
+            const labels = model.device.data.map(entry => {
+                const date = new Date(entry.timestamp);
+                return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+            });
 
-        return { labels, values };
+            return { labels, values };
+        }
+        return { labels: [], values: [] };
     }
 
     const updateCharts = async (selectedBrand, selectedDevice) => {
@@ -114,7 +152,39 @@ const Dashboard = () => {
             const steps = getDataEntry(selectedBrand, selectedDevice, 'steps');
             const calories = getDataEntry(selectedBrand, selectedDevice, 'caloriesBurned');
             const sleep = getDataEntry(selectedBrand, selectedDevice, 'sleep');
-            setChartsData({ heartRate, steps, calories, sleep });
+            const stress = getDataEntry(selectedBrand, selectedDevice, 'stress');
+            const oxygen = getDataEntry(selectedBrand, selectedDevice, 'oxygenSaturation');
+            const bloodPressure = getDataEntry(selectedBrand, selectedDevice, 'bloodPressure');
+            const eeg = getDataEntry(selectedBrand, selectedDevice, 'EEG');
+
+            setChartsData({
+                heartRate,
+                steps,
+                calories,
+                sleep: {
+                    labels: sleep.labels,
+                    values: sleep.values.map(sp => sp.duration),
+                    valuesY1: sleep.values.map(sp => sp.quality)
+                },
+                stress: {
+                    labels: stress.labels,
+                    values: stress.values.map(stress => stress.score)
+                },
+                oxygen,
+                bloodPressure: {
+                    labels: bloodPressure.labels,
+                    systolic: bloodPressure.values.map(bp => bp.systolic),
+                    diastolic: bloodPressure.values.map(bp => bp.diastolic)
+                },
+                eeg: {
+                    labels: eeg.labels,
+                    alpha: eeg.values.map(data => data.alpha),
+                    beta: eeg.values.map(data => data.beta),
+                    gamma: eeg.values.map(data => data.gamma),
+                    delta: eeg.values.map(data => data.delta),
+                    theta: eeg.values.map(data => data.theta)
+                }
+            });
         }
     };
 
@@ -177,10 +247,75 @@ const Dashboard = () => {
             </div>
 
             <div className="flex flex-wrap justify-center gap-14 max-w-full">
-                <ChartComponent title="Average Heartrate BPM" chartId="avghealthDataChart" data={averageChartsData.heartRate} type="line" summary={getGraphSummary(overallAverages.heartRate, "heartRate")} multiDeviceData={true}/>
-                <ChartComponent title="Average Steps Count" chartId="avgstepsChart" data={averageChartsData.steps} type="bar" summary={getGraphSummary(overallAverages.steps, "steps")} multiDeviceData={true}/>
-                <ChartComponent title="Average Calories Burned" chartId="avgcaloriesChart" data={averageChartsData.calories} type="bar" summary={getGraphSummary(overallAverages.calories, "calories")} multiDeviceData={true}/>
-                <ChartComponent title="Average Sleep Duration" chartId="avgsleepChart" data={averageChartsData.sleep} type="bar" summary={getGraphSummary(overallAverages.sleep, "sleep")} multiDeviceData={true}/>
+                <ChartComponent
+                    title="Average Heartrate BPM"
+                    chartId="avghealthDataChart"
+                    labels={averageChartsData.heartRate.labels}
+                    datasets={[
+                        {
+                            label: 'Heartrate BPM',
+                            data: averageChartsData.heartRate.values,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            type: 'line',
+                        }
+                    ]}
+                    summary={getGraphSummary(overallAverages.heartRate, "heartRate")}
+                />
+                <ChartComponent
+                    title="Average Steps Count"
+                    chartId="avgstepsChart"
+                    labels={averageChartsData.steps.labels}
+                    datasets={[
+                        {
+                            label: 'Steps Count',
+                            data: averageChartsData.steps.values,
+                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            type: 'bar',
+                        }
+                    ]}
+                    summary={getGraphSummary(overallAverages.steps, "steps")}
+                />
+                <ChartComponent
+                    title="Average Calories Burned"
+                    chartId="avgcaloriesChart"
+                    labels={averageChartsData.calories.labels}
+                    datasets={[
+                        {
+                            label: 'Calories Burned',
+                            data: averageChartsData.calories.values,
+                            backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                            borderColor: 'rgba(255, 159, 64, 1)',
+                            type: 'bar',
+                        }
+                    ]}
+                    summary={getGraphSummary(overallAverages.calories, "calories")}
+                />
+                <ChartComponent
+                    title="Average Sleep Duration"
+                    chartId="avgsleepChart"
+                    labels={averageChartsData.sleep.labels}
+                    datasets={[
+                        {
+                            label: 'Sleep Duration (hours)',
+                            data: averageChartsData.sleep.values,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            type: 'bar',
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Sleep Quality',
+                            data: chartsData.sleep.valuesY1,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            type: 'line',
+                            yAxisID: 'y1'
+                        }
+                    ]}
+                    summary={getGraphSummary(overallAverages.sleep, "sleep")}
+                />
             </div>
 
             <div className="flex justify-center items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full mb-10">
@@ -211,22 +346,186 @@ const Dashboard = () => {
             </div>
 
             <div className="flex flex-wrap justify-center gap-14 max-w-full">
-                <ChartComponent title="Heartrate BPM" chartId="healthDataChart" data={chartsData.heartRate} type="line" summary="" />
-                <ChartComponent title="Steps Count" chartId="stepsChart" data={chartsData.steps} type="bar" summary="" />
-                <ChartComponent title="Calories Burned" chartId="caloriesChart" data={chartsData.calories} type="bar" summary="" />
-                <ChartComponent title="Sleep Statistics" chartId="sleepChart" data={chartsData.sleep} type="bar" summary="" />
-                <div id="stressChartContainer" className="hidden">
-                    <ChartComponent title="Stress Management Score" chartId="stressChart" data={[]} type="line" summary="" />
-                </div>
-                <div id="oxygenChartContainer" className="hidden">
-                    <ChartComponent title="Oxygen Saturation Levels" chartId="oxygenChart" data={[]} type="line" summary="" />
-                </div>
-                <div id="bloodPressureChartContainer" className="hidden">
-                    <ChartComponent title="Blood Pressure" chartId="bloodPressureChart" data={[]} type="line" summary="" />
-                </div>
-                <div id="eegChartContainer" className="hidden">
-                    <ChartComponent title="EEG Data" chartId="eegChart" data={[]} type="line" summary="" />
-                </div>
+                <ChartComponent
+                    title="Heartrate BPM"
+                    chartId="healthDataChart"
+                    labels={chartsData.heartRate.labels}
+                    datasets={[
+                        {
+                            label: 'Heartrate BPM',
+                            data: chartsData.heartRate.values,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            type: 'line',
+                        }
+                    ]}
+                    summary=""
+                />
+                <ChartComponent
+                    title="Steps Count"
+                    chartId="stepsChart"
+                    labels={chartsData.steps.labels}
+                    datasets={[
+                        {
+                            label: 'Steps Count',
+                            data: chartsData.steps.values,
+                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            type: 'bar',
+                        }
+                    ]}
+                    summary=""
+                />
+                <ChartComponent
+                    title="Calories Burned"
+                    chartId="caloriesChart"
+                    labels={chartsData.calories.labels}
+                    datasets={[
+                        {
+                            label: 'Calories Burned',
+                            data: chartsData.calories.values,
+                            backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                            borderColor: 'rgba(255, 159, 64, 1)',
+                            type: 'bar',
+                        }
+                    ]}
+                    summary=""
+                />
+                <ChartComponent
+                    title="Sleep Statistics"
+                    chartId="sleepChart"
+                    labels={chartsData.sleep.labels}
+                    datasets={[
+                        {
+                            label: 'Sleep Duration (hours)',
+                            data: chartsData.sleep.values,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            type: 'bar',
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Sleep Quality',
+                            data: chartsData.sleep.valuesY1,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            type: 'line',
+                            yAxisID: 'y1'
+                        }
+                    ]}
+                    summary=""
+                />
+                {chartsData.stress.labels.length > 0 && (
+                    <div id="stressChartContainer">
+                        <ChartComponent
+                            title="Stress Management Score"
+                            chartId="stressChart"
+                            labels={chartsData.stress.labels}
+                            datasets={[
+                                {
+                                    label: 'Stress Management Score',
+                                    data: chartsData.stress.values,
+                                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                    borderColor: 'rgba(255, 99, 132, 1)',
+                                    type: 'line',
+                                }
+                            ]}
+                            summary=""
+                        />
+                    </div>
+                )}
+                {chartsData.oxygen.labels.length > 0 && (
+                    <div id="oxygenChartContainer">
+                        <ChartComponent
+                            title="Oxygen Saturation Levels"
+                            chartId="oxygenChart"
+                            labels={chartsData.oxygen.labels}
+                            datasets={[
+                                {
+                                    label: 'Oxygen Saturation Levels (%)',
+                                    data: chartsData.oxygen.values,
+                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    type: 'line',
+                                }
+                            ]}
+                            summary=""
+                        />
+                    </div>
+                )}
+                {chartsData.bloodPressure.labels.length > 0 && (
+                    <div id="bloodPressureChartContainer">
+                        <ChartComponent
+                            title="Blood Pressure"
+                            chartId="bloodPressureChart"
+                            labels={chartsData.bloodPressure.labels}
+                            datasets={[
+                                {
+                                    label: 'Systolic Blood Pressure',
+                                    data: chartsData.bloodPressure.systolic,
+                                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                                    borderColor: 'rgba(255, 159, 64, 1)',
+                                    type: 'line',
+                                },
+                                {
+                                    label: 'Diastolic Blood Pressure',
+                                    data: chartsData.bloodPressure.diastolic,
+                                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                                    borderColor: 'rgba(153, 102, 255, 1)',
+                                    type: 'line',
+                                }
+                            ]}
+                            summary=""
+                        />
+                    </div>
+                )}
+                {chartsData.eeg.labels.length > 0 && (
+                    <div id="eegChartContainer">
+                        <ChartComponent
+                            title="EEG Data"
+                            chartId="eegChart"
+                            labels={chartsData.eeg.labels}
+                            datasets={[
+                                {
+                                    label: 'Alpha Waves',
+                                    data: chartsData.eeg.alpha,
+                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                    borderColor: 'rgba(75, 192, 192, 1)',
+                                    type: 'line',
+                                },
+                                {
+                                    label: 'Beta Waves',
+                                    data: chartsData.eeg.beta,
+                                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                                    borderColor: 'rgba(153, 102, 255, 1)',
+                                    type: 'line',
+                                },
+                                {
+                                    label: 'Gamma Waves',
+                                    data: chartsData.eeg.gamma,
+                                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                                    borderColor: 'rgba(255, 159, 64, 1)',
+                                    type: 'line',
+                                },
+                                {
+                                    label: 'Delta Waves',
+                                    data: chartsData.eeg.delta,
+                                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                    borderColor: 'rgba(54, 162, 235, 1)',
+                                    type: 'line',
+                                },
+                                {
+                                    label: 'Theta Waves',
+                                    data: chartsData.eeg.theta,
+                                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                                    borderColor: 'rgba(255, 206, 86, 1)',
+                                    type: 'line',
+                                }
+                            ]}
+                            summary=""
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

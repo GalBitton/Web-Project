@@ -2,21 +2,24 @@ import Device from "./device.js";
 
 export default class AppleWatch extends Device {
     getFieldValue(entry, field) {
-        if (field === 'heartRate') {
-            return entry[field];
-        } else if (field === 'caloriesBurned') {
-            return entry[field];
-        } else if (field === 'sleep') {
-            return {
-                "duration": entry[field].duration,
-                "quality": entry[field].quality
-            }
-        } else if (field === 'bloodPressure') {
-            return {
-                systolic: entry[field].systolic,
-                diastolic: entry[field].diastolic
-            }
+        switch (field) {
+            case 'sleep':
+                return {
+                    "duration": entry[field].duration,
+                    "quality": entry[field].quality
+                }
+            case 'bloodPressure':
+                return {
+                    systolic: entry[field].systolic,
+                    diastolic: entry[field].diastolic
+                }
+            case 'activityRings':
+            case 'heartRate':
+            case 'steps':
+            case 'caloriesBurned':
+                return entry[field];
+            default:
+                return 0;
         }
-        return 0;
     }
 }

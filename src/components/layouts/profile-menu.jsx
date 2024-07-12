@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import useAuth from '../../hooks/useAuth.jsx';
+import { useAuth } from '../../hooks/AuthContext.jsx';
 
 function ProfileMenu() {
     const { logout } = useAuth();

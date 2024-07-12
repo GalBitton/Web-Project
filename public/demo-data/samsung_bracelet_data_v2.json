@@ -1,6 +1,6 @@
 {
-    "device": "Smart Bracelet",
-    "model": "Samsung Galaxy Fit 2",
+    "brand": "Samsung",
+    "device": "Bracelet",
     "data": [
         {
             "timestamp": "2024-06-14T21:42:02.827315Z",

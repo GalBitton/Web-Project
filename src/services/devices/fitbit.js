@@ -2,21 +2,22 @@ import Device from "./device.js";
 
 export default class FitbitBracelet extends Device {
     getFieldValue(entry, field) {
-        if (field === 'heartRate') {
-            return entry.heartRate;
-        } else if (field === 'caloriesBurned') {
-            return entry.caloriesBurned;
-        } else if (field === 'sleep') {
-            return {
-                "duration": entry[field].duration,
-                "quality": entry[field].quality
-            }
-        } else if (field === 'stress') {
-            return {
-                "score": entry.stressManagement.score,
-                "breathingRate": entry.stressManagement.breathingRate
-            }
+        switch (field) {
+            case 'sleep':
+                return {
+                    "duration": entry[field].duration,
+                    "quality": entry[field].quality
+                }
+            case 'stress':
+                return {
+                    "score": 10.0 - entry.stressManagement.score,
+                }
+            case 'steps':
+            case 'heartRate':
+            case 'caloriesBurned':
+                return entry[field];
+            default:
+                return 0;
         }
-        return 0;
     }
 }

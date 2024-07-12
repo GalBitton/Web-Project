@@ -1,6 +1,6 @@
 {
-    "device": "Smart Bracelet",
-    "model": "Fitbit Charge 5",
+    "brand": "FitBit",
+    "device": "Bracelet",
     "data": [
         {
             "timestamp": "2024-06-14T21:42:02.812402Z",

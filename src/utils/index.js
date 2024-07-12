@@ -1,4 +1,4 @@
-import exportHandler from './exportHandler';
+import exportHandler from './exporter.js';
 import { getGraphSummary } from './graphUtils';
 import { calculateOverallAverage } from './mathUtils';
 

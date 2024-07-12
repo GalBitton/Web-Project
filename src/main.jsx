@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from './components/protectedroute';
-import { IndexPage, Dashboard, Login, Register, NotFound, Maintenance, UnderConstruction, PrivacyPolicy, TermsOfService } from './app/views/';
+import { IndexPage, Dashboard, Login, Register, NotFound, Maintenance, UnderConstruction, PrivacyPolicy, TermsOfService } from './app/views/index.jsx';
 import App from './app/App.jsx'
 import './index.css'
 
@@ -12,8 +12,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Routes>
             <Route path="/" element={<App />}>
             <Route index element={<IndexPage />} />
-            <Route path="dashboard" element={<ProtectedRoute />}>
-                <Route index element={<Dashboard />} />
+            <Route element={<ProtectedRoute />}>
+                <Route index path="dashboard" element={<Dashboard />} />
             </Route>
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />

@@ -1,58 +1,132 @@
 import React, { useRef, useEffect } from 'react';
 import Chart from 'chart.js/auto';
-import ExportHandler from '../utils/exportHandler';
+import Exporter from '../utils/exporter.js';
 
-const ChartComponent = ({ title, chartId, data, type, summary, multiDeviceData = false }) => {
+const ChartComponent = ({ title, chartId, labels, datasets, summary }) => {
     const chartRef = useRef(null);
-    const exporter = new ExportHandler();
-    console.log('data', data);
+    const exporter = new Exporter();
 
     useEffect(() => {
         const ctx = chartRef.current.getContext('2d');
-        const chart = new Chart(ctx, {
-            type: type,
-            data: {
-                labels: multiDeviceData ? data.map(subdata => subdata.label) : data.labels,
-                datasets: [{
-                    label: title,
-                    data: multiDeviceData ? data.map(subdata => subdata.value) : data.values,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
+
+        const colors = [
+            { background: 'rgba(54, 162, 235, 0.2)', border: 'rgba(54, 162, 235, 1)' },
+            { background: 'rgba(255, 99, 132, 0.2)', border: 'rgba(255, 99, 132, 1)' },
+            { background: 'rgba(255, 159, 64, 0.2)', border: 'rgba(255, 159, 64, 1)' }
+        ];
+
+        const chartData = {
+            labels: labels,
+            datasets: datasets.map((dataset, index) => ({
+                ...dataset,
+                backgroundColor: dataset.backgroundColor || colors[index % colors.length].background,
+                borderColor: dataset.borderColor || colors[index % colors.length].border,
+                borderWidth: 1,
+                yAxisID: dataset.yAxisID || 'y',
+            }))
+        };
+
+        const yAxes = [
+            {
+                id: 'y',
+                type: 'linear',
+                position: 'left',
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Value'
+                }
+            }
+        ];
+
+        if (chartData.datasets.length > 1) {
+            yAxes.push({
+                id: 'y1',
+                type: 'linear',
+                position: 'right',
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Quality'
+                },
+                ticks: {
+                    callback: function (value) {
+                        const qualityLabels = ['Unknown', 'Excellent', 'Good', 'Fair', 'Poor', 'Very Poor'];
+                        return qualityLabels[value] || value;
+                    }
+                }
+            });
+        }
+
+        const chartConfig = {
+            type: 'bar',
+            data: chartData,
             options: {
                 responsive: true,
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Value'
+                        }
+                    },
+                    ...((chartData.datasets.length > 1) && {
+                        y1: {
+                            beginAtZero: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Quality'
+                            },
+                            ticks: {
+                                callback: function (value) {
+                                    const qualityLabels = ['', 'Excellent', 'Good', 'Fair', 'Poor', 'Very Poor'];
+                                    return qualityLabels[value] || value;
+                                }
+                            }
+                        }
+                    })
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function (tooltipItem) {
+                                if (tooltipItem.datasetIndex === 1) {
+                                    const qualityLabels = ['', 'Excellent', 'Good', 'Fair', 'Poor', 'Very Poor'];
+                                    return 'Quality: ' + qualityLabels[tooltipItem.raw];
+                                }
+                            }
+                        }
                     }
                 }
             }
-        });
+        };
+
+        const chart = new Chart(ctx, chartConfig);
 
         return () => {
             chart.destroy();
         };
-    }, [data, type, title]);
+    }, [datasets, labels, title]);
 
     return (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-xl mb-10">
             <h2 className="text-xl mb-4">{title}</h2>
             <canvas ref={chartRef} id={chartId} className="w-full h-64"></canvas>
-            <div className="mt-4 text-center">
+            <div className="mt-6 text-center">
                 <p className="text-lg">{summary}</p>
             </div>
             <div className="flex justify-center space-x-4 mt-4">
                 <button
                     className="bg-transparent hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => exporter.exportToCSV(data.labels, data.values, chartId)}
+                    onClick={() => exporter.exportToCSV(labels, datasets, title)}
                 >
                     <img src="assets/export-csv.svg" alt="Export to CSV" />
                 </button>
                 <button
                     className="bg-transparent hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => exporter.exportToPDF(data.labels, data.values, chartId)}
+                    onClick={() => exporter.exportToPDF(labels, datasets, title)}
                 >
                     <img src="assets/export-pdf.svg" alt="Export to PDF" />
                 </button>
