@@ -15,6 +15,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route element={<ProtectedRoute />}>
                 <Route index path="dashboard" element={<Dashboard />} />
             </Route>
+            <Route path="about-us" element={<UnderConstruction />} />
+            <Route path="contact-us" element={<UnderConstruction />} />
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
             <Route path="forgot-password" element={<UnderConstruction />} />
