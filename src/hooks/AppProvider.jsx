@@ -12,5 +12,5 @@ export const AppProvider = ({ children }) => {
         };
     }, []);
 
-    return <div className="bg-white dark:bg-slate-900 text-white">{children}</div>;
+    return <div data-testid="app-provider" className="bg-white dark:bg-slate-900 text-white">{children}</div>;
 }

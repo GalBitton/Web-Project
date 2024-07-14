@@ -15,16 +15,17 @@ export default class Device {
     
 
     translateQualityIndex(qualityIndex) {
-        if (qualityIndex <= 2) {
-            return "Excellent";
-        } else if (qualityIndex <= 4) {
-            return "Good";
-        } else if (qualityIndex <= 6) {
-            return "Fair";
-        } else if (qualityIndex <= 8) {
-            return "Poor";
-        } else {
+        if (qualityIndex <= 0.25) {
             return "Very Poor";
+        } else if (qualityIndex <= 0.5) {
+            return "Poor";
+        } else if (qualityIndex <= 0.75) {
+            return "Fair";
+        } else if (qualityIndex <= 1.00) {
+            return "Good";
+        } else {
+            return "Excellent";
+
         }
     }
 

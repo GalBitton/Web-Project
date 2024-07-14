@@ -111,7 +111,7 @@ const ChartComponent = ({ title, chartId, labels, datasets, summary }) => {
     }, [datasets, labels, title]);
 
     return (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-xl mb-10">
+        <div data-testid="chart-component" className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-xl mb-10">
             <h2 className="text-xl mb-4">{title}</h2>
             <canvas ref={chartRef} id={chartId} className="w-full h-64"></canvas>
             <div className="mt-6 text-center">

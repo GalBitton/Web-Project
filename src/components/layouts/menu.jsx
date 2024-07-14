@@ -70,7 +70,7 @@ const AppMenu = () => {
     }
 
     return (
-        <header className={`bg-gray-200 dark:bg-gray-800 text-black dark:text-white p-4 flex items-center gap-10 ${'md:justify-between'}`}>
+        <header data-testid="menu-component" className={`bg-gray-200 dark:bg-gray-800 text-black dark:text-white p-4 flex items-center gap-10 ${'md:justify-between'}`}>
             <div className="md:hidden">
                 <Menu styles={ menuStyles }>
                     {logoImage()}

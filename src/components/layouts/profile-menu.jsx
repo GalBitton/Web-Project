@@ -35,7 +35,7 @@ function ProfileMenu() {
     };
 
     return (
-        <div className="relative flex justify-center items-center">
+        <div data-testid="profile-menu" className="relative flex justify-center items-center">
             <img
                 ref={buttonRef}
                 src="/assets/profilePicture.webp"
