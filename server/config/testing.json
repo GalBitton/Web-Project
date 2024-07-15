@@ -1,0 +1,9 @@
+{
+    "server": {
+        "port": 3000,
+        "db_uri": ""
+    },
+    "logger": {
+        "level": "debug"
+    }
+}

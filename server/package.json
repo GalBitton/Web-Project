@@ -1,0 +1,31 @@
+{
+  "name": "NeuroSync Server",
+  "version": "1.0.0",
+  "description": "NeuroSync Server & Endpoint API",
+  "main": "index.js",
+  "scripts": {
+    "start": "NODE_ENVIRONMENT=production --nolazy --inspect index.js",
+    "dev": "NODE_ENVIRONMENT=development --nolazy --inspect index.js",
+    "test": "NODE_ENVIRONMENT=testing nodemon --nolazy --inspect index.js",
+    "build": ""
+  },
+  "author": "Team 1",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "config": "^3.3.12",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.3.1",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "kontainer-di": "^0.9.9",
+    "validator": "^13.12.0",
+    "winston": "^3.13.1"
+  }
+}
