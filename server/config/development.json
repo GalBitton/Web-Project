@@ -1,9 +1,10 @@
 {
     "server": {
         "port": 3000,
-        "db_uri": ""
+        "db_uri": "mongodb+srv://wezkc21:kZaRmBSQOxPEShHE@cluster0.ecddkfl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
     },
     "logger": {
-        "level": "debug"
+        "level": "debug",
+        "log2file": true
     }
 }
