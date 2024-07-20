@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from './components/protectedroute';
-import { IndexPage, Dashboard, Login, Register, NotFound, Maintenance, UnderConstruction, PrivacyPolicy, TermsOfService } from './app/views/index.jsx';
+import { IndexPage, Dashboard, Login, Register, NotFound, Maintenance, UnderConstruction, PrivacyPolicy, TermsOfService } from './app/views-components/index.jsx';
 import App from './app/App.jsx'
 import './index.css'
 

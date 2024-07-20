@@ -3,6 +3,7 @@ import { stack as Menu } from '@katasonovyp/react-burger-menu';
 import { useAuth } from '../../hooks/AuthContext.jsx';
 import ProfileMenu from './profile-menu.jsx';
 import { ThemeProvider } from "../../hooks/ThemeProvider.jsx";
+import useLocation from '../../hooks/useLocation.jsx';
 
 const menuStyles = {
     bmBurgerButton: {
@@ -51,7 +52,7 @@ const menuStyles = {
 
 const AppMenu = () => {
     const { isLoggedIn } = useAuth();
-    const currentPath = window.location.pathname;
+    const { location } = useLocation();
 
     const menuItems = [
         { name: 'Dashboard', alias: 'dashboard', href: '/dashboard', visible: isLoggedIn },
@@ -76,7 +77,7 @@ const AppMenu = () => {
                     {logoImage()}
                     {menuItems.map((item, index) =>
                         item.visible ? (
-                            <a key={index} href={item.href} onClick={item.onClick} className={`block px-4 py-2 text-lg w-full items-center hover:text-[#0059ff] ${currentPath.includes(item.alias) ? "text-[#0059ff]" : '' }`}>{item.name}</a>
+                            <a key={index} href={item.href} onClick={item.onClick} className={`block px-4 py-2 text-lg w-full items-center hover:text-[#0059ff] ${location.pathname.includes(item.alias) ? "text-[#0059ff]" : '' }`}>{item.name}</a>
                         ) : null
                     )}
                 </Menu>
@@ -85,7 +86,7 @@ const AppMenu = () => {
                 {logoImage()}
                 {menuItems.map((item, index) =>
                     item.visible ? (
-                        <a key={index} href={item.href} onClick={item.onClick} className={`text-lg hover:text-[#0059ff] ${currentPath.includes(item.alias) ? "text-[#0059ff]" : '' }`}>{item.name}</a>
+                        <a key={index} href={item.href} onClick={item.onClick} className={`text-lg hover:text-[#0059ff] ${location.pathname.includes(item.alias) ? "text-[#0059ff]" : '' }`}>{item.name}</a>
                     ) : null
                 )}
             </nav>

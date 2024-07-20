@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DeviceFactory } from '../../services/deviceFactory';
+import { DeviceFactory } from '@/services/deviceFactory';
 import Device from '../../services/devices/device';
 import '../../services/devices/samsung';
 import '../../services/devices/apple';
@@ -7,7 +7,7 @@ import '../../services/devices/xiaomi';
 import '../../services/devices/fitbit';
 import '../../services/devices/dreem';
 import '../../services/devices/muse';
-import { getGraphSummary, calculateOverallAverage } from '../../utils';
+import { getGraphSummary, calculateOverallAverage } from '@/utils';
 import DeviceCard from '../../components/devicecard';
 import ChartComponent from '../../components/chart';
 
@@ -137,8 +137,7 @@ const Dashboard = () => {
             }
 
             const labels = model.device.data.map(entry => {
-                const date = new Date(entry.timestamp);
-                return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                return new Date(entry.timestamp);
             });
 
             return { labels, values };

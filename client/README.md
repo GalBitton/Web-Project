@@ -86,7 +86,7 @@ neurosync/
 │   ├── assets/                 # Images and other assets
 ├── src/                        # Source code
 │   ├── app/                    # App components
-│       ├── views/              # Pages components
+│       ├── views-components/   # Pages components
 │       ├── App.jsx             # Main App component
 │   ├── components/             # React components
         ├── layouts/            # Layout components
@@ -94,7 +94,7 @@ neurosync/
 │   ├── hooks/                  # Custom React hooks
 │   ├── services/               # API services and data classes
 │   ├── utils/                  # Utilities and helper functions
-│   ├── test/                   # Unit tests
+│   ├── tests/                  # Unit tests
 │   ├── main.jsx                # Entry point for React
 │   ├── index.css               # Global CSS styles
 │   └── config/                 # Environment configuration files
