@@ -236,7 +236,7 @@ const Dashboard = () => {
                 <div className="flex justify-center mt-5">
                     <h1 className="text-3xl text-black dark:text-white mt-16">Linked Devices</h1>
                 </div>
-                <div className="flex justify-center p-8 sm:h-[70vh] md:h-[60vh] lg:h-[35vh] mb-[15rem] lg:mb-0">
+                <div className="flex justify-center p-8 sm:h-[105vh] md:h-[80vh] lg:h-[60vh] mb-[15rem] lg:mb-0">
                     <div className="linked-devices flex flex-wrap justify-center sm:justify-between items-center w-full p-2 gap-14">
                         {linkedDevices.map(device => (
                             <DeviceCard key={device.name} device={device} />
@@ -260,6 +260,7 @@ const Dashboard = () => {
                         }
                     ]}
                     summary={getGraphSummary(overallAverages.heartRate, "heartRate")}
+                    averageChart={true}
                 />
                 <ChartComponent
                     title="Average Steps Count"
@@ -275,6 +276,7 @@ const Dashboard = () => {
                         }
                     ]}
                     summary={getGraphSummary(overallAverages.steps, "steps")}
+                    averageChart={true}
                 />
                 <ChartComponent
                     title="Average Calories Burned"
@@ -290,6 +292,7 @@ const Dashboard = () => {
                         }
                     ]}
                     summary={getGraphSummary(overallAverages.calories, "calories")}
+                    averageChart={true}
                 />
                 <ChartComponent
                     title="Average Sleep Duration"
@@ -314,6 +317,7 @@ const Dashboard = () => {
                         }
                     ]}
                     summary={getGraphSummary(overallAverages.sleep, "sleep")}
+                    averageChart={true}
                 />
             </div>
 
@@ -344,6 +348,12 @@ const Dashboard = () => {
                 </div>
             </div>
 
+            <div className="flex justify-center items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full mb-10">
+                <p className="text-lg text-gray-700 dark:text-slate-400">Select Filters: </p>
+                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-8 w-full sm:w-[60rem]">
+                </div>
+            </div>
+
             <div className="flex flex-wrap justify-center gap-14 max-w-full">
                 <ChartComponent
                     title="Heartrate BPM"
@@ -359,6 +369,7 @@ const Dashboard = () => {
                         }
                     ]}
                     summary=""
+                    averageChart={false}
                 />
                 <ChartComponent
                     title="Steps Count"
@@ -374,6 +385,7 @@ const Dashboard = () => {
                         }
                     ]}
                     summary=""
+                    averageChart={false}
                 />
                 <ChartComponent
                     title="Calories Burned"
@@ -389,6 +401,7 @@ const Dashboard = () => {
                         }
                     ]}
                     summary=""
+                    averageChart={false}
                 />
                 <ChartComponent
                     title="Sleep Statistics"
@@ -413,6 +426,7 @@ const Dashboard = () => {
                         }
                     ]}
                     summary=""
+                    averageChart={false}
                 />
                 {chartsData.stress.labels.length > 0 && (
                     <div id="stressChartContainer">
@@ -430,6 +444,7 @@ const Dashboard = () => {
                                 }
                             ]}
                             summary=""
+                            averageChart={false}
                         />
                     </div>
                 )}
@@ -449,6 +464,7 @@ const Dashboard = () => {
                                 }
                             ]}
                             summary=""
+                            averageChart={false}
                         />
                     </div>
                 )}
@@ -475,6 +491,7 @@ const Dashboard = () => {
                                 }
                             ]}
                             summary=""
+                            averageChart={false}
                         />
                     </div>
                 )}
@@ -522,6 +539,7 @@ const Dashboard = () => {
                                 }
                             ]}
                             summary=""
+                            averageChart={false}
                         />
                     </div>
                 )}

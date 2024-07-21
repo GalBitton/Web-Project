@@ -5,29 +5,14 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { Range, getTrackBackground } from 'react-range';
 import Exporter from '../utils/exporter.js';
 
-const ChartComponent = ({ title, chartId, labels, datasets, summary }) => {
+const ChartComponent = ({ title, chartId, labels, datasets, summary = "", averageChart = false }) => {
     const chartRef = useRef(null);
     const exporter = new Exporter();
 
-    const initialStartDate = labels[0];
-    const initialEndDate = labels[labels.length - 1];
-
-    const [startDate, setStartDate] = useState(initialStartDate);
-    const [endDate, setEndDate] = useState(initialEndDate);
-    const [range, setRange] = useState([0, labels.length - 1]);
-
-    const filterData = () => {
-        const filteredLabels = labels.slice(range[0], range[1] + 1);
-        const filteredDatasets = datasets.map(dataset => ({
-            ...dataset,
-            data: dataset.data.slice(range[0], range[1] + 1)
-        }));
-        return { filteredLabels, filteredDatasets };
-    };
-
     useEffect(() => {
         const ctx = chartRef.current.getContext('2d');
-        const { filteredLabels, filteredDatasets } = filterData();
+        const filteredLabels = labels
+        const filteredDatasets = datasets
 
         const colors = [
             { background: 'rgba(54, 162, 235, 0.2)', border: 'rgba(54, 162, 235, 1)' },
@@ -128,73 +113,77 @@ const ChartComponent = ({ title, chartId, labels, datasets, summary }) => {
         return () => {
             chart.destroy();
         };
-    }, [datasets, labels, range, startDate, endDate, title]);
+    }, [datasets, labels, title]);
 
     return (
         <div data-testid="chart-component" className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-xl mb-10">
             <h2 className="text-xl mb-4">{title}</h2>
             <div className="flex flex-col items-center mb-6">
-                <DatePicker
-                    selected={startDate}
-                    onChange={(date) => setStartDate(date || initialStartDate)}
-                    selectsStart
-                    startDate={startDate}
-                    endDate={endDate}
-                    showTimeSelect
-                    dateFormat="Pp"
-                    className="mb-2"
-                />
-                <DatePicker
-                    selected={endDate}
-                    onChange={(date) => setEndDate(date || initialEndDate)}
-                    selectsEnd
-                    startDate={startDate}
-                    endDate={endDate}
-                    showTimeSelect
-                    dateFormat="Pp"
-                    className="mb-4"
-                />
-                <Range
-                    values={range}
-                    step={1}
-                    min={0}
-                    max={dateLabels.length - 1}
-                    onChange={(values) => setRange(values)}
-                    renderTrack={({ props, children }) => (
-                        <div
-                            {...props}
-                            style={{
-                                ...props.style,
-                                height: '6px',
-                                width: '100%',
-                                background: getTrackBackground({
-                                    values: range,
-                                    colors: ['#ccc', '#548BF4', '#ccc'],
-                                    min: 0,
-                                    max: dateLabels.length - 1,
-                                }),
-                            }}
-                        >
-                            {children}
-                        </div>
-                    )}
-                    renderThumb={({ props, isDragged }) => (
-                        <div
-                            {...props}
-                            style={{
-                                ...props.style,
-                                height: '24px',
-                                width: '24px',
-                                borderRadius: '50%',
-                                backgroundColor: '#FFF',
-                                border: '1px solid #ccc',
-                                boxShadow: '0px 2px 6px #AAA',
-                            }}
-                        >
-                            {isDragged ? <div style={{ position: 'absolute', top: '-28px' }}>{dateLabels[range[0]].toLocaleString()} - {dateLabels[range[1]].toLocaleString()}</div> : ''}
-                        </div>
-                    )}
-                />
+                {/*{!averageChart && (*/}
+                {/*    <div>*/}
+                {/*        <DatePicker*/}
+                {/*            selected={startDate}*/}
+                {/*            onChange={(date) => setStartDate(date || initialStartDate)}*/}
+                {/*            selectsStart*/}
+                {/*            startDate={startDate}*/}
+                {/*            endDate={endDate}*/}
+                {/*            showTimeSelect*/}
+                {/*            dateFormat="Pp"*/}
+                {/*            className="mb-2"*/}
+                {/*        />*/}
+                {/*        <DatePicker*/}
+                {/*            selected={endDate}*/}
+                {/*            onChange={(date) => setEndDate(date || initialEndDate)}*/}
+                {/*            selectsEnd*/}
+                {/*            startDate={startDate}*/}
+                {/*            endDate={endDate}*/}
+                {/*            showTimeSelect*/}
+                {/*            dateFormat="Pp"*/}
+                {/*            className="mb-4"*/}
+                {/*        />*/}
+                {/*    </div>*/}
+                {/*)}*/}
+                {/*<Range*/}
+                {/*    values={range}*/}
+                {/*    step={1}*/}
+                {/*    min={0}*/}
+                {/*    max={range.length - 1}*/}
+                {/*    onChange={(values) => setRange(values)}*/}
+                {/*    renderTrack={({ props, children }) => (*/}
+                {/*        <div*/}
+                {/*            {...props}*/}
+                {/*            style={{*/}
+                {/*                ...props.style,*/}
+                {/*                height: '6px',*/}
+                {/*                width: '100%',*/}
+                {/*                background: getTrackBackground({*/}
+                {/*                    values: range,*/}
+                {/*                    colors: ['#ccc', '#548BF4', '#ccc'],*/}
+                {/*                    min: 0,*/}
+                {/*                    max: range.length - 1,*/}
+                {/*                }),*/}
+                {/*            }}*/}
+                {/*        >*/}
+                {/*            {children}*/}
+                {/*        </div>*/}
+                {/*    )}*/}
+                {/*    renderThumb={({ props, isDragged }) => (*/}
+                {/*        <div*/}
+                {/*            {...props}*/}
+                {/*            style={{*/}
+                {/*                ...props.style,*/}
+                {/*                height: '24px',*/}
+                {/*                width: '24px',*/}
+                {/*                borderRadius: '50%',*/}
+                {/*                backgroundColor: '#FFF',*/}
+                {/*                border: '1px solid #ccc',*/}
+                {/*                boxShadow: '0px 2px 6px #AAA',*/}
+                {/*            }}*/}
+                {/*        >*/}
+                {/*            {isDragged ? <div style={{ position: 'absolute', top: '-28px' }}>{dateLabels[range[0]].toLocaleString()} - {dateLabels[range[1]].toLocaleString()}</div> : ''}*/}
+                {/*        </div>*/}
+                {/*    )}*/}
+                {/*/>*/}
             </div>
             <canvas ref={chartRef} id={chartId} className="w-full h-64"></canvas>
             <div className="mt-6 text-center">
