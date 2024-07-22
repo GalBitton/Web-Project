@@ -28,6 +28,7 @@ class Logger {
         this.logger = null;
         this.config = config;
         this.createLogger();
+        this.overrideConsole();
     };
 
     createLogger() {
