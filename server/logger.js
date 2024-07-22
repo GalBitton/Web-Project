@@ -27,11 +27,10 @@ class Logger {
     constructor(config) {
         this.logger = null;
         this.config = config;
-        this.createLogger();
-        this.overrideConsole();
+        this._createLogger();
     };
 
-    createLogger() {
+    _createLogger() {
         const options = this.config.log2file ? {
             filename: 'logs/%DATE%.txt',
             datePattern: 'DD-MM-YYYY',
@@ -61,6 +60,26 @@ class Logger {
             ],
         });
     };
+
+    log(level, message, request) {
+        this.logger.log({ level, message, request });
+    }
+
+    error(message, request) {
+        this.logger.error(message, { request });
+    }
+
+    warn(message, request) {
+        this.logger.warn(message, { request });
+    }
+
+    info(message, request) {
+        this.logger.info(message, {request});
+    }
+
+    debug(message, request) {
+        this.logger.debug(message, {request});
+    }
 }
 
 export default Logger;
