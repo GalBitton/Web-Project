@@ -9,7 +9,7 @@ import { Maintenance } from "./views-components/index.jsx";
 function App() {
     const isMaintenance = import.meta.env.VITE_MAINTENANCE === 'true';
     return (
-        <GoogleOAuthProvider clientId="">
+        <GoogleOAuthProvider clientId="796593946504-rg5tis6qthatmtbkvbgakhqkhmoaaht0.apps.googleusercontent.com">
             <AppProvider>
                 <AuthProvider>
                     <div className="min-h-screen bg-gradient-to-b from-white to-gray-200 dark:from-gray-900 dark:to-slate-800 flex flex-col text-black dark:text-white max-w-full">

@@ -6,9 +6,14 @@ import serviceData from './package.json' assert { type: "json" };
 import config from 'config';
 import Logger from './logger.js';
 import Server from './server.js';
+
 import AuthController from './controllers/auth.controller.js';
+import UserController from './controllers/user.controller.js';
+
 import AuthMiddleware from "./middlewares/auth.middleware.js";
+
 import AuthRouter from "./routes/auth.routes.js";
+import UserRouter from "./routes/user.routes.js";
 
 const serverConfig = config.get("server");
 const loggerConfig = config.get("logger");
@@ -24,6 +29,8 @@ container.register('logger', [], loggerClass.logger);
 container.register('authMiddleware', ['authConfig', 'logger'], AuthMiddleware);
 container.register('authController', ['authConfig', 'logger'], AuthController);
 container.register('authRouter', [], AuthRouter);
+container.register('authController', ['authConfig', 'logger'], UserController);
+container.register('authRouter', [], UserRouter);
 container.register('serverConfig', [], serverConfig);
 container.register('server', ['serverConfig', 'logger'], Server);
 

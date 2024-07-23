@@ -18,7 +18,7 @@ class AuthController {
         this.authenticateGoogleToken = this.authenticateGoogleToken.bind(this);
         this.refresh = this.refresh.bind(this);
         this.logout = this.logout.bind(this);
-    }
+    };
 
     async register(req, res) {
         try {
@@ -64,7 +64,7 @@ class AuthController {
             this._logger.error(`Error registering user: ${error}, request: ${req}`);
             res.status(400).send({ error: error.message });
         }
-    }
+    };
 
     async authenticate(req, res) {
         try {
@@ -115,7 +115,7 @@ class AuthController {
             this._logger.error(`Error authenticating user: ${error}, request: ${req}`);
             res.status(500).json({ error: error.message });
         }
-    }
+    };
 
     async authenticateGoogleToken(req, res) {
         try {
@@ -183,7 +183,7 @@ class AuthController {
             this._logger.error(`Error authenticating user with Google: ${error}, request: ${req}`);
             return res.status(500).json({ error: error.message });
         }
-    }
+    };
 
     async refresh(req, res) {
         try {
@@ -216,7 +216,7 @@ class AuthController {
             this._logger.error(`Error refreshing access token: ${error}, request: ${req}`);
             res.status(500).json({ error: error.message });
         }
-    }
+    };
 
     async logout(req, res) {
         try {
@@ -242,7 +242,7 @@ class AuthController {
             this._logger.error(`Error logging out: ${error}, request: ${req}`);
             res.status(500).json({ error: error.message });
         }
-    }
-}
+    };
+};
 
 export default AuthController;

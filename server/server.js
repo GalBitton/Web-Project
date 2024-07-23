@@ -73,6 +73,7 @@ export default class Server {
         });
 
         this._app.use('/auth', container.get('authRouter').getRouter());
+        this._app.use('/user', container.get('userRouter').getRouter());
     }
 
     _setupMiddlewares() {
