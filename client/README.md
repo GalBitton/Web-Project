@@ -78,7 +78,7 @@ These files can be adjusted to control the behavior of the application based on 
 
 ## Project Structure
 ```
-neurosync/
+client/
 │
 ├── .idea/                      # IDE configuration files
 ├── .git/                       # Git repository files
@@ -87,20 +87,31 @@ neurosync/
 ├── src/                        # Source code
 │   ├── app/                    # App components
 │       ├── views-components/   # Pages components
+│           ├── ...
 │       ├── App.jsx             # Main App component
 │   ├── components/             # React components
         ├── layouts/            # Layout components
-        └── ...
-│   ├── hooks/                  # Custom React hooks
+        └── chart.jsx           # Chart.js custom generic chart component
+│       ├── protectedroute.jsx  # Protected Route client middleware component
+│       ├── ...
+│   ├── hooks/                  # Custom React hooks and providers
 │   ├── services/               # API services and data classes
+│       ├── devices/            # Device classes
+│       ├── deviceFactory       # Device Factory class
+│       ├── api/                # API functions using Axios
 │   ├── utils/                  # Utilities and helper functions
-│   ├── tests/                  # Unit tests
-│   ├── main.jsx                # Entry point for React
+│   ├── tests/                  # Tests
+│       ├── __mocks__/          # Mocks for unit tests
+│           ├── ...
+│       ├── unit-tests/         # Unit tests
+│           ├── ...
+│       ├── integration-tests/  # Integration tests - Placeholder
+│   ├── main.jsx                # Entry point for React, includes React Router
 │   ├── index.css               # Global CSS styles
 │   └── config/                 # Environment configuration files
 │       ├── .env.development
 │       ├── .env.production
-│       └── ...
+│       └── .env.testing
 ├── .eslintrc.cjs               # ESLint configuration
 ├── .gitignore                  # Git ignore file
 ├── .prettierignore             # Prettier ignore file
