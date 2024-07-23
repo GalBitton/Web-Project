@@ -2,9 +2,9 @@ import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import bcrypt from "bcrypt";
 import validator from 'validator';
-import container from '../../containerConfig.js';
+import config from 'config';
 
-const authConfig = container.get('authConfig');
+const authConfig = config.get('auth');
 const JWT_AWT_SECRET = authConfig.get('jwt-access-token-secret');
 const passwordRegex = /^.{1,}$/;
 
@@ -31,7 +31,11 @@ const UserSchema = new mongoose.Schema({
     refreshToken: { type: String, default: '' },
     googleSignIn: { type: Boolean, default: false, select: false },
     forgottenPassToken: { type: String, default: null, select: false },
-}, { versionKey: false, timestamps: true });
+}, {
+    versionKey: false,
+    timestamps: true,
+    collection: 'users'
+});
 
 
 UserSchema.methods.hashPassword = async function() {
@@ -42,21 +46,20 @@ UserSchema.methods.comparePassword = function (password) {
     return bcrypt.compare(password, this.password);
 };
 
-// Generate verification token.
-UserSchema.methods.generateVerificationToken = async function() {
+UserSchema.methods.generateResetPasswordToken = async function() {
     const token = jwt.sign(
         {
             _id: this._id,
             email: this.email,
-            verificationTokenExpiration: Date.now() + 24 * 60 * 60 * 100, // Expires in 24 hours
+            resetPasswordTokenExpiration: Date.now() + 24 * 60 * 60 * 100, // Expires in 24 hours
         },
         JWT_AWT_SECRET
     );
 
     // Update the user document with the generated token and expiration
     this.set({
-        verificationToken: token,
-        verificationTokenExpiration: new Date(Date.now() + 24 * 60 * 60 * 100),
+        resetPasswordToken: token,
+        resetPasswordTokenExpiration: new Date(Date.now() + 24 * 60 * 60 * 100),
     });
 
     await this.save(); // Save the updated user document

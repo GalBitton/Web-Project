@@ -5,8 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production index.js",
-    "dev": "cross-env NODE_ENV=development node --nolazy --inspect index.js",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development nodemon --nolazy --inspect index.js",
     "test": "cross-env NODE_ENV=testing nodemon node --nolazy --inspect index.js",
     "build": ""
   },

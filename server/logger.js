@@ -26,28 +26,42 @@ const logFormat = format.printf(({ timestamp, level, message, request }) => {
 class Logger {
     constructor(config) {
         this.logger = null;
-        this.config = config;
+        this._config = config;
         this._createLogger();
     };
 
     _createLogger() {
-        const options = this.config.log2file ? {
+        const FileOptions = {
             filename: 'logs/%DATE%.txt',
             datePattern: 'DD-MM-YYYY',
             zippedArchive: true,
             maxSize: '2m',
-            level: this.config.level,
-        } : {
-            db: mongoose.connection.useDb('logs'),
+            level: this._config.level,
+        };
+
+        const MongoDBOptions = {
+            db: mongoose.connection.useDb('neurosync'),
             options: { useUnifiedTopology: true },
             collection: 'logs',
             capped: false,
-            leaveConnectionOpen: true
+            leaveConnectionOpen: true,
+            level: this._config.level,
         };
 
-        const transport = this.config.log2file ?
-            new winston.transports.DailyRotateFile(options) :
-            new winston.transports.MongoDB(options);
+        let logTransports = [];
+        const mongoDBTransport = new winston.transports.MongoDB(MongoDBOptions);
+        const consoleTransport = new winston.transports.Console({
+            format: winston.format.combine(
+                winston.format.colorize(),
+                winston.format.simple()
+            )
+        });
+
+        if (this._config.log2file) {
+            logTransports.push(new winston.transports.DailyRotateFile(FileOptions))
+        }
+        logTransports.push(consoleTransport);
+        logTransports.push(mongoDBTransport);
 
         this.logger = winston.createLogger({
             format: winston.format.combine(
@@ -55,31 +69,9 @@ class Logger {
                 winston.format.errors({ stack: true }),
                 logFormat
             ),
-            transports: [
-                transport
-            ],
+            transports: logTransports
         });
     };
-
-    log(level, message, request) {
-        this.logger.log({ level, message, request });
-    }
-
-    error(message, request) {
-        this.logger.error(message, { request });
-    }
-
-    warn(message, request) {
-        this.logger.warn(message, { request });
-    }
-
-    info(message, request) {
-        this.logger.info(message, {request});
-    }
-
-    debug(message, request) {
-        this.logger.debug(message, {request});
-    }
 }
 
 export default Logger;

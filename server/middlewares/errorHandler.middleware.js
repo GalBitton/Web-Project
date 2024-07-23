@@ -3,7 +3,7 @@ const errorHandler = (err, req, res, next) => {
         message: err.message || 'Internal server error'
     };
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (["development", "testing"].includes(process.env.NODE_ENV)) {
         errorResponse.detailed = {
             stack: err.stack,
         };

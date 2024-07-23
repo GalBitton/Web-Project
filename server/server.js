@@ -1,13 +1,14 @@
 'use strict';
-
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import helmet from 'helmet';
-const cookieParser = require('cookie-parser');
+import cookieParser from 'cookie-parser';
 
-import { authRouter } from "./routes/index.js";
-import connect from "./db/connect.js";
+import connect from "./database/connect.js";
+import container from './containerConfig.js';
 import { errorHandler, limiter } from "./middlewares/index.js";
 
 export default class Server {
@@ -16,6 +17,7 @@ export default class Server {
         this._config = config;
         this._logger = logger;
         this._port = this._config.port;
+        this._dirname = dirname(fileURLToPath(import.meta.url));
         this._setupEJS();
         this._setupPolicies();
         this._setupRoutes();
@@ -24,10 +26,10 @@ export default class Server {
 
     run() {
         try {
-            connect(this._config.db.uri, this._logger);
+            connect(this._config.db_uri, this._logger);
             this._app.listen(this._port, () => {
-                this._logger.info(`Server listening on port ${this._port}.`);
-            })
+                this._logger.info(`Server Public URL: http://${this._config.host}:${this._port}, listening on port ${this._port}. Environment: ${process.env.NODE_ENV}.`);
+            });
         } catch (error) {
             console.error(error);
         }
@@ -35,7 +37,7 @@ export default class Server {
 
     _setupEJS() {
         this._app.set('view engine', 'ejs');
-        this._app.set('views', path.join(__dirname, 'views'));
+        this._app.set('views', path.join(this._dirname, 'views'));
     }
 
     _setupPolicies() {
@@ -53,13 +55,13 @@ export default class Server {
             preload: true,
         }));
         this._app.use(
-            express.static(path.join(__dirname, "..", "client", "dist", 'index.html'))
+            express.static(path.join(this._dirname, "..", "client", "dist", 'index.html'))
         );
     }
 
     _setupRoutes() {
         this._app.get('/', (req, res) => {
-            if (!req.secure) {
+            if (["staging", "production"].includes(process.env.NODE_ENV) && !req.secure) {
                 res.redirect(301, "https://" + req.headers.host + req.originalUrl);
             }
             res.render('index.ejs');
@@ -70,7 +72,7 @@ export default class Server {
             res.status(403).send('Access denied');
         });
 
-        this._app.use('/auth', authRouter);
+        this._app.use('/auth', container.get('authRouter').getRouter());
     }
 
     _setupMiddlewares() {
