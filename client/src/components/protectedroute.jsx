@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../hooks/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const ProtectedRoute = ({ redirectTo = '/login' }) => {
     const { isLoggedIn } = useAuth();

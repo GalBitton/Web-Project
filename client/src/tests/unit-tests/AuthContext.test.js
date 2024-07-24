@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
-import { AuthProvider, useAuth } from '../../hooks/AuthContext.jsx';
+import { AuthProvider, useAuth } from '../../contexts/AuthContext.jsx';
 
 // Mock component to tests useAuth hook
 const MockComponent = () => {

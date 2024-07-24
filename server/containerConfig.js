@@ -29,8 +29,8 @@ container.register('logger', [], loggerClass.logger);
 container.register('authMiddleware', ['authConfig', 'logger'], AuthMiddleware);
 container.register('authController', ['authConfig', 'logger'], AuthController);
 container.register('authRouter', [], AuthRouter);
-container.register('authController', ['authConfig', 'logger'], UserController);
-container.register('authRouter', [], UserRouter);
+container.register('userController', ['authConfig', 'logger'], UserController);
+container.register('userRouter', [], UserRouter);
 container.register('serverConfig', [], serverConfig);
 container.register('server', ['serverConfig', 'logger'], Server);
 

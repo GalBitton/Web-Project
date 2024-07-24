@@ -1,6 +1,6 @@
 import React from 'react';
 import { stack as Menu } from '@katasonovyp/react-burger-menu';
-import { useAuth } from '../../hooks/AuthContext.jsx';
+import { useAuth } from '../../contexts/AuthContext.jsx';
 import ProfileMenu from './profile-menu.jsx';
 import { ThemeProvider } from "../../hooks/ThemeProvider.jsx";
 import useLocation from '../../hooks/useLocation.jsx';

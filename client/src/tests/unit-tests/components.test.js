@@ -8,7 +8,7 @@ import Footer from '../../components/layouts/footer.jsx';
 import TextCard from '../../components/textcard.jsx';
 import Menu from '../../components/layouts/menu.jsx';
 import ProfileMenu from '../../components/layouts/profile-menu.jsx';
-import { useAuth } from '../../hooks/AuthContext.jsx';
+import { useAuth } from '../../contexts/AuthContext.jsx';
 import { AppProvider } from '../../hooks/AppProvider';
 
 // Mock the useAuth hook
