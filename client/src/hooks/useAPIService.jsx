@@ -1,11 +1,27 @@
-import React from 'react';
-import { useAxios } from '../contexts/APIContext.jsx';
+import React, { useEffect } from 'react';
 import APIService from '../services/api/APIService.js';
 
 const useAPIService = (request) => {
-    const axiosInstance = useAxios();
+    const [data, setData] = React.useState(null);
+    const [error, setError] = React.useState(null);
+    const [loading, setLoading] = React.useState(true);
 
-    return new APIService(request, axiosInstance);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const apiService = new APIService(request);
+                const response = await apiService.execute();
+                setData(response);
+            } catch (error) {
+                setError(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    return { data, error, loading };
 };
 
 export default useAPIService;

@@ -1,6 +1,7 @@
+import axiosInstance from "@/services/api/AxiosHandler.js";
 const endpointAPI = import.meta.env.VITE_ENDPOINT;
 
-export const ControllerService = (axiosInstance) => {
+export const ControllerService = () => {
     const logout = async () => {
         const googleToken = localStorage.getItem('googleToken');
         await axiosInstance.post(`${endpointAPI}/auth/logout`);
@@ -33,7 +34,7 @@ export const ControllerService = (axiosInstance) => {
     };
 
     const getDeviceData = async (deviceId) => {
-        const response = await axiosInstance.get(`${endpointAPI}/user/device-data`, { deviceId });
+        const response = await axiosInstance.get(`${endpointAPI}/user/device-data/${deviceId}`);
         return response.data;
     };
 

@@ -28,12 +28,12 @@ class UserController {
 
     async getDeviceData(req, res) {
         try {
-            const { deviceId } = req.body;
+            const { deviceId } = req.params;
             const deviceData = await DeviceData.findOne({ device: deviceId }).lean().exec();
             if (!deviceData) {
                 return res.status(404).json({ error: 'Device data not found' });
             }
-            res.status(200).json(deviceData);
+            res.status(200).json(deviceData.datapoints);
         } catch (err) {
             this._logger.error('Error retrieving device data:', err);
             res.status(500).json({ error: 'Internal Server Error' });
@@ -42,37 +42,45 @@ class UserController {
 
     async getAverageDataAllDevices(req, res) {
         try {
-            const userId = req.user;
-            const linkedDevices = await Device.find({ user: userId, status: 'linked' });
+            const linkedDevices = await Device.find({ status: 'linked' }).exec();
 
-            const avgHeartRate = [];
-            const avgSteps = [];
-            const avgCalories = [];
-            const avgSleep = [];
+            const heartRateAverages = {labels: [], values: []};
+            const stepsAverages = {labels: [], values: []};
+            const caloriesAverages = {labels: [], values: []};
+            const sleepAverages = {labels: [], values: []};
 
             for (const device of linkedDevices) {
-                const deviceData = await DeviceData.findOne({ device: device._id });
+                const deviceData = await DeviceData.findOne({ device: device._id }).exec();
+                const deviceName = `${device.brand} ${device.type}`;
+
                 if (deviceData) {
                     const heartRateValues = deviceData.datapoints.map(dp => dp.data.heartRate).filter(value => value);
                     const stepsValues = deviceData.datapoints.map(dp => dp.data.steps).filter(value => value);
                     const caloriesValues = deviceData.datapoints.map(dp => dp.data.caloriesBurned).filter(value => value);
                     const sleepValues = deviceData.datapoints.map(dp => dp.data.sleep && dp.data.sleep.duration).filter(value => value);
 
-                    avgHeartRate.push(calculateOverallAverage(heartRateValues));
-                    avgSteps.push(calculateOverallAverage(stepsValues));
-                    avgCalories.push(calculateOverallAverage(caloriesValues));
-                    avgSleep.push(calculateOverallAverage(sleepValues));
+                    heartRateAverages.labels.push(deviceName);
+                    heartRateAverages.values.push(parseFloat(heartRateValues.reduce((a, b) => a + b, 0) / heartRateValues.length).toFixed(2));
+
+                    stepsAverages.labels.push(deviceName);
+                    stepsAverages.values.push(parseFloat(stepsValues.reduce((a, b) => a + b, 0) / stepsValues.length).toFixed(2));
+
+                    caloriesAverages.labels.push(deviceName);
+                    caloriesAverages.values.push(parseFloat(caloriesValues.reduce((a, b) => a + b, 0) / caloriesValues.length).toFixed(2));
+
+                    sleepAverages.labels.push(deviceName);
+                    sleepAverages.values.push(parseFloat(sleepValues.reduce((a, b) => a + b, 0) / sleepValues.length).toFixed(2));
                 }
             }
 
             const overallAverages = {
-                heartRate: calculateOverallAverage(avgHeartRate),
-                steps: calculateOverallAverage(avgSteps),
-                calories: calculateOverallAverage(avgCalories),
-                sleep: calculateOverallAverage(avgSleep)
+                heartRate: calculateOverallAverage(heartRateAverages.values),
+                steps: calculateOverallAverage(stepsAverages.values),
+                calories: calculateOverallAverage(caloriesAverages.values),
+                sleep: calculateOverallAverage(sleepAverages.values)
             };
 
-            res.status(200).json(overallAverages);
+            res.status(200).json({ overallAverages, heartRateAverages, stepsAverages, caloriesAverages, sleepAverages });
         } catch (err) {
             this._logger.error('Error retrieving average data:', err);
             res.status(500).json({ error: 'Internal Server Error' });

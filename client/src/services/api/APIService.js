@@ -1,12 +1,12 @@
 import { ControllerService } from "@/services/api/ControllerService";
 
 class APIService {
-    constructor(request, axiosInstance) {
+    constructor(request) {
         this.request = request;
         this.parameters = [];
         this.callback = null;
 
-        const controller = ControllerService(axiosInstance);
+        const controller = ControllerService();
 
         switch (request.action) {
             case 'logout':
@@ -32,12 +32,7 @@ class APIService {
 
     async execute() {
         if (this.callback) {
-            try {
-                return await this.callback(...this.parameters);
-            } catch (err) {
-                console.error(err);
-                return { error: err.message };
-            }
+            return await this.callback(...this.parameters);
         }
     }
 }

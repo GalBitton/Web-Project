@@ -118,74 +118,9 @@ const ChartComponent = ({ title, chartId, labels, datasets, summary = "", averag
     return (
         <div data-testid="chart-component" className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-xl mb-10">
             <h2 className="text-xl mb-4">{title}</h2>
-            {/*<div className="flex flex-col items-center mb-6">*/}
-            {/*    {!averageChart && (*/}
-            {/*        <div>*/}
-            {/*            <DatePicker*/}
-            {/*                selected={startDate}*/}
-            {/*                onChange={(date) => setStartDate(date || initialStartDate)}*/}
-            {/*                selectsStart*/}
-            {/*                startDate={startDate}*/}
-            {/*                endDate={endDate}*/}
-            {/*                showTimeSelect*/}
-            {/*                dateFormat="Pp"*/}
-            {/*                className="mb-2"*/}
-            {/*            />*/}
-            {/*            <DatePicker*/}
-            {/*                selected={endDate}*/}
-            {/*                onChange={(date) => setEndDate(date || initialEndDate)}*/}
-            {/*                selectsEnd*/}
-            {/*                startDate={startDate}*/}
-            {/*                endDate={endDate}*/}
-            {/*                showTimeSelect*/}
-            {/*                dateFormat="Pp"*/}
-            {/*                className="mb-4"*/}
-            {/*            />*/}
-            {/*        </div>*/}
-            {/*    )}*/}
-            {/*    <Range*/}
-            {/*        values={range}*/}
-            {/*        step={1}*/}
-            {/*        min={0}*/}
-            {/*        max={range.length - 1}*/}
-            {/*        onChange={(values) => setRange(values)}*/}
-            {/*        renderTrack={({ props, children }) => (*/}
-            {/*            <div*/}
-            {/*                {...props}*/}
-            {/*                style={{*/}
-            {/*                    ...props.style,*/}
-            {/*                    height: '6px',*/}
-            {/*                    width: '100%',*/}
-            {/*                    background: getTrackBackground({*/}
-            {/*                        values: range,*/}
-            {/*                        colors: ['#ccc', '#548BF4', '#ccc'],*/}
-            {/*                        min: 0,*/}
-            {/*                        max: range.length - 1,*/}
-            {/*                    }),*/}
-            {/*                }}*/}
-            {/*            >*/}
-            {/*                {children}*/}
-            {/*            </div>*/}
-            {/*        )}*/}
-            {/*        renderThumb={({ props, isDragged }) => (*/}
-            {/*            <div*/}
-            {/*                {...props}*/}
-            {/*                style={{*/}
-            {/*                    ...props.style,*/}
-            {/*                    height: '24px',*/}
-            {/*                    width: '24px',*/}
-            {/*                    borderRadius: '50%',*/}
-            {/*                    backgroundColor: '#FFF',*/}
-            {/*                    border: '1px solid #ccc',*/}
-            {/*                    boxShadow: '0px 2px 6px #AAA',*/}
-            {/*                }}*/}
-            {/*            >*/}
-            {/*                {isDragged ? <div style={{ position: 'absolute', top: '-28px' }}>{dateLabels[range[0]].toLocaleString()} - {dateLabels[range[1]].toLocaleString()}</div> : ''}*/}
-            {/*            </div>*/}
-            {/*        )}*/}
-            {/*    />*/}
-            {/*</div>*/}
-            <canvas ref={chartRef} id={chartId} className="w-full h-64"></canvas>
+            <div className="w-full h-[50vh] sm:h-[40vh] md:h-[30vh] lg:h-[25vh] xl:h-[20vh]">
+                <canvas ref={chartRef} id={chartId} className="w-full h-full"></canvas>
+            </div>
             <div className="mt-6 text-center">
                 <p className="text-lg">{summary}</p>
             </div>

@@ -2,7 +2,7 @@ import React from 'react';
 
 const DeviceCard = ({ device }) => (
     <div className={`relative group m-2 ${device.brand}-${device.type}-container`}>
-        <div className="absolute inset-0 flex justify-center items-center w-[13rem]">
+        <div className="absolute inset-0 flex justify-center items-center">
             <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <span className="bg-slate-500 text-white px-2 py-1 rounded w-full">{device.name}</span>
             </div>

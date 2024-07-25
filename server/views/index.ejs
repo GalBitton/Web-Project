@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>NeuroSync API Status</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -41,27 +41,15 @@
         }
     </style>
 </head>
-
 <body>
-<header>
-    <h1>Server Status</h1>
-</header>
+    <header>
+        <h1>Server Status</h1>
+    </header>
 
-<main>
-    <p>Server is active and running smoothly.</p>
-</main>
+    <main>
+        <p>Server is active and running smoothly.</p>
+    </main>
 
-<footer id="footer"></footer>
-<script>
-    import container from "../containerConfig";
-    const serviceName = container.get("serviceName");
-
-    const footer = document.getElementById("footer");
-    footer.innerHTML = `<p>{serviceName} © ${new Date().getFullYear()}</p>`;
-
-    const title = document.querySelector("title");
-    title.innerHTML = `${serviceName} API Status`;
-</script>
+    <footer id="footer"><p><%= `NeuroSync © ${new Date().getFullYear()}` %></p></footer>
 </body>
-
 </html>

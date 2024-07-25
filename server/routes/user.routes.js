@@ -19,7 +19,7 @@ class UserRouter {
         // this._router.get('/device-data', this.authMiddleware.authenticateJWT, this.userController.getDeviceData);
         this._router.get('/average-devices-data', this.userController.getAverageDataAllDevices);
         this._router.get('/linked-devices', this.userController.getLinkedDevices);
-        this._router.get('/device-data', this.userController.getDeviceData);
+        this._router.get('/device-data/:deviceId', this.userController.getDeviceData);
     }
 }
 

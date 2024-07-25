@@ -1,29 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { DeviceFactory } from '@/services/deviceFactory';
-import Device from '../../services/devices/device';
 import '../../services/devices/samsung';
 import '../../services/devices/apple';
 import '../../services/devices/xiaomi';
 import '../../services/devices/fitbit';
 import '../../services/devices/dreem';
 import '../../services/devices/muse';
-import { getGraphSummary, calculateOverallAverage } from '@/utils';
+import { getGraphSummary } from '@/utils';
 import DeviceCard from '../../components/devicecard';
 import ChartComponent from '../../components/chart';
 import useAPIService from "@/hooks/useAPIService";
 
-const devicesData = [
-    { brand: 'Samsung', type: 'Smartwatch', file: '/demo-data/samsung_watch_data_v2.json', imageSrc: 'assets/watches/samsung-smartwatch.png', hoverLeft: '38vw', status: 'linked' },
-    { brand: 'Samsung', type: 'Bracelet', file: '/demo-data/samsung_bracelet_data_v2.json', imageSrc: 'assets/watches/samsung-bracelet.png', hoverLeft: '26vw', status: 'linked' },
-    { brand: 'Apple', type: 'Smartwatch', file: '/demo-data/apple_watch_data_v2.json', imageSrc: 'assets/watches/apple-smartwatch.png', hoverLeft: '50vw', status: 'linked' },
-    { brand: 'Xiaomi', type: 'Smartwatch', file: '/demo-data/xiaomi_watch_data_v2.json', imageSrc: 'assets/watches/xiaomi-smartwatch.png', hoverLeft: '10vw', status: 'linked' },
-    { brand: 'Xiaomi', type: 'Bracelet', file: '/demo-data/xiaomi_bracelet_data_v2.json', imageSrc: 'assets/watches/xiaomi-bracelet.png', hoverLeft: '-4vw', status: 'linked' },
-    { brand: 'FitBit', type: 'Bracelet', file: '/demo-data/fitbit_bracelet_data_v2.json', imageSrc: 'assets/watches/fitbit-bracelet.png', hoverLeft: '-16vw', status: 'linked' },
-    { brand: 'Dreem', type: 'Headband', file: '/demo-data/dreem_headband_data_v2.json', imageSrc: 'assets/watches/dreem-headband.png', hoverLeft: '-28vw', status: 'linked' },
-    { brand: 'Muse', type: 'Headband', file: '/demo-data/muse_headband_data_v2.json', imageSrc: 'assets/watches/muse-headband.png', hoverLeft: '-42vw', status: 'linked' },
-];
-
 const Dashboard = () => {
+    const { data: devicesData, error, loading } = useAPIService({action: 'getLinkedDevices'});
+    const { data: avgData } = useAPIService({action: 'getAverageDataAllDevices'});
     const [linkedDevices, setLinkedDevices] = useState([]);
     const [chartsData, setChartsData] = useState({
         heartRate: {labels: [], values: []},
@@ -48,7 +38,7 @@ const Dashboard = () => {
     // useEffect to reload the brand and device options
     useEffect(() => {
         if (selectedBrand) {
-            const availableDevices = devicesData.filter(device => device.brand === selectedBrand && device.status === 'linked');
+            const availableDevices = linkedDevices.filter(device => device.brand === selectedBrand && device.status === 'linked');
             if (availableDevices.length > 0) {
                 setSelectedDevice(availableDevices[0].type);
             } else {
@@ -63,16 +53,33 @@ const Dashboard = () => {
         updateCharts(selectedBrand, selectedDevice);
     }, [selectedDevice]);
 
+    // useEffect to set the linked devices
+    useEffect (() => {
+        const getDevicesData = async () => {
+            if (devicesData) {
+                const linkedDevices = await createAllDevices(devicesData);
+                setLinkedDevices(linkedDevices);
+            }
+        };
+
+        getDevicesData();
+    }, [devicesData]);
+
+    // useEffect to set the average charts data
+    useEffect (() => {
+        setAverageChartsData({
+            heartRate: avgData?.heartRateAverages || {labels: [], values: []},
+            steps: avgData?.stepsAverages || {labels: [], values: []},
+            calories: avgData?.caloriesAverages || {labels: [], values: []},
+            sleep: avgData?.sleepAverages || {labels: [], values: []}
+        });
+
+        setOverallAverages(avgData?.overallAverages || {});
+    }, [avgData]);
 
     // useEffect on mount to initialize the linked devices
     useEffect(() => {
         const initializeDevices = async () => {
-            const apiService = useAPIService({action: 'getLinkedDevices'});
-            const data = await apiService.execute();
-            console.log('Got data: ' + JSON.stringify(data));
-
-            const linkedDevices = await createAllDevices();
-            setLinkedDevices(linkedDevices);
             if (linkedDevices.length > 0) {
                 const defaultBrand = linkedDevices[0].brand;
                 const defaultDevice = linkedDevices.find(device => device.brand === defaultBrand).type;
@@ -80,61 +87,30 @@ const Dashboard = () => {
                 setSelectedBrand(defaultBrand);
                 setSelectedDevice(defaultDevice);
             }
-
-            const avgHeartRate = {labels: [], values: []};
-            const avgSteps = {labels: [], values: []};
-            const avgCalories = {labels: [], values: []};
-            const avgSleep = {labels: [], values: []};
-
-            linkedDevices.forEach(device => {
-                avgHeartRate.labels.push(device.name);
-                avgHeartRate.values.push(parseFloat(device.device.calculateAverage('heartRate')));
-
-                avgSteps.labels.push(device.name);
-                avgSteps.values.push(parseFloat(device.device.calculateAverage('steps')));
-
-                avgCalories.labels.push(device.name);
-                avgCalories.values.push(parseFloat(device.device.calculateAverage('caloriesBurned')));
-
-                avgSleep.labels.push(device.name);
-                avgSleep.values.push(parseFloat(device.device.calculateAverage('sleep')));
-            });
-
-            setAverageChartsData({
-                heartRate: avgHeartRate,
-                steps: avgSteps,
-                calories: avgCalories,
-                sleep: avgSleep
-            });
-
-            const overallAverages = {
-                heartRate: calculateOverallAverage(avgHeartRate.values),
-                steps: calculateOverallAverage(avgSteps.values),
-                calories: calculateOverallAverage(avgCalories.values),
-                sleep: calculateOverallAverage(avgSleep.values)
-            };
-
-            setOverallAverages(overallAverages);
         };
 
         initializeDevices();
-    }, []);
+    }, [linkedDevices]);
 
-    const fetchAndCreateDevice = async (brand, device, file) => {
-        const data = await Device.fetchData(file);
-        return DeviceFactory.createDevice(brand, device, data);
+    const fetchAndCreateDevice = async (brand, device, id) => {
+        return DeviceFactory.createDevice(brand, device, id);
     };
 
-    const createAllDevices = async () => {
-        return Promise.all(devicesData.map(async (device) => ({
-            ...device,
-            name: `${device.brand} ${device.type}`,
-            device: await fetchAndCreateDevice(device.brand, device.type, device.file),
-        })));
+    const createAllDevices = async (devicesData) => {
+        if (devicesData) {
+            return Promise.all(devicesData.map(async (device) => ({
+                ...device,
+                name: `${device.brand} ${device.type}`,
+                imageSrc: 'assets/watches/' + device.brand.toLowerCase() + '-' + device.type.toLowerCase() + '.png',
+                device: await fetchAndCreateDevice(device.brand, device.type, device._id),
+            })));
+        }
+        return [];
     };
 
-    const getDataEntry = (brand, type, dataEntry) => {
+    const getDataEntry = async (brand, type, dataEntry) => {
         const model = linkedDevices.find(device => device.brand === brand && device.type === type);
+        await model.device.fetchData()
         if (model && model.device) {
             const values = model.device.data.map(entry => model.device.getFieldValue(entry, dataEntry));
             if (values.every(value => value === 0)) {
@@ -229,9 +205,11 @@ const Dashboard = () => {
         updateCharts(selectedBrand, selectedDevice);
     };
 
+    if (error) return <div>Error: {error.message}</div>;
+    if (loading) return <div>Loading...</div>;
 
     return (
-        <div className="dashboard-full-container">
+        <div className="dashboard-full-container max-w-full">
             <div className="mb-2 p-4 items-center">
                 <h1 className="text-4xl">Welcome back, John</h1>
                 <p className="text-gray-700 dark:text-slate-500">Inspect your health charts and analytics</p>
@@ -335,7 +313,7 @@ const Dashboard = () => {
                         className="brandCmbBox bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-2 rounded w-full sm:w-[10rem]"
                         value={selectedBrand} onChange={handleBrandChange}>
                         <option value="" disabled>Select Brand</option>
-                        {[...new Set(devicesData.map(device => device.brand))].map(brand => (
+                        {[...new Set(linkedDevices.map(device => device.brand))].map(brand => (
                             <option key={brand} value={brand}>{brand}</option>
                         ))}
                     </select>
@@ -343,7 +321,7 @@ const Dashboard = () => {
                         className="deviceCmbBox bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-2 rounded w-full sm:w-[10rem]"
                         value={selectedDevice} onChange={handleDeviceChange}>
                         <option value="" disabled>Select Device</option>
-                        {selectedBrand && devicesData.filter(device => device.brand === selectedBrand && device.status === 'linked').map(device => (
+                        {selectedBrand && linkedDevices.filter(device => device.brand === selectedBrand && device.status === 'linked').map(device => (
                             <option key={device.type} value={device.type}>{device.type}</option>
                         ))}
                     </select>

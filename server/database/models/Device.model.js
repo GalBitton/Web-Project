@@ -22,7 +22,7 @@ const DeviceSchema = new mongoose.Schema({
     data: { type: mongoose.Schema.Types.ObjectId, ref: 'DeviceData' }
 }, {
     versionKey: false,
-    timestamps: true,
+    timestamps: false,
     collection: 'devices'
 });
 

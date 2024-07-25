@@ -12,9 +12,18 @@
     "curator": "cross-env NODE_ENV=development node ./database/migrations/database-curator.js",
     "build": ""
   },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    }
+  },
   "author": "Team 1",
   "license": "ISC",
   "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-dom": "^4.0.0",
+    "jest-environment-jsdom": "^29.7.0",
     "nodemon": "^3.1.4"
   },
   "dependencies": {
