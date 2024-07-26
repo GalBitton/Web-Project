@@ -39,7 +39,7 @@ export default class Server {
     _setupEJS() {
         this._app.set('view engine', 'ejs');
         this._app.engine("ejs", ejs.__express);
-        this._app.set('views', path.join(this._dirname, 'views'));
+        this._app.set('views', path.join(this._dirname, '/views'));
     }
 
     _getCorsOptions() {
@@ -92,16 +92,13 @@ export default class Server {
             includeSubDomains: true,
             preload: true,
         }));
-        this._app.use(
-            express.static(path.join(this._dirname, "..", "client", "dist", 'index.html'))
-        );
     }
 
     _setupRoutes() {
         this._app.get('/', (req, res) => {
-            if (["staging", "production"].includes(process.env.NODE_ENV) && !req.secure) {
-                res.redirect(301, "https://" + req.headers.host + req.originalUrl);
-            }
+            // if (["staging", "production"].includes(process.env.NODE_ENV) && !req.secure) {
+            //     res.redirect(301, "https://" + req.headers.host + req.originalUrl);
+            // }
             res.render('index.ejs');
         });
 
