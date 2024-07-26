@@ -96,10 +96,9 @@ export default class Server {
 
     _setupRoutes() {
         this._app.get('/', (req, res) => {
-            // if (["staging", "production"].includes(process.env.NODE_ENV) && !req.secure) {
-            //     res.redirect(301, "https://" + req.headers.host + req.originalUrl);
-            // }
-            res.render('index.ejs');
+            if (["staging", "production"].includes(process.env.NODE_ENV) && !req.secure) {
+                res.redirect(301, "https://" + req.headers.host + req.originalUrl);
+            }
         });
 
         this._app.get(['/.env', '/config/*', '/.git/*', '/*.json'], (req, res) => {
