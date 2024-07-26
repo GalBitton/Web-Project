@@ -28,7 +28,7 @@ export default class Server {
         try {
             connect(this._config.db_uri, this._logger);
             this._app.listen(this._port, () => {
-                this._logger.info(`Server Public URL: http://${this._config.host}:${this._port}, listening on port ${this._port}. Environment: ${process.env.NODE_ENV}.`);
+                this._logger.info(`Listening on port ${this._port}. Environment: ${process.env.NODE_ENV}.`);
             });
         } catch (error) {
             console.error(error);

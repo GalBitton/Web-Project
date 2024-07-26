@@ -15,6 +15,6 @@
   "vercelAllowedOrigins": ["https://neurosync-server.vercel.app/", "https://neurosync-git-hw2-eyalmks-projects.vercel.app/"],
   "logger": {
     "level": "info",
-    "log2file": true
+    "log2file": false
   }
 }

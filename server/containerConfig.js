@@ -23,6 +23,7 @@ const loggerClass = new Logger(loggerConfig);
 
 container.register('serviceData', [], serviceData);
 container.register('serviceName', [], serviceData.name);
+container.register('vercelAllowedOrigins', [], config.get("vercelAllowedOrigins"));
 container.register('authConfig', [], authConfig);
 container.register('loggerConfig', [], loggerConfig);
 container.register('logger', [], loggerClass.logger);
