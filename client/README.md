@@ -88,27 +88,27 @@ client/
 │           ├── ...
 │       ├── App.jsx                     # Main App component
 │   ├── components/                     # React components
-        └── layouts/                    # Layout components
+        ├── layouts/                    # Layout components
 │           ├── ...        
-        └── chart.jsx                   # Chart.js custom generic chart component
-│       └── protectedroute.jsx          # Protected Route client middleware component
+        ├── chart.jsx                   # Chart.js custom generic chart component
+│       ├── protectedroute.jsx          # Protected Route client middleware component
 │       └── ...
 │   ├── config/                         # Environment configuration files
-│       └── .env.development
-│       └── .env.production
+│       ├── .env.development
+│       ├── .env.production
 │       └── .env.testing
 │   ├── context/                        # React context providers
 │       └── AuthContext.jsx             # Authentication context provider
 │   ├── hooks/                          # Custom React hooks and providers
-│       └── useAPIService.jsx           # API service hook
-│       └── AppProvider.jsx             # App context provider to set title and app div wrapper class
-│       └── ThemeProvider.jsx           # Theme provider for dark mode/light mode
+│       ├── useAPIService.jsx           # API service hook
+│       ├── AppProvider.jsx             # App context provider to set title and app div wrapper class
+│       ├── ThemeProvider.jsx           # Theme provider for dark mode/light mode
 │       └── useLocation.jsx             # Custom hook to get current location and check specific routes
 │   ├── services/                       # API services and data classes
 │       ├── device.js                   # Device class utilized for IoT devices
-│       ├── api/                        # API functions using Axios
-│           └── APIService.js           # API service class to handle API callbacks
-│           └── AxiosHandler.js         # AxiosHandler to create an axios instance with custom configurations
+│       └── api/                        # API functions using Axios
+│           ├── APIService.js           # API service class to handle API callbacks
+│           ├── AxiosHandler.js         # AxiosHandler to create an axios instance with custom configurations
 │           └── ControllerService.js    # API callbacks
 │   ├── tests/                          # Tests
 │       ├── __mocks__/                  # Mocks for unit tests
