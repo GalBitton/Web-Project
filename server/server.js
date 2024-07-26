@@ -3,7 +3,6 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import express from 'express';
 import cors from 'cors';
-import ejs from 'ejs';
 import path from 'path';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
@@ -19,7 +18,6 @@ export default class Server {
         this._logger = logger;
         this._port = this._config.port;
         this._dirname = dirname(fileURLToPath(import.meta.url));
-        this._setupEJS();
         this._setupPolicies();
         this._setupRoutes();
         this._setupMiddlewares();
@@ -34,12 +32,6 @@ export default class Server {
         } catch (error) {
             console.error(error);
         }
-    }
-
-    _setupEJS() {
-        this._app.set('view engine', 'ejs');
-        this._app.engine("ejs", ejs.__express);
-        this._app.set('views', path.join(this._dirname, '/views'));
     }
 
     _getCorsOptions() {
