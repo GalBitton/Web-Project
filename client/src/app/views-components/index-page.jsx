@@ -1,8 +1,11 @@
 import serviceData from "../../../package.json";
 import TextCard from "../../components/textcard.jsx";
 import React from "react";
+import { useAuth } from "@/contexts/AuthContext.jsx";
 
 const IndexPage = () => {
+    const { isLoggedIn } = useAuth();
+    const getStarted = isLoggedIn ? "/dashboard" : "/register";
     return (
         <div className="relative flex flex-col justify-between min-h-screen">
             <img
@@ -18,7 +21,7 @@ const IndexPage = () => {
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Neque laoreet suspendisse interdum consectetur libero id faucibus. Morbi tincidunt augue interdum velit euismod in pellentesque massa placerat. Blandit turpis cursus in hac habitasse platea. Accumsan sit amet nulla facilisi morbi tempus.
                 </p>
                 <a
-                    href="#"
+                    href={getStarted}
                     className="bg-gray-300 dark:bg-slate-600 text-black dark:text-white px-6 py-3 rounded-full hover:bg-gray-300 transition duration-300"
                 >
                     Get started
