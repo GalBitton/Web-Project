@@ -3,14 +3,13 @@
   "version": "1.0.0",
   "description": "NeuroSync Server & Endpoint API",
   "type": "module",
-  "main": "index.js",
+  "main": "api/index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node index.js",
-    "dev": "cross-env NODE_ENV=development nodemon --nolazy --inspect index.js",
-    "test": "cross-env NODE_ENV=testing nodemon node --nolazy --inspect index.js",
+    "start": "cross-env NODE_ENV=production node ./api/index.js",
+    "dev": "cross-env NODE_ENV=development nodemon --nolazy --inspect ./api/index.js",
+    "test": "cross-env NODE_ENV=testing nodemon node --nolazy --inspect ./api/index.js",
     "migrate-demo-data": "cross-env NODE_ENV=development node ./database/migrations/migrate-demo-data-to-db.js",
-    "curator": "cross-env NODE_ENV=development node ./database/migrations/database-curator.js",
-    "build": ""
+    "curator": "cross-env NODE_ENV=development node ./database/migrations/database-curator.js"
   },
   "jest": {
     "testEnvironment": "jsdom",

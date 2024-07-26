@@ -1,4 +1,4 @@
-import container from './containerConfig.js';
+import container from '../containerConfig.js';
 
 const server = container.get('server');
 const logger = container.get('logger');

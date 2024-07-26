@@ -69,7 +69,7 @@ npm run test
 
 #### Production
 
-To run the server in production mode:
+To run the server in production mode (for Vercel):
 ```sh
 npm start
 ```
@@ -86,6 +86,8 @@ To switch between environments, set the NODE_ENV environment variable accordingl
 ## Project Structure
 ```
 server/
+├── api/
+│   └── index.js                    # Entry point
 ├── config/
 │   ├── development.json            # Development environment configuration
 │   └── testing.json                # Testing environment configuration
@@ -134,7 +136,6 @@ server/
 ├── containerConfig.js              # Dependency injection container configuration
 ├── server.js                       # Server class
 ├── logger.js                       # Logger class
-├── index.js                        # Entry point
 ├── package.json
 ├── package-lock.json
 └── README.md
@@ -201,7 +202,6 @@ npm run test
 * ```npm run dev```: Start the server in development mode with live reload.
 * ```npm start```: Start the server in production mode.
 * ```npm test```: Run unit tests.
-* ```npm run build```: Build the project for production.
 * ```npm run curator```: Run the database curator to clean up all data.
 * ```npm run migrate-demo-data```: Seed the database with demo data.
 

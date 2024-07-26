@@ -40,10 +40,46 @@ export default class Server {
         this._app.set('views', path.join(this._dirname, 'views'));
     }
 
+    _getCorsOptions() {
+        if (process.env.NODE_ENV === 'production') {
+            const allowedOrigins = container.get("vercelAllowedOrigins");
+
+            this._app.use((req, res, next) => {
+                const origin = req.get('origin');
+                if (allowedOrigins.includes(origin)) {
+                    res.header('Access-Control-Allow-Origin', origin);
+                }
+                res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+                res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+                next();
+            });
+
+            return {
+                origin: (origin, callback) => {
+                    if (allowedOrigins.includes(origin) || !origin) {
+                        callback(null, true);
+                    } else {
+                        callback(new Error('Not allowed by CORS'));
+                    }
+                },
+                optionsSuccessStatus: 200,
+                credentials: true,
+            };
+        } else {
+            return {
+                origin: true,
+                optionsSuccessStatus: 200,
+                credentials: true,
+            };
+        }
+    }
+
     _setupPolicies() {
+        const corsOptions = this._getCorsOptions();
+
         this._app.use(express.json({ limit: "400kb"}));
         this._app.use(cookieParser());
-        this._app.use(cors({ origin: true, credentials: true }));
+        this._app.use(cors(corsOptions));
         this._app.use(helmet({
             crossOriginOpenerPolicy: true
         }));
