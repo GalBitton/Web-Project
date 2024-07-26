@@ -13,7 +13,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path="/" element={<App />}>
             <Route index element={<IndexPage />} />
             <Route element={<ProtectedRoute />}>
-                <Route index path="dashboard" element={<Dashboard />} />
+                <Route path="dashboard" element={<Dashboard />} />
             </Route>
             <Route path="about-us" element={<UnderConstruction />} />
             <Route path="contact-us" element={<UnderConstruction />} />

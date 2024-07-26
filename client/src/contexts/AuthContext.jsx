@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
-            {children}
+            {isLoggedIn === null ? <div>Loading...</div> : children}
         </AuthContext.Provider>
     );
 };
