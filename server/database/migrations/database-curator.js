@@ -6,7 +6,7 @@ const db_uri = serverConfig.get('db_uri');
 
 const collectionsToDelete = [
     'devices',
-    'device-data',
+    'devices-data',
     'logs',
     'users'
 ];

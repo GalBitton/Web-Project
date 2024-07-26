@@ -3,9 +3,12 @@ import fs from 'fs';
 import config from 'config';
 import Device from '../models/Device.model.js';
 import DeviceData from '../models/DeviceData.model.js';
+import {dirname} from "path";
+import {fileURLToPath} from "url";
 
 const serverConfig = config.get('server');
 const db_uri = serverConfig.db_uri;
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const jsonFiles = [
     { filePath: '../demo-data/apple_watch_data_v2.json', brand: 'Apple', type: 'Smartwatch' },
@@ -28,7 +31,7 @@ const migrateData = async () => {
         console.log('Connected to MongoDB');
 
         for (const { filePath, brand, type } of jsonFiles) {
-            const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+            const data = JSON.parse(fs.readFileSync(__dirname + "/" + filePath, 'utf8'));
 
             // Create a new device entry
             const device = new Device({
