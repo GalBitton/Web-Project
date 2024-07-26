@@ -80,48 +80,56 @@ These files can be adjusted to control the behavior of the application based on 
 ```
 client/
 │
-├── .idea/                      # IDE configuration files
-├── .git/                       # Git repository files
-├── public/                     # Static assets
-│   ├── assets/                 # Images and other assets
-├── src/                        # Source code
-│   ├── app/                    # App components
-│       ├── views-components/   # Pages components
+├── public/                             # Static assets
+│   ├── assets/                         # Images and other assets
+├── src/                                # Source code
+│   ├── app/                            # App components
+│       ├── views-components/           # Pages components
 │           ├── ...
-│       ├── App.jsx             # Main App component
-│   ├── components/             # React components
-        ├── layouts/            # Layout components
-        └── chart.jsx           # Chart.js custom generic chart component
-│       ├── protectedroute.jsx  # Protected Route client middleware component
-│       ├── ...
-│   ├── hooks/                  # Custom React hooks and providers
-│   ├── services/               # API services and data classes
-│       ├── devices/            # Device classes
-│       ├── deviceFactory       # Device Factory class
-│       ├── api/                # API functions using Axios
-│   ├── utils/                  # Utilities and helper functions
-│   ├── tests/                  # Tests
-│       ├── __mocks__/          # Mocks for unit tests
-│           ├── ...
-│       ├── unit-tests/         # Unit tests
-│           ├── ...
-│       ├── integration-tests/  # Integration tests - Placeholder
-│   ├── main.jsx                # Entry point for React, includes React Router
-│   ├── index.css               # Global CSS styles
-│   └── config/                 # Environment configuration files
-│       ├── .env.development
-│       ├── .env.production
+│       ├── App.jsx                     # Main App component
+│   ├── components/                     # React components
+        └── layouts/                    # Layout components
+│           ├── ...        
+        └── chart.jsx                   # Chart.js custom generic chart component
+│       └── protectedroute.jsx          # Protected Route client middleware component
+│       └── ...
+│   ├── config/                         # Environment configuration files
+│       └── .env.development
+│       └── .env.production
 │       └── .env.testing
-├── .eslintrc.cjs               # ESLint configuration
-├── .gitignore                  # Git ignore file
-├── .prettierignore             # Prettier ignore file
-├── .prettierrc                 # Prettier configuration
-├── index.html                  # Main HTML file
-├── package.json                # NPM package file
-├── postcss.config.cjs          # PostCSS configuration
-├── tailwind.config.cjs         # Tailwind CSS configuration
-├── vite.config.js              # Vite configuration
-└── README.md                   # Project documentation
+│   ├── context/                        # React context providers
+│       └── AuthContext.jsx             # Authentication context provider
+│   ├── hooks/                          # Custom React hooks and providers
+│       └── useAPIService.jsx           # API service hook
+│       └── AppProvider.jsx             # App context provider to set title and app div wrapper class
+│       └── ThemeProvider.jsx           # Theme provider for dark mode/light mode
+│       └── useLocation.jsx             # Custom hook to get current location and check specific routes
+│   ├── services/                       # API services and data classes
+│       ├── device.js                   # Device class utilized for IoT devices
+│       ├── api/                        # API functions using Axios
+│           └── APIService.js           # API service class to handle API callbacks
+│           └── AxiosHandler.js         # AxiosHandler to create an axios instance with custom configurations
+│           └── ControllerService.js    # API callbacks
+│   ├── tests/                          # Tests
+│       ├── __mocks__/                  # Mocks for unit tests
+│           └── ...
+│       ├── unit-tests/                 # Unit tests
+│           └── ...
+│       ├── integration-tests/          # Integration tests - Placeholder
+│   ├── utils/                          # Utilities and helper functions
+│   ├── main.jsx                        # Entry point for React, includes React Router
+│   ├── index.css                       # Global CSS styles
+├── .eslintrc.cjs                       # ESLint configuration
+├── .gitignore                          # Git ignore file
+├── .prettierignore                     # Prettier ignore file
+├── .prettierrc                         # Prettier configuration
+├── babel.config.js                     # Babel configuration
+├── index.html                          # Main HTML file
+├── package.json                        # NPM package file
+├── postcss.config.cjs                  # PostCSS configuration
+├── tailwind.config.cjs                 # Tailwind CSS configuration
+├── vite.config.js                      # Vite configuration
+└── README.md                           # Project documentation
 ```
 
 ## Scripts
