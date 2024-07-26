@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DeviceFactory } from '@/services/deviceFactory';
-import '../../services/devices/samsung';
-import '../../services/devices/apple';
-import '../../services/devices/xiaomi';
-import '../../services/devices/fitbit';
-import '../../services/devices/dreem';
-import '../../services/devices/muse';
+import Device from '@/services/device.js';
 import { getGraphSummary } from '@/utils';
 import DeviceCard from '../../components/devicecard';
 import ChartComponent from '../../components/chart';
@@ -15,6 +9,9 @@ const Dashboard = () => {
     const { data: devicesData, error, loading } = useAPIService({action: 'getLinkedDevices'});
     const { data: avgData } = useAPIService({action: 'getAverageDataAllDevices'});
     const [linkedDevices, setLinkedDevices] = useState([]);
+    const [selectedBrand, setSelectedBrand] = useState('');
+    const [selectedType, setSelectedType] = useState('');
+
     const [chartsData, setChartsData] = useState({
         heartRate: {labels: [], values: []},
         steps: {labels: [], values: []},
@@ -25,33 +22,14 @@ const Dashboard = () => {
         bloodPressure: {labels: [], systolic: [], diastolic: []},
         eeg: {labels: [], alpha: [], beta: [], gamma: [], delta: [], theta: []}
     });
+
+    const [overallAverages, setOverallAverages] = useState({});
     const [averageChartsData, setAverageChartsData] = useState({
         heartRate: {labels: [], values: []},
         steps: {labels: [], values: []},
         calories: {labels: [], values: []},
         sleep: {labels: [], values: []}
     });
-    const [overallAverages, setOverallAverages] = useState({});
-    const [selectedBrand, setSelectedBrand] = useState('');
-    const [selectedDevice, setSelectedDevice] = useState('');
-
-    // useEffect to reload the brand and device options
-    useEffect(() => {
-        if (selectedBrand) {
-            const availableDevices = linkedDevices.filter(device => device.brand === selectedBrand && device.status === 'linked');
-            if (availableDevices.length > 0) {
-                setSelectedDevice(availableDevices[0].type);
-            } else {
-                setSelectedDevice('');
-                setSelectedBrand('');
-            }
-        }
-    }, [selectedBrand]);
-
-    // useEffect to reload the charts when the brand or device changes
-    useEffect(() => {
-        updateCharts(selectedBrand, selectedDevice);
-    }, [selectedDevice]);
 
     // useEffect to set the linked devices
     useEffect (() => {
@@ -64,6 +42,24 @@ const Dashboard = () => {
 
         getDevicesData();
     }, [devicesData]);
+
+    // useEffect to reload the brand and device options
+    useEffect(() => {
+        if (selectedBrand) {
+            const availableDevices = linkedDevices.filter(device => device.brand === selectedBrand && device.status === 'linked');
+            if (availableDevices.length > 0) {
+                setSelectedType(availableDevices[0].type);
+            } else {
+                setSelectedType('');
+                setSelectedBrand('');
+            }
+        }
+    }, [selectedBrand]);
+
+    // useEffect to reload the charts when the brand or device changes
+    useEffect(() => {
+        updateCharts(selectedBrand, selectedType);
+    }, [selectedType]);
 
     // useEffect to set the average charts data
     useEffect (() => {
@@ -85,16 +81,12 @@ const Dashboard = () => {
                 const defaultDevice = linkedDevices.find(device => device.brand === defaultBrand).type;
 
                 setSelectedBrand(defaultBrand);
-                setSelectedDevice(defaultDevice);
+                setSelectedType(defaultDevice);
             }
         };
 
         initializeDevices();
     }, [linkedDevices]);
-
-    const fetchAndCreateDevice = async (brand, device, id) => {
-        return DeviceFactory.createDevice(brand, device, id);
-    };
 
     const createAllDevices = async (devicesData) => {
         if (devicesData) {
@@ -102,40 +94,28 @@ const Dashboard = () => {
                 ...device,
                 name: `${device.brand} ${device.type}`,
                 imageSrc: 'assets/watches/' + device.brand.toLowerCase() + '-' + device.type.toLowerCase() + '.png',
-                device: await fetchAndCreateDevice(device.brand, device.type, device._id),
+                device: new Device(device._id),
             })));
         }
         return [];
     };
 
-    const getDataEntry = async (brand, type, dataEntry) => {
-        const model = linkedDevices.find(device => device.brand === brand && device.type === type);
-        await model.device.fetchData()
-        if (model && model.device) {
-            const values = model.device.data.map(entry => model.device.getFieldValue(entry, dataEntry));
-            if (values.every(value => value === 0)) {
-                return {labels: [], values: []};
+    const updateCharts = async (selectedBrand, selectedType) => {
+        if (selectedBrand !== '' && selectedType !== '') {
+            const model = linkedDevices.find(device => device.brand === selectedBrand && device.type === selectedType);
+            if (model && model.device) {
+                await model.device.fetchData()
             }
 
-            const labels = model.device.data.map(entry => {
-                return new Date(entry.timestamp);
-            });
+            const heartRate = model.device.data.heartRate;
+            const steps = model.device.data.steps;
+            const calories = model.device.data.caloriesBurned;
+            const sleep = model.device.data.sleep;
+            const stress = model.device.data.stress;
+            const oxygen = model.device.data.oxygenSaturation;
+            const bloodPressure = model.device.data.bloodPressure;
+            const eeg = model.device.data.EEG;
 
-            return {labels, values};
-        }
-        return {labels: [], values: []};
-    }
-
-    const updateCharts = async (selectedBrand, selectedDevice) => {
-        if (selectedBrand !== '' && selectedDevice !== '') {
-            const heartRate = getDataEntry(selectedBrand, selectedDevice, 'heartRate');
-            const steps = getDataEntry(selectedBrand, selectedDevice, 'steps');
-            const calories = getDataEntry(selectedBrand, selectedDevice, 'caloriesBurned');
-            const sleep = getDataEntry(selectedBrand, selectedDevice, 'sleep');
-            const stress = getDataEntry(selectedBrand, selectedDevice, 'stress');
-            const oxygen = getDataEntry(selectedBrand, selectedDevice, 'oxygenSaturation');
-            const bloodPressure = getDataEntry(selectedBrand, selectedDevice, 'bloodPressure');
-            const eeg = getDataEntry(selectedBrand, selectedDevice, 'EEG');
 
             setChartsData({
                 heartRate,
@@ -169,15 +149,15 @@ const Dashboard = () => {
     };
 
     const handleUnlinkDevice = () => {
-        const image = document.querySelector(`.${selectedBrand}-${selectedDevice}-container`);
+        const image = document.querySelector(`.${selectedBrand}-${selectedType}-container`);
         if (image) {
             image.remove();
         }
 
-        if (selectedDevice !== '') {
+        if (selectedType !== '') {
             // Unlink the device in the devices array
             const updatedLinkedDevices = linkedDevices.map((device) => {
-                if (device.brand === selectedBrand && device.type === selectedDevice) {
+                if (device.brand === selectedBrand && device.type === selectedType) {
                     return {...device, status: 'unlinked'};
                 }
                 return device;
@@ -186,7 +166,7 @@ const Dashboard = () => {
             setLinkedDevices(updatedLinkedDevices);
 
             // Update the charts with the new selection
-            setSelectedDevice('');
+            setSelectedType('');
             setSelectedBrand('');
             updateCharts('', '');
         }
@@ -195,14 +175,14 @@ const Dashboard = () => {
     const handleBrandChange = (event) => {
         const selectedBrand = event.target.value;
         setSelectedBrand(selectedBrand);
-        setSelectedDevice('');
-        updateCharts(selectedBrand, selectedDevice);
+        setSelectedType('');
+        updateCharts(selectedBrand, selectedType);
     };
 
     const handleDeviceChange = (event) => {
-        const selectedDevice = event.target.value;
-        setSelectedDevice(selectedDevice);
-        updateCharts(selectedBrand, selectedDevice);
+        const selectedType = event.target.value;
+        setSelectedType(selectedType);
+        updateCharts(selectedBrand, selectedType);
     };
 
     if (error) return <div>Error: {error.message}</div>;
@@ -319,7 +299,7 @@ const Dashboard = () => {
                     </select>
                     <select
                         className="deviceCmbBox bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-2 rounded w-full sm:w-[10rem]"
-                        value={selectedDevice} onChange={handleDeviceChange}>
+                        value={selectedType} onChange={handleDeviceChange}>
                         <option value="" disabled>Select Device</option>
                         {selectedBrand && linkedDevices.filter(device => device.brand === selectedBrand && device.status === 'linked').map(device => (
                             <option key={device.type} value={device.type}>{device.type}</option>
@@ -337,12 +317,12 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            <div
-                className="flex justify-center items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full mb-10">
-                <p className="text-lg text-gray-700 dark:text-slate-400">Select Filters: </p>
-                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-8 w-full sm:w-[60rem]">
-                </div>
-            </div>
+            {/*<div*/}
+            {/*    className="flex justify-center items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full mb-10">*/}
+            {/*    <p className="text-lg text-gray-700 dark:text-slate-400">Select Filters: </p>*/}
+            {/*    <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-8 w-full sm:w-[60rem]">*/}
+            {/*    </div>*/}
+            {/*</div>*/}
 
             <div className="flex flex-wrap justify-center gap-14 max-w-full">
                 <ChartComponent

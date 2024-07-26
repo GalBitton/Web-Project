@@ -3,6 +3,7 @@ import User from '../database/models/User.model.js';
 import Device from '../database/models/Device.model.js';
 import DeviceData from '../database/models/DeviceData.model.js';
 import { calculateOverallAverage } from "../utils/mathUtils.js";
+import { DeviceFactory } from "../services/deviceFactory.js";
 
 class UserController {
     constructor(config, logger) {
@@ -29,11 +30,19 @@ class UserController {
     async getDeviceData(req, res) {
         try {
             const { deviceId } = req.params;
+            const device = await Device.findOne({ _id: deviceId }).lean().exec();
+            if (!device) {
+                return res.status(404).json({ error: 'Device not found' });
+            }
+
             const deviceData = await DeviceData.findOne({ device: deviceId }).lean().exec();
             if (!deviceData) {
                 return res.status(404).json({ error: 'Device data not found' });
             }
-            res.status(200).json(deviceData.datapoints);
+
+            const deviceInstance = DeviceFactory.createDevice(device.brand, device.type, deviceId);
+            const data = deviceInstance.extractGraphData(deviceData.datapoints);
+            res.status(200).json({ ...data });
         } catch (err) {
             this._logger.error('Error retrieving device data:', err);
             res.status(500).json({ error: 'Internal Server Error' });
