@@ -3,6 +3,7 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import express from 'express';
 import cors from 'cors';
+import ejs from 'ejs';
 import path from 'path';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
@@ -37,6 +38,7 @@ export default class Server {
 
     _setupEJS() {
         this._app.set('view engine', 'ejs');
+        this._app.engine("ejs", ejs.__express);
         this._app.set('views', path.join(this._dirname, 'views'));
     }
 
