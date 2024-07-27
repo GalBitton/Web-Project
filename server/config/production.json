@@ -12,7 +12,7 @@
     "jwt-access-token-secret": "H$lloH5c9ersGTF0",
     "jwt-refresh-token-secret": "W3Sa1dGTF0Ok9"
   },
-  "vercelAllowedOrigins": ["https://neurosync-server.vercel.app/", "https://neurosync-git-hw2-eyalmks-projects.vercel.app/"],
+  "vercelAllowedOrigins": ["https://neurosync-server.vercel.app", "https://neurosync-iota.vercel.app"],
   "logger": {
     "level": "info",
     "log2file": false

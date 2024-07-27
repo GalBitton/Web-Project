@@ -17,7 +17,6 @@ export default class Server {
         this._config = config;
         this._logger = logger;
         this._port = this._config.port;
-        this._dirname = dirname(fileURLToPath(import.meta.url));
         this._setupPolicies();
         this._setupRoutes();
         this._setupMiddlewares();
@@ -43,8 +42,6 @@ export default class Server {
                 if (allowedOrigins.includes(origin)) {
                     res.header('Access-Control-Allow-Origin', origin);
                 }
-                res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-                res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
                 next();
             });
 
