@@ -1,0 +1,107 @@
+pipeline {
+    agent any
+
+    environment {
+        NODE_ENV = 'production'
+        DOCKER_IMAGE = 'neurosync-server'
+        ETCD_IMAGE = 'quay.io/coreos/etcd:v3.5.0'
+    }
+
+    stages {
+        stage('Checkout HW2 Branch') {
+            steps {
+                git branch: 'HW2', url: 'https://github.com/GalBitton/Web-Project.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    // Install Node.js dependencies
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('Run Unit Tests') {
+            steps {
+                script {
+                    // Run unit tests
+                    sh 'npm test'
+                }
+            }
+        }
+
+        stage('Get Version') {
+            steps {
+                script {
+                    // Extract version from package.json
+                    env.VERSION = sh(script: 'jq -r .version package.json', returnStdout: true).trim()
+                }
+            }
+        }
+
+        stage('Start etcd') {
+            steps {
+                script {
+                    // Start etcd using Docker
+                    sh '''
+                    docker run -d --name etcd \
+                      -p 2379:2379 \
+                      -p 2380:2380 \
+                      --volume=/tmp/etcd-data:/etcd-data \
+                      quay.io/coreos/etcd:v3.5.0 \
+                      /usr/local/bin/etcd \
+                      --data-dir=/etcd-data --name node1 \
+                      --initial-advertise-peer-urls http://localhost:2380 \
+                      --listen-peer-urls http://0.0.0.0:2380 \
+                      --advertise-client-urls http://localhost:2379 \
+                      --listen-client-urls http://0.0.0.0:2379 \
+                      --initial-cluster node1=http://localhost:2380
+                    '''
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build Docker image
+                    sh "docker build -t ${DOCKER_IMAGE}:${VERSION} ."
+                }
+            }
+        }
+
+        stage('Compile confd Templates') {
+            steps {
+                script {
+                    // Compile confd templates and TOML files
+                    sh '''
+                    confd -onetime -backend etcd -node http://localhost:2379 -config-file ./confd/confd.toml
+                    '''
+                }
+            }
+        }
+
+        stage('Create production.json') {
+            steps {
+                script {
+                    // Move the compiled configuration to production.json
+                    sh '''
+                    mv /etc/myapp/config.json ./production.json
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                // Clean up workspace and stop etcd
+                sh 'docker stop etcd && docker rm etcd'
+                cleanWs()
+            }
+        }
+    }
+}

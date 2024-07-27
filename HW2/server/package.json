@@ -1,0 +1,46 @@
+{
+  "name": "NeuroSync Server",
+  "version": "1.0.0",
+  "description": "NeuroSync Server & Endpoint API",
+  "type": "module",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=production node ./api/index.js",
+    "dev": "cross-env NODE_ENV=development nodemon --nolazy --inspect ./api/index.js",
+    "test": "cross-env NODE_ENV=testing nodemon node --nolazy --inspect ./api/index.js",
+    "migrate-demo-data": "cross-env NODE_ENV=development node ./database/migrations/migrate-demo-data-to-db.js",
+    "curator": "cross-env NODE_ENV=development node ./database/migrations/database-curator.js"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    }
+  },
+  "author": "Team 1",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-dom": "^4.0.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "nodemon": "^3.1.4"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "config": "^3.3.12",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.3.1",
+    "google-auth-library": "^9.11.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "kontainer-di": "^0.9.9",
+    "mongoose": "^8.5.1",
+    "validator": "^13.12.0",
+    "winston": "^3.13.1",
+    "winston-daily-rotate-file": "^5.0.0",
+    "winston-mongodb": "^5.1.1"
+  }
+}
