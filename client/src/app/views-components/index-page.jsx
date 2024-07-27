@@ -11,7 +11,8 @@ const IndexPage = () => {
             <img
                 src="/assets/backgrounds/landingPage-transparent.png"
                 alt="Landing Page Image"
-                className="absolute left-1/4 inset-0 w-full h-full object-cover opacity-50"
+                className="absolute left-1/4 inset-0 w-[75vw] h-full opacity-100"
+                style={{ maxWidth: '100%', maxHeight: '100%' }}
             />
             <div className="relative z-10 flex flex-col items-start p-8 max-w-xl mt-24 ml-4 md:ml-16 dark:bg-slate-900">
                 <h1 className="text-5xl md:text-7xl font-bold mb-4 text-black dark:text-white">
