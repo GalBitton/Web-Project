@@ -8,13 +8,13 @@ const limiter = rateLimit({
 
 const registerLimiter = rateLimit({
     windowMs: 60 * 60 * 1000,
-    max: 5,
+    max: 15,
     message: 'Too many registration attempts from this IP address, please try again later.',
 });
 
 const loginLimiter = rateLimit({
     windowMs: 60 * 60 * 1000,
-    max: 15,
+    max: 50,
     message: 'Too many login attempts from this IP address, please try again later.',
 });
 

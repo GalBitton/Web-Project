@@ -40,8 +40,7 @@ class AuthMiddleware {
                         return res.status(200).json({ message: 'Token expired, re-login to generate a new one. '});
                     }
                     return res.status(401).json({ message: 'Token expired' });
-                }
-                else {
+                } else {
                     return res.status(401).json({ message: 'Unauthorized' });
                 }
             }

@@ -9,6 +9,20 @@ class APIService {
         const controller = ControllerService();
 
         switch (request.action) {
+            case 'login':
+                this.callback = controller.login;
+                this.parameters.push(this.request.email);
+                this.parameters.push(this.request.password);
+                break;
+            case 'login-google':
+                this.callback = controller.loginGoogle;
+                this.parameters.push(this.request.idToken);
+                break;
+            case 'register':
+                this.callback = controller.register;
+                this.parameters.push(this.request.email);
+                this.parameters.push(this.request.password);
+                break;
             case 'logout':
                 this.callback = controller.logout;
                 break;

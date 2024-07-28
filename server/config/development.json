@@ -7,8 +7,8 @@
     "auth": {
         "google_oauth_client_id": "796593946504-rg5tis6qthatmtbkvbgakhqkhmoaaht0.apps.googleusercontent.com",
         "google_oauth_client_secret": "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",
-        "refresh_expiration": "90d",
-        "access_expiration": "20m",
+        "refresh_expiration": "30s",
+        "access_expiration": "10s",
         "jwt-access-token-secret": "H$lloH5c9ersGTF0",
         "jwt-refresh-token-secret": "W3Sa1dGTF0Ok9"
     },

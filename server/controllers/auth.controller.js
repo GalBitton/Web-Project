@@ -54,9 +54,7 @@ class AuthController {
             });
 
             res.status(201).send({
-                message: 'User registered successfully',
                 accessToken,
-                refreshToken,
                 userId: user._id,
                 email: user.email
             });
@@ -103,7 +101,6 @@ class AuthController {
 
             res.status(200).json({
                 accessToken,
-                refreshToken,
                 userId: user._id,
                 email
             });
@@ -119,12 +116,12 @@ class AuthController {
 
     async authenticateGoogleToken(req, res) {
         try {
-            const { token } = req.body;
+            const { idToken } = req.body;
             let email;
 
             try {
                 const ticket = await this._OAuthClient.verifyIdToken({
-                    idToken: token,
+                    idToken,
                     audience: this._config.get('google_oauth_client_id'),
                 });
 
@@ -175,7 +172,6 @@ class AuthController {
 
             res.status(200).json({
                 accessToken,
-                refreshToken,
                 email,
                 userId: user._id,
             });

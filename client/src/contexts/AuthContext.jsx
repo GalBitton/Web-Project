@@ -1,30 +1,38 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(null);
-    const navigate = useNavigate();
 
     useEffect(() => {
-        const status = JSON.parse(localStorage.getItem('loginStatus')) || false;
+        const googleToken = localStorage.getItem('token');
+        const token = localStorage.getItem('googleToken');
+        let status = false;
+        if (googleToken || token) {
+            status = true;
+        }
         setIsLoggedIn(status);
     }, []);
 
-    const login = () => {
-        localStorage.setItem('loginStatus', true);
-        setIsLoggedIn(true);
-    };
+    function getIdentity(identifier) {
+        const identity = JSON.parse(localStorage.getItem('identity'));
+        if (!identity) {
+            return null;
+        }
 
-    const logout = () => {
-        localStorage.setItem('loginStatus', false);
-        setIsLoggedIn(false);
-        navigate('/');
-    };
+        switch (identifier) {
+            case 'email':
+                return identity.email;
+            case 'userId':
+                return identity.userId;
+            default:
+                return null;
+        }
+    }
 
     return (
-        <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+        <AuthContext.Provider value={{ isLoggedIn, getIdentity }}>
             {isLoggedIn === null ? <div>Loading...</div> : children}
         </AuthContext.Provider>
     );

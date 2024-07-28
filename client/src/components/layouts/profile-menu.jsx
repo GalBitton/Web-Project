@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext.jsx';
+import { useNavigate } from 'react-router-dom';
+import APIService from "@/services/api/APIService";
 
 function ProfileMenu() {
-    const { logout } = useAuth();
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef(null);
     const buttonRef = useRef(null);
+    const navigate = useNavigate();
 
     const handleToggleMenu = () => {
         setMenuOpen(!menuOpen);
@@ -25,13 +26,18 @@ function ProfileMenu() {
     }, []);
 
     const handleSettingsClick = () => {
-        // Your settings click handler here
-        console.log('Your settings click handler');
+        console.log('Settings click handler');
     };
 
-    const handleLogoutClick = () => {
-        // Your logout click handler here
-        console.log('Your logout click handler');
+    const handleLogoutClick = async () => {
+        const apiService = new APIService( { action: 'logout' });
+        const response = await apiService.execute();
+        if (response && response.error) {
+            console.error('Logout failed:', response.error);
+            return;
+        }
+        setMenuOpen(false);
+        navigate('/');
     };
 
     return (
@@ -50,7 +56,7 @@ function ProfileMenu() {
                     style={{ top: '100%', left: '50%', transform: 'translateX(-50%)' }}
                 >
                     <a href="#" className="block px-4 py-2 hover:bg-gray-300 dark:hover:bg-gray-600 w-full text-center" onClick={handleSettingsClick}>Settings</a>
-                    <a href="#" className="block px-4 py-2 hover:bg-gray-300 dark:hover:bg-gray-600 w-full text-center" onClick={logout}>Logout</a>
+                    <a href="#" className="block px-4 py-2 hover:bg-gray-300 dark:hover:bg-gray-600 w-full text-center" onClick={handleLogoutClick}>Logout</a>
                 </div>
             )}
         </div>

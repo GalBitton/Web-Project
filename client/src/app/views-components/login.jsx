@@ -1,34 +1,43 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
 import { GoogleLogin } from '@react-oauth/google';
-import { jwtDecode } from 'jwt-decode';
+import APIService from "@/services/api/APIService";
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
-    const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
         try {
-            // Add your login logic here, e.g., call an API to authenticate the user
-            login();
+            const apiService = new APIService({ action: 'login', email, password });
+            const response = await apiService.execute();
+            if (response && response.error) {
+                setError(response.error);
+                return;
+            } else {
+                setError(''); // Clear any previous error
+            }
+
             navigate('/dashboard');
         } catch (error) {
             setError('Invalid email or password');
         }
     };
 
-    const handleGoogleSuccess = (response) => {
-        const decoded = jwtDecode(response.credential);
-        console.log('Google Access Token:', response.credential);
-        console.log('Decoded User Info:', decoded);
-        // Here you can use the access token and refresh token if available
-        login();
+    const handleGoogleSuccess = async (response) => {
+        const apiService = new APIService({ action: 'login-google', idToken: response.credential });
+        const res = await apiService.execute();
+        if (res && res.error) {
+            handleGoogleFailure(res.error);
+            return;
+        } else {
+            setError(''); // Clear any previous error
+        }
+
         navigate('/dashboard');
     };
 
@@ -86,7 +95,7 @@ const Login = () => {
                             />
                         </div>
                     </div>
-                    {error && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
+                    {error && <p className="mt-2 text-sm text-red-600 dark:text-red-400 text-center">{error}</p>}
                     <div className="flex items-center justify-between">
                         <div className="flex items-center">
                             <input
