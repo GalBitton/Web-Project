@@ -19,7 +19,12 @@ class AuthMiddleware {
             return res.status(401).json({ message: 'Unauthorized' });
         }
 
-        const token = authHeader.split(' ')[1];
+        let token;
+        try {
+            token = authHeader.split(' ')[1];
+        } catch (err) {
+            return next(err);
+        }
 
         if (!token) {
             return res.status(401).json({ message: 'Unauthorized' });

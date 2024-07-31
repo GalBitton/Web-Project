@@ -1,9 +1,6 @@
 'use strict';
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
 import express from 'express';
 import cors from 'cors';
-import path from 'path';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 
@@ -68,13 +65,13 @@ export default class Server {
     _setupPolicies() {
         const corsOptions = this._getCorsOptions();
 
-        this._app.use(express.json({ limit: "400kb"}));
+        this._app.use(express.json({ limit: "2mb" } ));
         this._app.use(cookieParser());
         this._app.use(cors(corsOptions));
         this._app.use(helmet({
             crossOriginOpenerPolicy: true
         }));
-        this._app.use('/robots.txt', express.static('robots.txt'));
+        this._app.use('/robots.txt', express.static('public/robots.txt'));
         this._app.use(helmet.noSniff());
         this._app.use(helmet.hsts({
             maxAge: 31536000,

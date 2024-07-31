@@ -1,8 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import Chart from 'chart.js/auto';
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Range, getTrackBackground } from 'react-range';
 import Exporter from '../utils/exporter.js';
 
 const ChartComponent = ({ title, chartId, labels, datasets, summary = "", averageChart = false }) => {

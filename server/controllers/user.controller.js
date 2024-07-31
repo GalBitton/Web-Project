@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import User from '../database/models/User.model.js';
 import Device from '../database/models/Device.model.js';
 import DeviceData from '../database/models/DeviceData.model.js';

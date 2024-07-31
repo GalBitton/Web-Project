@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import APIService from '../services/api/APIService.js';
 
 const useAPIService = (request) => {
-    const [data, setData] = React.useState(null);
-    const [error, setError] = React.useState(null);
-    const [loading, setLoading] = React.useState(true);
+    const [data, setData] = useState(null);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {

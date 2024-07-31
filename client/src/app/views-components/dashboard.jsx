@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Device from '@/services/device.js';
 import { getGraphSummary } from '@/utils';
 import DeviceCard from '../../components/devicecard';

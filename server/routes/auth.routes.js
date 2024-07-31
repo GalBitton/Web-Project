@@ -3,10 +3,10 @@ import { registerLimiter, loginLimiter } from '../middlewares/rateLimiters.middl
 import container from '../containerConfig.js';
 
 class AuthRouter {
-    constructor() {
+    constructor(authController, authMiddleware) {
         this._router = express.Router();
-        this.authController = container.get('authController');
-        this.authMiddleware = container.get('authMiddleware');
+        this.authController = authController;
+        this.authMiddleware = authMiddleware;
         this._registerRoutes();
     }
 

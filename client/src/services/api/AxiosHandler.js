@@ -2,6 +2,7 @@ import axios from 'axios';
 import APIService from './APIService';
 
 const endpointAPI = import.meta.env.VITE_ENDPOINT;
+
 const refreshToken = async () => {
     const apiService = new APIService({ action: "refreshToken" });
     await apiService.execute();
@@ -29,11 +30,12 @@ axiosInstance.interceptors.response.use(
     async (error) => {
         if (error.response && (error.response.status === 401 || error.response.status === 403)) {
             let retryCount = 0;
+            const requestConfig = error.config;
 
             while (retryCount < 3) {
                 try {
                     await refreshToken();
-                    return axiosInstance.request(error.config);
+                    return axiosInstance.request(requestConfig);
                 } catch (error) {
                     console.log(error);
                     retryCount++;

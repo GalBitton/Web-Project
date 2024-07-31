@@ -1,4 +1,3 @@
-import React from 'react';
 import {ThemeProvider} from "@/hooks/ThemeProvider.jsx";
 
 const Maintenance = () => {

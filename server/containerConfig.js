@@ -29,7 +29,7 @@ container.register('loggerConfig', [], loggerConfig);
 container.register('logger', [], loggerClass.logger);
 container.register('authMiddleware', ['authConfig', 'logger'], AuthMiddleware);
 container.register('authController', ['authConfig', 'logger'], AuthController);
-container.register('authRouter', [], AuthRouter);
+container.register('authRouter', ['authController', 'authMiddleware'], AuthRouter);
 container.register('userController', ['authConfig', 'logger'], UserController);
 container.register('userRouter', [], UserRouter);
 container.register('serverConfig', [], serverConfig);

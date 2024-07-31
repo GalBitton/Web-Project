@@ -1,9 +1,9 @@
 import React from 'react';
 import { stack as Menu } from '@katasonovyp/react-burger-menu';
-import { useAuth } from '../../contexts/AuthContext.jsx';
+import { useAuth } from '@/contexts/AuthContext';
 import ProfileMenu from './profile-menu.jsx';
-import { ThemeProvider } from "../../hooks/ThemeProvider.jsx";
-import useLocation from '../../hooks/useLocation.jsx';
+import { ThemeProvider } from "@/hooks/ThemeProvider";
+import useLocation from '@/hooks/useLocation.jsx';
 
 const menuStyles = {
     bmBurgerButton: {

@@ -6,8 +6,8 @@ export const AuthProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(null);
 
     useEffect(() => {
-        const googleToken = localStorage.getItem('token');
-        const token = localStorage.getItem('googleToken');
+        const token = localStorage.getItem('token');
+        const googleToken = localStorage.getItem('googleToken');
         let status = false;
         if (googleToken || token) {
             status = true;

@@ -16,12 +16,14 @@ function App() {
             <AppProvider>
                 <AuthProvider>
                     <div className="min-h-screen bg-gradient-to-b from-white to-gray-200 dark:from-gray-900 dark:to-slate-800 flex flex-col text-black dark:text-white max-w-full">
-                        {isMaintenance ? <Maintenance /> : <>
-                            <AppMenu />
-                            <main className="flex-grow flex flex-col my-4 w-full px-4">
-                                <Outlet />
-                            </main>
-                        </>}
+                        {isMaintenance ? <Maintenance /> :
+                            <>
+                                <AppMenu />
+                                <main className="flex-grow flex flex-col my-4 w-full px-4">
+                                    <Outlet />
+                                </main>
+                            </>
+                        }
                         <Footer />
                     </div>
                 </AuthProvider>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import serviceData from "../../package.json";
 
 export const AppProvider = ({ children }) => {

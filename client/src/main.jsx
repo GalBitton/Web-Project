@@ -11,20 +11,20 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <Router>
         <Routes>
             <Route path="/" element={<App />}>
-            <Route index element={<IndexPage />} />
-            <Route element={<ProtectedRoute />}>
-                <Route path="dashboard" element={<Dashboard />} />
+                <Route index element={<IndexPage />} />
+                <Route element={<ProtectedRoute />}>
+                    <Route path="dashboard" element={<Dashboard />} />
+                </Route>
+                <Route path="about-us" element={<UnderConstruction />} />
+                <Route path="contact-us" element={<UnderConstruction />} />
+                <Route path="login" element={<Login />} />
+                <Route path="register" element={<Register />} />
+                <Route path="forgot-password" element={<UnderConstruction />} />
+                <Route path="privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="terms-of-service" element={<TermsOfService />} />
+                <Route path="maintenance" element={<Maintenance />} />
+                <Route path="*" element={<NotFound />} />
             </Route>
-            <Route path="about-us" element={<UnderConstruction />} />
-            <Route path="contact-us" element={<UnderConstruction />} />
-            <Route path="login" element={<Login />} />
-            <Route path="register" element={<Register />} />
-            <Route path="forgot-password" element={<UnderConstruction />} />
-            <Route path="privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="terms-of-service" element={<TermsOfService />} />
-            <Route path="maintenance" element={<Maintenance />} />
-            <Route path="*" element={<NotFound />} />
-        </Route>
         </Routes>
       </Router>
   </React.StrictMode>,
