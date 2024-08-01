@@ -183,7 +183,7 @@ class AuthController {
 
     async refresh(req, res) {
         try {
-            const refreshToken = req.cookies.jwt || req.body.refreshToken;
+            const refreshToken = req.cookies.jwt;
 
             if (!refreshToken) {
                 return res.status(401).json({ message: 'Unauthorized' });

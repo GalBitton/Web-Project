@@ -28,14 +28,17 @@ axiosInstance.interceptors.request.use((config) => {
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
-        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        const originalRequest = error.config;
+
+        if (error.response && (error.response.status === 401 || error.response.status === 403) && !originalRequest._retry) {
+            originalRequest._retry = true;
             let retryCount = 0;
-            const requestConfig = error.config;
 
             while (retryCount < 3) {
                 try {
                     await refreshToken();
-                    return axiosInstance.request(requestConfig);
+                    originalRequest.headers['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
+                    return axiosInstance.request(originalRequest);
                 } catch (error) {
                     console.log(error);
                     retryCount++;

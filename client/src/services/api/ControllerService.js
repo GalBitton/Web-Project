@@ -14,6 +14,7 @@ export const ControllerService = () => {
                 email: response.data.email
             }));
             localStorage.setItem('token', response.data.accessToken);
+            window.location.replace("/dashboard");
         } catch (error) {
             if (error.response) {
                 return error.response.data;
@@ -36,7 +37,8 @@ export const ControllerService = () => {
                 email: response.data.email
             }));
             localStorage.setItem('token', response.data.accessToken);
-            localStorage.setItem('googleToken', response.data.googleToken);
+            localStorage.setItem('googleToken', idToken);
+            window.location.replace("/dashboard");
         } catch (error) {
             if (error.response) {
                 return error.response.data;
@@ -60,6 +62,7 @@ export const ControllerService = () => {
                 email: response.data.email
             }));
             localStorage.setItem('token', response.data.accessToken);
+            window.location.replace("/login");
         } catch (error) {
             if (error.response) {
                 return error.response.data;
@@ -99,7 +102,7 @@ export const ControllerService = () => {
 
     const refreshToken = async () => {
         const response = await axiosInstance.post(`${endpointAPI}/auth/refresh`);
-        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('token', response.data.accessToken);
     };
 
     const getLinkedDevices = async () => {

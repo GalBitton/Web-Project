@@ -6,7 +6,7 @@ class AuthMiddleware {
     constructor(config, logger) {
         this._config = config;
         this._logger = logger;
-        this.JWT_REFRESH_SECRET = this._config.get('jwt-refresh-token-secret');
+        this.JWT_ACCESS_SECRET = this._config.get('jwt-access-token-secret');
 
         // Bind methods to ensure 'this' context is correct
         this.authenticateJWT = this.authenticateJWT.bind(this);
@@ -30,13 +30,13 @@ class AuthMiddleware {
             return res.status(401).json({ message: 'Unauthorized' });
         }
 
-        jwt.verify(token, this.JWT_REFRESH_SECRET, async (err, decodedToken) => {
+        jwt.verify(token, this.JWT_ACCESS_SECRET, async (err, decodedToken) => {
             if (err) {
                 if (err instanceof jwt.TokenExpiredError) {
                     // Edge case for logout.
                     if (req.url === '/logout') {
                         // Invalidate the refresh token
-                        res.cookie('refreshJWT', '', {
+                        res.cookie('jwt', '', {
                             httpOnly: true,
                             sameSite: 'none',
                             secure: true,

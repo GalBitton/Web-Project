@@ -50,13 +50,11 @@ export default class Server {
                         callback(new Error('Not allowed by CORS'));
                     }
                 },
-                optionsSuccessStatus: 200,
                 credentials: true,
             };
         } else {
             return {
                 origin: true,
-                optionsSuccessStatus: 200,
                 credentials: true,
             };
         }
@@ -81,12 +79,6 @@ export default class Server {
     }
 
     _setupRoutes() {
-        // this._app.get('/', (req, res) => {
-        //     if (["staging", "production"].includes(process.env.NODE_ENV) && !req.secure) {
-        //         res.redirect(301, "https://" + req.headers.host + req.originalUrl);
-        //     }
-        // });
-
         this._app.get(['/.env', '/config/*', '/.git/*', '/*.json'], (req, res) => {
             const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || (req.connection.socket ? req.connection.socket.remoteAddress : null) || req.ip;
             this._logger.info(`IP Address ${ip} tried to access a sensitive file at ${req.url}.\nMethod: ${req.method}\nstatus: ${req.statusCode}\nHeaders: ${JSON.stringify(req.headers)}\nQuery: ${JSON.stringify(req.query)}`);

@@ -28,7 +28,7 @@ const Dashboard = () => {
         heartRate: {labels: [], values: []},
         steps: {labels: [], values: []},
         calories: {labels: [], values: []},
-        sleep: {labels: [], values: []}
+        sleep: {labels: [], values: [], valuesY1: []}
     });
 
     // useEffect to set the linked devices
@@ -58,7 +58,7 @@ const Dashboard = () => {
 
     // useEffect to reload the charts when the brand or device changes
     useEffect(() => {
-        updateCharts(selectedBrand, selectedType);
+        updateCharts();
     }, [selectedType]);
 
     // useEffect to set the average charts data
@@ -93,14 +93,14 @@ const Dashboard = () => {
             return Promise.all(devicesData.map(async (device) => ({
                 ...device,
                 name: `${device.brand} ${device.type}`,
-                imageSrc: 'assets/watches/' + device.brand.toLowerCase() + '-' + device.type.toLowerCase() + '.png',
+                imageSrc: '/assets/watches/' + device.brand.toLowerCase() + '-' + device.type.toLowerCase() + '.png',
                 device: new Device(device._id),
             })));
         }
         return [];
     };
 
-    const updateCharts = async (selectedBrand, selectedType) => {
+    const updateCharts = async () => {
         if (selectedBrand !== '' && selectedType !== '') {
             const model = linkedDevices.find(device => device.brand === selectedBrand && device.type === selectedType);
             if (model && model.device) {
@@ -168,7 +168,7 @@ const Dashboard = () => {
             // Update the charts with the new selection
             setSelectedType('');
             setSelectedBrand('');
-            updateCharts('', '');
+            updateCharts();
         }
     };
 
@@ -176,13 +176,13 @@ const Dashboard = () => {
         const selectedBrand = event.target.value;
         setSelectedBrand(selectedBrand);
         setSelectedType('');
-        updateCharts(selectedBrand, selectedType);
+        updateCharts();
     };
 
     const handleDeviceChange = (event) => {
         const selectedType = event.target.value;
         setSelectedType(selectedType);
-        updateCharts(selectedBrand, selectedType);
+        updateCharts();
     };
 
     if (error) return <div>Error: {error.message}</div>;
@@ -224,7 +224,6 @@ const Dashboard = () => {
                         }
                     ]}
                     summary={getGraphSummary(overallAverages.heartRate, "heartRate")}
-                    averageChart={true}
                 />
                 <ChartComponent
                     title="Average Steps Count"
@@ -240,7 +239,6 @@ const Dashboard = () => {
                         }
                     ]}
                     summary={getGraphSummary(overallAverages.steps, "steps")}
-                    averageChart={true}
                 />
                 <ChartComponent
                     title="Average Calories Burned"
@@ -256,7 +254,6 @@ const Dashboard = () => {
                         }
                     ]}
                     summary={getGraphSummary(overallAverages.calories, "calories")}
-                    averageChart={true}
                 />
                 <ChartComponent
                     title="Average Sleep Duration"
@@ -281,7 +278,6 @@ const Dashboard = () => {
                         }
                     ]}
                     summary={getGraphSummary(overallAverages.sleep, "sleep")}
-                    averageChart={true}
                 />
             </div>
 
@@ -339,7 +335,6 @@ const Dashboard = () => {
                         }
                     ]}
                     summary=""
-                    averageChart={false}
                 />
                 <ChartComponent
                     title="Steps Count"
@@ -355,7 +350,6 @@ const Dashboard = () => {
                         }
                     ]}
                     summary=""
-                    averageChart={false}
                 />
                 <ChartComponent
                     title="Calories Burned"
@@ -371,7 +365,6 @@ const Dashboard = () => {
                         }
                     ]}
                     summary=""
-                    averageChart={false}
                 />
                 <ChartComponent
                     title="Sleep Statistics"
@@ -396,7 +389,6 @@ const Dashboard = () => {
                         }
                     ]}
                     summary=""
-                    averageChart={false}
                 />
                 {chartsData.stress.labels.length > 0 && (
                     <div id="stressChartContainer">
@@ -414,7 +406,6 @@ const Dashboard = () => {
                                 }
                             ]}
                             summary=""
-                            averageChart={false}
                         />
                     </div>
                 )}
@@ -434,7 +425,6 @@ const Dashboard = () => {
                                 }
                             ]}
                             summary=""
-                            averageChart={false}
                         />
                     </div>
                 )}
@@ -461,7 +451,6 @@ const Dashboard = () => {
                                 }
                             ]}
                             summary=""
-                            averageChart={false}
                         />
                     </div>
                 )}
@@ -509,7 +498,6 @@ const Dashboard = () => {
                                 }
                             ]}
                             summary=""
-                            averageChart={false}
                         />
                     </div>
                 )}
