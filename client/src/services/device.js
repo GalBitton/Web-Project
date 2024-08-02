@@ -1,17 +1,20 @@
 import APIService from "@/services/api/APIService";
-import dataAnalytics from "@/services/dataAnalytics";
+import DataAnalytics from "@/services/DataAnalytics";
 
 export default class Device {
     constructor(id) {
         this.id = id;
-        this.data = {};
-        this.analytics = new dataAnalytics();
+        this.analytics = new DataAnalytics();
     }
 
-    async fetchData() {
+    async fetchAnalyzeData() {
         const apiService = new APIService({action: 'getDeviceData', deviceId: this.id});
-        this.data = await apiService.execute();
-        this.analytics.analyzeData(this.data);
+        const data = await apiService.execute();
+        this.analytics.analyzeData(data);
+    }
+
+    getAnalysisData(field) {
+        return this.analytics.getAnalysisData(field);
     }
 
     getAnalysisSummary(field){
