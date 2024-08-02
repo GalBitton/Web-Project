@@ -18,7 +18,7 @@ class UserController {
     async getLinkedDevices(req, res) {
         try {
             const userId = req.user;
-            const linkedDevices = await Device.find({ user: userId, status: 'linked' }).lean().exec();
+            const linkedDevices = await Device.find({ status: 'linked' }).lean().exec();
             res.status(200).json(linkedDevices);
         } catch (err) {
             this._logger.error('Error retrieving linked devices:', err);

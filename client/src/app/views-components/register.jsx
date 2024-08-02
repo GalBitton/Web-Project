@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import useNavigate from "@/hooks/useNavigate";
 import { GoogleLogin } from '@react-oauth/google';
 import APIService from "@/services/api/APIService";
 
@@ -8,7 +8,8 @@ const Register = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState(null);
-    const navigate = useNavigate();
+    const [success, setSuccess] = useState(null);
+    const { navigate } = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -22,12 +23,12 @@ const Register = () => {
             const response = await apiService.execute();
             if (response && response.error) {
                 setError(response.error);
-                return;
+                setSuccess('');
             } else {
                 setError(''); // Clear any previous error
+                setSuccess('Registration successful, redirecting to login page...');
+                navigate({ redirectPath: '/login', redirectTimeout: 3 });
             }
-
-            navigate('/dashboard');
         } catch (error) {
             setError('Registration failed');
         }
@@ -38,12 +39,10 @@ const Register = () => {
         const res = await apiService.execute();
         if (res && res.error) {
             handleGoogleFailure(res.error);
-            return;
         } else {
             setError(''); // Clear any previous error
+            navigate({ redirectPath: '/dashboard', redirectTimeout: 0 });
         }
-
-        navigate('/dashboard');
     };
 
     const handleGoogleFailure = (error) => {
@@ -77,7 +76,7 @@ const Register = () => {
                                 type="email"
                                 autoComplete="email"
                                 required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 focus:z-10 sm:text-sm"
+                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 focus:z-10 sm:text-sm"
                                 placeholder="Email address"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -93,7 +92,7 @@ const Register = () => {
                                 type="password"
                                 autoComplete="current-password"
                                 required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 sm:text-sm"
+                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 focus:z-10 sm:text-sm"
                                 placeholder="Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -109,7 +108,7 @@ const Register = () => {
                                 type="password"
                                 autoComplete="current-password"
                                 required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 focus:z-10 sm:text-sm"
+                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:focus:ring-indigo-400 dark:focus:border-indigo-400 focus:z-10 sm:text-sm"
                                 placeholder="Confirm Password"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -117,6 +116,7 @@ const Register = () => {
                         </div>
                     </div>
                     {error && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
+                    {success && <p className="mt-2 text-sm text-green-600 dark:text-green-400">{success}</p>}
                     <div>
                         <button
                             type="submit"

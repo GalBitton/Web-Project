@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import useNavigate from "@/hooks/useNavigate";
 import { GoogleLogin } from '@react-oauth/google';
 import APIService from "@/services/api/APIService";
 
@@ -7,7 +7,7 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
-    const navigate = useNavigate();
+    const { navigate } = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -17,12 +17,10 @@ const Login = () => {
             const response = await apiService.execute();
             if (response && response.error) {
                 setError(response.error);
-                return;
             } else {
                 setError(''); // Clear any previous error
+                navigate({ redirectPath: '/dashboard', redirectTimeout: 0 });
             }
-
-            navigate('/dashboard');
         } catch (error) {
             setError('Invalid email or password');
         }
@@ -33,12 +31,10 @@ const Login = () => {
         const res = await apiService.execute();
         if (res && res.error) {
             handleGoogleFailure(res.error);
-            return;
         } else {
             setError(''); // Clear any previous error
+            navigate({ redirectPath: '/dashboard', redirectTimeout: 0 });
         }
-
-        navigate('/dashboard');
     };
 
     const handleGoogleFailure = (error) => {

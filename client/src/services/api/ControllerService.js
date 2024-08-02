@@ -1,5 +1,4 @@
 import axiosInstance from "@/services/api/AxiosHandler.js";
-import axios from 'axios';
 const endpointAPI = import.meta.env.VITE_ENDPOINT;
 
 export const ControllerService = () => {
@@ -15,7 +14,6 @@ export const ControllerService = () => {
                 email: response.data.email
             }));
             localStorage.setItem('token', response.data.accessToken);
-            window.location.replace("/dashboard");
         } catch (error) {
             if (error.response) {
                 return error.response.data;
@@ -39,7 +37,6 @@ export const ControllerService = () => {
             }));
             localStorage.setItem('token', response.data.accessToken);
             localStorage.setItem('googleToken', idToken);
-            window.location.replace("/dashboard");
         } catch (error) {
             if (error.response) {
                 return error.response.data;
@@ -63,7 +60,6 @@ export const ControllerService = () => {
                 email: response.data.email
             }));
             localStorage.setItem('token', response.data.accessToken);
-            window.location.replace("/login");
         } catch (error) {
             if (error.response) {
                 return error.response.data;

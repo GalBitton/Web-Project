@@ -1,20 +1,34 @@
 {
   "server": {
-    "host": "localhost",
-    "port": 8080,
-    "db_uri": "mongodb+srv://dev:dev123@cluster0.ecddkfl.mongodb.net/neurosync?retryWrites=true&w=majority&appName=Cluster0"
+      "host": "localhost",
+      "port": 8080,
+      "db_uri": "mongodb+srv://dev:dev123@cluster0.ecddkfl.mongodb.net/neurosync?retryWrites=true&w=majority&appName=Cluster0"
+  },
+  "limiterLogic": {
+      "limiter": {
+        "maxRequests": 500,
+        "timeWindowMs": "10m"
+      },
+      "registerLimits": {
+        "maxRequests": 15,
+        "timeWindowMs": "10m"
+      },
+      "loginLimits": {
+        "maxRequests": 20,
+        "timeWindowMs": "10m"
+      }
   },
   "auth": {
-    "google_oauth_client_id": "796593946504-rg5tis6qthatmtbkvbgakhqkhmoaaht0.apps.googleusercontent.com",
-    "google_oauth_client_secret": "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",
-    "refresh_expiration": "90d",
-    "access_expiration": "20m",
-    "jwt-access-token-secret": "H$lloH5c9ersGTF0",
-    "jwt-refresh-token-secret": "W3Sa1dGTF0Ok9"
+      "google_oauth_client_id": "796593946504-rg5tis6qthatmtbkvbgakhqkhmoaaht0.apps.googleusercontent.com",
+      "google_oauth_client_secret": "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",
+      "refresh_expiration": "90d",
+      "access_expiration": "20m",
+      "jwt-access-token-secret": "H$lloH5c9ersGTF0",
+      "jwt-refresh-token-secret": "W3Sa1dGTF0Ok9"
   },
   "vercelAllowedOrigins": ["https://neurosync-server.vercel.app", "https://neurosync-iota.vercel.app"],
   "logger": {
-    "level": "info",
-    "log2file": false
+      "level": "info",
+      "log2file": false
   }
 }

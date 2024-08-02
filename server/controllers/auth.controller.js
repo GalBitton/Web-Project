@@ -34,33 +34,20 @@ class AuthController {
             });
             await user.save();
 
-            const accessToken = jwt.sign({ userId: user._id }, this.JWT_AWT_SECRET, {
-                expiresIn: this._config.get('access_expiration'),
-            });
-
-            const refreshToken = jwt.sign({ userId: user._id }, this.JWT_REFRESH_SECRET, {
-                expiresIn: this._config.get('refresh_expiration'),
-            });
-
-            user.refreshToken = refreshToken;
-
-            await user.save();
-
-            res.cookie('jwt', refreshToken, {
-                httpOnly: true,
-                sameSite: 'None',
-                secure: true,
-                maxAge: convertExpirationDateToMilliseconds(this._config.get('refresh_expiration')),
-            });
-
             res.status(201).send({
-                accessToken,
                 userId: user._id,
                 email: user.email
             });
         } catch (error) {
             this._logger.error(`Error registering user: ${error}, request: ${req}`);
-            res.status(400).send({ error: error.message });
+            let formattedError = error.message;
+
+            if (error instanceof mongoose.Error.ValidationError) {
+                formattedError = Object.values(error.errors).map((error) => error.message).join(', ');
+            } else if (error.code === 11000) {
+                formattedError = 'Email already in use';
+            }
+            res.status(400).send({ error: formattedError });
         }
     };
 
