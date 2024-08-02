@@ -22,9 +22,9 @@ const refreshToken = async (retryCount = 0) => {
         const apiService = new APIService({ action: "refreshToken" });
         await apiService.execute();
         isRefreshing = false;
-    } catch (err) {
         processQueue(null, localStorage.getItem('token'));
         return true;
+    } catch (err) {
         if (retryCount < 3) {
             return await refreshToken(retryCount + 1);
         } else {
