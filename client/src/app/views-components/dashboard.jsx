@@ -311,7 +311,7 @@ const Dashboard = () => {
                         onClick={handleUnlinkDevice}
                     >
                         <div className="flex items-center gap-2">
-                            <img src="assets/unlink.svg" className="w-[2rem] h-[2rem]" alt="Unlink" style={{ maxWidth: '100%', maxHeight: '100%' }}/>
+                            <img src="/assets/unlink.svg" className="w-[2rem] h-[2rem]" alt="Unlink" style={{ maxWidth: '100%', maxHeight: '100%' }}/>
                             Unlink
                         </div>
                     </button>
