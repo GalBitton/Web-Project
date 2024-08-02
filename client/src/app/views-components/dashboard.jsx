@@ -11,6 +11,7 @@ const Dashboard = () => {
     const [linkedDevices, setLinkedDevices] = useState([]);
     const [selectedBrand, setSelectedBrand] = useState('');
     const [selectedType, setSelectedType] = useState('');
+    const [currentDevice, setCurrentDevice] = useState(null);
 
     const [chartsData, setChartsData] = useState({
         heartRate: {labels: [], values: []},
@@ -58,7 +59,11 @@ const Dashboard = () => {
 
     // useEffect to reload the charts when the brand or device changes
     useEffect(() => {
-        updateCharts();
+        if (selectedBrand !== '' && selectedType !== '') {
+            const model = linkedDevices.find(device => device.brand === selectedBrand && device.type === selectedType);
+            setCurrentDevice(model);
+            updateCharts();
+        }
     }, [selectedType]);
 
     // useEffect to set the average charts data
@@ -101,20 +106,21 @@ const Dashboard = () => {
     };
 
     const updateCharts = async () => {
-        if (selectedBrand !== '' && selectedType !== '') {
-            const model = linkedDevices.find(device => device.brand === selectedBrand && device.type === selectedType);
-            if (model && model.device) {
-                await model.device.fetchData()
+            if(!currentDevice)
+                return;
+
+            if (currentDevice && currentDevice.device) {
+                await currentDevice.device.fetchData()
             }
 
-            const heartRate = model.device.data.heartRate;
-            const steps = model.device.data.steps;
-            const calories = model.device.data.caloriesBurned;
-            const sleep = model.device.data.sleep;
-            const stress = model.device.data.stress;
-            const oxygen = model.device.data.oxygenSaturation;
-            const bloodPressure = model.device.data.bloodPressure;
-            const eeg = model.device.data.EEG;
+            const heartRate = currentDevice.device.data.heartRate;
+            const steps = currentDevice.device.data.steps;
+            const calories = currentDevice.device.data.caloriesBurned;
+            const sleep = currentDevice.device.data.sleep;
+            const stress = currentDevice.device.data.stress;
+            const oxygen = currentDevice.device.data.oxygenSaturation;
+            const bloodPressure = currentDevice.device.data.bloodPressure;
+            const eeg = currentDevice.device.data.EEG;
 
 
             setChartsData({
@@ -145,7 +151,6 @@ const Dashboard = () => {
                     theta: eeg.values.map(data => data.theta)
                 }
             });
-        }
     };
 
     const handleUnlinkDevice = () => {
@@ -218,7 +223,7 @@ const Dashboard = () => {
                         {
                             label: 'Heartrate BPM',
                             data: averageChartsData.heartRate.values,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.5)',
                             borderColor: 'rgba(75, 192, 192, 1)',
                             type: 'line',
                         }
@@ -233,7 +238,7 @@ const Dashboard = () => {
                         {
                             label: 'Steps Count',
                             data: averageChartsData.steps.values,
-                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            backgroundColor: 'rgba(153, 102, 255, 0.5)',
                             borderColor: 'rgba(153, 102, 255, 1)',
                             type: 'bar',
                         }
@@ -248,7 +253,7 @@ const Dashboard = () => {
                         {
                             label: 'Calories Burned',
                             data: averageChartsData.calories.values,
-                            backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                            backgroundColor: 'rgba(255, 159, 64, 0.5)',
                             borderColor: 'rgba(255, 159, 64, 1)',
                             type: 'bar',
                         }
@@ -263,7 +268,7 @@ const Dashboard = () => {
                         {
                             label: 'Sleep Duration (hours)',
                             data: averageChartsData.sleep.values,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
                             borderColor: 'rgba(54, 162, 235, 1)',
                             type: 'bar',
                             yAxisID: 'y'
@@ -271,7 +276,7 @@ const Dashboard = () => {
                         {
                             label: 'Sleep Quality',
                             data: chartsData.sleep.valuesY1,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
                             borderColor: 'rgba(255, 99, 132, 1)',
                             type: 'line',
                             yAxisID: 'y1'
@@ -329,12 +334,13 @@ const Dashboard = () => {
                         {
                             label: 'Heartrate BPM',
                             data: chartsData.heartRate.values,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.5)',
                             borderColor: 'rgba(75, 192, 192, 1)',
                             type: 'line',
                         }
                     ]}
-                    summary=""
+                    summary={currentDevice ? currentDevice.device.getAnalysisSummary('heartRate') : 'No device selected'}
+
                 />
                 <ChartComponent
                     title="Steps Count"
@@ -344,12 +350,12 @@ const Dashboard = () => {
                         {
                             label: 'Steps Count',
                             data: chartsData.steps.values,
-                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            backgroundColor: 'rgba(153, 102, 255, 0.5)',
                             borderColor: 'rgba(153, 102, 255, 1)',
                             type: 'bar',
                         }
                     ]}
-                    summary=""
+                    summary={currentDevice ? currentDevice.device.getAnalysisSummary('steps') : 'No device selected'}
                 />
                 <ChartComponent
                     title="Calories Burned"
@@ -359,12 +365,12 @@ const Dashboard = () => {
                         {
                             label: 'Calories Burned',
                             data: chartsData.calories.values,
-                            backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                            backgroundColor: 'rgba(255, 159, 64, 0.5)',
                             borderColor: 'rgba(255, 159, 64, 1)',
                             type: 'bar',
                         }
                     ]}
-                    summary=""
+                    summary={currentDevice ? currentDevice.device.getAnalysisSummary('calories') : 'No device selected'}
                 />
                 <ChartComponent
                     title="Sleep Statistics"
@@ -388,7 +394,7 @@ const Dashboard = () => {
                             yAxisID: 'y1'
                         }
                     ]}
-                    summary=""
+                    summary={currentDevice ? currentDevice.device.getAnalysisSummary('sleep') : 'No device selected'}
                 />
                 {chartsData.stress.labels.length > 0 && (
                     <div id="stressChartContainer">
@@ -405,7 +411,7 @@ const Dashboard = () => {
                                     type: 'line',
                                 }
                             ]}
-                            summary=""
+                            summary={currentDevice ? currentDevice.device.getAnalysisSummary('stressLevel') : 'No device selected'}
                         />
                     </div>
                 )}
@@ -424,7 +430,7 @@ const Dashboard = () => {
                                     type: 'line',
                                 }
                             ]}
-                            summary=""
+                            summary={currentDevice ? currentDevice.device.getAnalysisSummary('oxygenSaturation') : 'No device selected'}
                         />
                     </div>
                 )}
@@ -450,7 +456,7 @@ const Dashboard = () => {
                                     type: 'line',
                                 }
                             ]}
-                            summary=""
+                            summary={currentDevice ? currentDevice.device.getAnalysisSummary('bloodPressure') : 'No device selected'}
                         />
                     </div>
                 )}
@@ -497,7 +503,7 @@ const Dashboard = () => {
                                     type: 'line',
                                 }
                             ]}
-                            summary=""
+                            summary={currentDevice ? currentDevice.device.getAnalysisSummary('eeg') : 'No device selected'}
                         />
                     </div>
                 )}

@@ -16,3 +16,5 @@ const getGraphSummary = (average, type) => {
 export {
     getGraphSummary
 };
+
+
