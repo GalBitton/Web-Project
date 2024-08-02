@@ -19,7 +19,7 @@ class AuthRouter {
         this._router.post('/authenticate', loginLimiter, this.authController.authenticate);
         this._router.post('/authenticate-google', loginLimiter, this.authController.authenticateGoogleToken);
         this._router.post('/refresh', loginLimiter, this.authController.refresh);
-        this._router.post('/logout', loginLimiter, this.authMiddleware.authenticateJWT, this.authController.logout);
+        this._router.post('/logout', loginLimiter, this.authController.logout);
     }
 }
 

@@ -1,4 +1,5 @@
 import axiosInstance from "@/services/api/AxiosHandler.js";
+import axios from 'axios';
 const endpointAPI = import.meta.env.VITE_ENDPOINT;
 
 export const ControllerService = () => {
@@ -101,8 +102,22 @@ export const ControllerService = () => {
     };
 
     const refreshToken = async () => {
-        const response = await axiosInstance.post(`${endpointAPI}/auth/refresh`);
-        localStorage.setItem('token', response.data.accessToken);
+        // It's critical that we use regular fetch here instead of axiosInstance to avoid infinite loops
+        const response = await fetch(`${endpointAPI}/auth/refresh`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Token refresh failed');
+        }
+
+        const data = await response.json();
+        localStorage.setItem('token', data.accessToken);
     };
 
     const getLinkedDevices = async () => {

@@ -186,7 +186,7 @@ class AuthController {
             const refreshToken = req.cookies.jwt;
 
             if (!refreshToken) {
-                return res.status(401).json({ message: 'Unauthorized' });
+                return res.status(406).json({ message: 'Unauthorized' });
             }
 
             jwt.verify(refreshToken, this.JWT_REFRESH_SECRET, async (err, user) => {
@@ -216,23 +216,26 @@ class AuthController {
 
     async logout(req, res) {
         try {
+            res.clearCookie('jwt');
+            if (!req.user) {
+                return res.status(200).json({ message: 'Logged out successfully' });
+            }
+
             const user = await User.findOne({
                 _id: req.user
             }).select('+refreshToken').exec();
 
-            if (!user) {
-                return res.status(400).json({ error: 'Invalid user' });
+            if (user) {
+                user.refreshToken = null;
+                await user.save();
             }
+            // res.cookie('jwt', '', {
+            //     httpOnly: true,
+            //     sameSite: 'None',
+            //     secure: true,
+            //     expires: new Date(0) // Set the cookie to expire immediately
+            // });
 
-            res.cookie('jwt', '', {
-                httpOnly: true,
-                sameSite: 'None',
-                secure: true,
-                expires: new Date(0) // Set the cookie to expire immediately
-            });
-
-            user.refreshToken = null;
-            await user.save();
             res.status(200).json({ message: 'Logged out successfully' });
         } catch (error) {
             this._logger.error(`Error logging out: ${error}, request: ${req}`);
