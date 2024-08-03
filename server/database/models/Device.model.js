@@ -3,6 +3,7 @@ import validator from 'validator';
 import { getSupportedDeviceBrands, getSupportedDeviceTypes } from "../../enums/supported-devices.js";
 
 const DeviceSchema = new mongoose.Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     status: { type: String, enum: ['linked', 'unlinked'], default: 'linked' },
     brand: { type: String, enum: getSupportedDeviceBrands(), required: true },
     type: {

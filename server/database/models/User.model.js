@@ -6,7 +6,7 @@ import config from 'config';
 
 const authConfig = config.get('auth');
 const JWT_AWT_SECRET = authConfig.get('jwt-access-token-secret');
-const passwordRegex = /^.{1,}$/;
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,32}$/;
 
 const UserSchema = new mongoose.Schema({
    email: {
@@ -24,12 +24,13 @@ const UserSchema = new mongoose.Schema({
         select: false, // Don't select password by default
         validate: {
             validator: (value) => passwordRegex.test(value),
-            message: (props) => `Password must be 8-64 characters long, contain at least one uppercase letter, one lowercase letter, and one special character.`,
+            message: (props) => `Password must be 8-32 characters long, contain at least one uppercase letter and one lowercase letter`,
         },
     },
     avatarUrl: { type: String, default: 'https://i.imgur.com/DA1hvi3.png' },
     refreshToken: { type: String, default: '' },
     googleSignIn: { type: Boolean, default: false, select: false },
+    devices: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Device' }],
     forgottenPassToken: { type: String, default: null, select: false },
 }, {
     versionKey: false,

@@ -15,10 +15,55 @@ class UserController {
         this.getAverageDataAllDevices = this.getAverageDataAllDevices.bind(this);
     };
 
+    async linkDevice(req, res) {
+        try {
+            const userId = req.user;
+            const { brand, type } = req.body;
+            const newDevice = new Device({
+                user: userId,
+                brand,
+                type,
+                status: 'linked'
+            });
+            await newDevice.save();
+
+            const newDeviceData = new DeviceData({
+                device: newDevice._id,
+                datapoints: []
+            });
+            await newDeviceData.save();
+
+            newDevice.data = newDeviceData._id;
+            await newDevice.save();
+
+            res.status(200).json(newDevice);
+        } catch (err) {
+            this._logger.error('Error linking device:', err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
+
+    async unlinkDevice(req, res) {
+        try {
+            const userId = req.user;
+            const { deviceId } = req.params;
+            const device = await Device.findOne({_id: deviceId, user: userId}).exec();
+            if (!device) {
+                return res.status(404).json({error: 'Device not found'});
+            }
+
+            device.status = 'unlinked';
+            await device.save();
+        } catch (err) {
+            this._logger.error('Error unlinking device:', err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    }
+
     async getLinkedDevices(req, res) {
         try {
             const userId = req.user;
-            const linkedDevices = await Device.find({ status: 'linked' }).lean().exec();
+            const linkedDevices = await Device.find({ user: userId, status: 'linked' }).lean().exec();
             res.status(200).json(linkedDevices);
         } catch (err) {
             this._logger.error('Error retrieving linked devices:', err);
@@ -50,7 +95,8 @@ class UserController {
 
     async getAverageDataAllDevices(req, res) {
         try {
-            const linkedDevices = await Device.find({ status: 'linked' }).exec();
+            const userId = req.user;
+            const linkedDevices = await Device.find({ user: userId, status: 'linked' }).exec();
 
             const heartRateAverages = {labels: [], values: []};
             const stepsAverages = {labels: [], values: []};
