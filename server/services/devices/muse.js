@@ -11,9 +11,10 @@ export default class MuseHeadband extends Device {
                     "delta": entry[field].deltaWaves,
                     "theta": entry[field].thetaWaves
                 }
-            case 'stress':
+            case 'sleep':
                 return {
-                    "score": entry.relaxationScore / 10.0,
+                    "duration": entry[field].duration,
+                    "quality": entry[field].quality
                 }
             case 'focusScore':
                 return entry[field];

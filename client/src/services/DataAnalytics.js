@@ -18,7 +18,7 @@ export default class DataAnalytics {
                 return this.heartRate;
             case 'steps':
                 return this.steps;
-            case 'calories':
+            case 'caloriesBurned':
                 return this.caloriesBurned;
             case 'sleep':
                 return this.sleep;
@@ -36,7 +36,6 @@ export default class DataAnalytics {
     }
 
     analyzeData(chartsData) {
-        console.log('Analyzing data', chartsData);
         this.heartRate = chartsData.heartRate;
         this.steps = chartsData.steps;
         this.caloriesBurned = chartsData.caloriesBurned;
@@ -91,6 +90,13 @@ export default class DataAnalytics {
     }
 
     _filterDataByTimeFrame(startTime, endTime, labels, values) {
+        if (startTime === undefined && endTime === undefined) {
+            return values;
+        } else if (startTime === undefined) {
+            return values;
+        } else if (endTime === undefined) {
+            return values;
+        }
         const start = new Date(startTime);
         const end = new Date(endTime);
         return labels.reduce((filteredValues, label, index) => {

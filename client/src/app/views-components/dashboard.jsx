@@ -36,7 +36,7 @@ const Dashboard = () => {
     useEffect (() => {
         const getDevicesData = async () => {
             if (devicesData) {
-                const linkedDevices = await createAllDevices(devicesData);
+                const linkedDevices = await createAllDevices();
                 setLinkedDevices(linkedDevices);
             }
         };
@@ -46,13 +46,10 @@ const Dashboard = () => {
 
     // useEffect to reload the brand and device options
     useEffect(() => {
-        if (selectedBrand) {
+        if (selectedBrand !== '') {
             const availableDevices = linkedDevices.filter(device => device.brand === selectedBrand && device.status === 'linked');
             if (availableDevices.length > 0) {
                 setSelectedType(availableDevices[0].type);
-            } else {
-                setSelectedType('');
-                setSelectedBrand('');
             }
         }
     }, [selectedBrand]);
@@ -61,10 +58,17 @@ const Dashboard = () => {
     useEffect(() => {
         if (selectedBrand !== '' && selectedType !== '') {
             const model = linkedDevices.find(device => device.brand === selectedBrand && device.type === selectedType);
-            setCurrentDevice(model.device);
+            if (model && model.status === 'linked') {
+                setCurrentDevice(model.device);
+            }
+        }
+    }, [selectedBrand, selectedType, linkedDevices]);
+
+    useEffect(() => {
+        if (currentDevice) {
             updateCharts();
         }
-    }, [selectedType]);
+    }, [currentDevice]);
 
     // useEffect to set the average charts data
     useEffect (() => {
@@ -83,17 +87,17 @@ const Dashboard = () => {
         const initializeDevices = async () => {
             if (linkedDevices.length > 0) {
                 const defaultBrand = linkedDevices[0].brand;
-                const defaultDevice = linkedDevices.find(device => device.brand === defaultBrand).type;
+                const defaultType = linkedDevices.find(device => device.brand === defaultBrand).type;
 
                 setSelectedBrand(defaultBrand);
-                setSelectedType(defaultDevice);
+                setSelectedType(defaultType);
             }
         };
 
         initializeDevices();
     }, [linkedDevices]);
 
-    const createAllDevices = async (devicesData) => {
+    const createAllDevices = async () => {
         if (devicesData) {
             return Promise.all(devicesData.map(async (device) => ({
                 ...device,
@@ -153,21 +157,18 @@ const Dashboard = () => {
             // Update the charts with the new selection
             setSelectedType('');
             setSelectedBrand('');
-            updateCharts();
+            setCurrentDevice(null);
         }
     };
 
     const handleBrandChange = (event) => {
         const selectedBrand = event.target.value;
         setSelectedBrand(selectedBrand);
-        setSelectedType('');
-        updateCharts();
     };
 
-    const handleDeviceChange = (event) => {
+    const handleTypeChange = (event) => {
         const selectedType = event.target.value;
         setSelectedType(selectedType);
-        updateCharts();
     };
 
     return (
@@ -281,7 +282,7 @@ const Dashboard = () => {
                     </select>
                     <select
                         className="deviceCmbBox bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-2 rounded w-full sm:w-[10rem]"
-                        value={selectedType} onChange={handleDeviceChange}>
+                        value={selectedType} onChange={handleTypeChange}>
                         <option value="" disabled>Select Device</option>
                         {selectedBrand && linkedDevices.filter(device => device.brand === selectedBrand && device.status === 'linked').map(device => (
                             <option key={device.type} value={device.type}>{device.type}</option>
@@ -356,7 +357,7 @@ const Dashboard = () => {
                                 type: 'bar',
                             }
                         ]}
-                        summary={currentDevice ? currentDevice.getAnalysisSummary('calories') : 'No device selected'}
+                        summary={currentDevice ? currentDevice.getAnalysisSummary('caloriesBurned') : 'No device selected'}
                     />
                 )}
                 {chartsData.sleep.labels.length > 0 && (
@@ -492,7 +493,7 @@ const Dashboard = () => {
                                     type: 'line',
                                 }
                             ]}
-                            summary={currentDevice ? currentDevice.getAnalysisSummary('eeg') : 'No device selected'}
+                            summary={currentDevice ? currentDevice.getAnalysisSummary('eeg', undefined, undefined) : 'No device selected'}
                         />
                     </div>
                 )}

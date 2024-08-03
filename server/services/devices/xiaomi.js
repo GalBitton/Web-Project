@@ -33,7 +33,7 @@ class XiaomiBracelet extends Device {
                 }
             case 'stress':
                 return {
-                    "score": (100.0 - entry.relaxationScore) / 10.0
+                    "score": entry.relaxationScore / 10.0
                 }
             case 'heartRate':
             case 'caloriesBurned':

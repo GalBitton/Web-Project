@@ -12,6 +12,8 @@ export default class FitbitBracelet extends Device {
                 return {
                     "score": 10.0 - entry.stressManagement.score,
                 }
+            case 'breathingRate':
+                return entry.stressManagement.breathingRate;
             case 'steps':
             case 'heartRate':
             case 'caloriesBurned':

@@ -1,5 +1,3 @@
-import React from 'react';
-
 const DeviceCard = ({ device }) => (
     <div className={`relative group m-2 ${device.brand}-${device.type}-container`}>
         <div className="absolute inset-0 flex justify-center items-center">
