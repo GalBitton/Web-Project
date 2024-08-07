@@ -21,6 +21,27 @@ class XiaomiWatch extends Device {
                 return 0;
         }
     }
+
+    generateDataForField(field, index) {
+        const ranges = this._config.valueRanges;
+        switch (field) {
+            case 'sleep':
+                return {
+                    duration: Math.random() * (ranges.sleepDuration.max - ranges.sleepDuration.min) + ranges.sleepDuration.min,
+                    quality: "Good"
+                };
+            case 'stressLevel':
+                return Math.random() * (ranges.stressScore.max - ranges.stressScore.min) + ranges.stressScore.min;
+            case 'VO2Max':
+                return Math.random() * (ranges.focusScore.max - ranges.focusScore.min) + ranges.focusScore.min;
+            default:
+                return super.generateDataForField(field, index);
+        }
+    }
+
+    getFields() {
+        return [...super.getFields(), "sleep", "stressLevel", "VO2Max"];
+    }
 }
 
 class XiaomiBracelet extends Device {
@@ -43,6 +64,27 @@ class XiaomiBracelet extends Device {
             default:
                 return 0;
         }
+    }
+
+    generateDataForField(field, index) {
+        const ranges = this._config.valueRanges;
+        switch (field) {
+            case 'sleep':
+                return {
+                    totalDuration: Math.random() * (ranges.sleepDuration.max - ranges.sleepDuration.min) + ranges.sleepDuration.min,
+                    qualityIndex: Math.random()
+                };
+            case 'relaxationScore':
+                return Math.random() * (ranges.stressScore.max - ranges.stressScore.min) + ranges.stressScore.min;
+            case 'respiratoryRate':
+                return Math.random() * (ranges.breathingRate.max - ranges.breathingRate.min) + ranges.breathingRate.min;
+            default:
+                return super.generateDataForField(field, index);
+        }
+    }
+
+    getFields() {
+        return [...super.getFields(), "sleep", "stress", "respiratoryRate"];
     }
 }
 
