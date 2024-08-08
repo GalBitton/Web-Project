@@ -5,14 +5,29 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(null);
 
-    useEffect(() => {
+    const checkAuthStatus = () => {
         const token = localStorage.getItem('token');
         const googleToken = localStorage.getItem('googleToken');
-        let status = false;
-        if (googleToken || token) {
-            status = true;
+
+        if (token || googleToken) {
+            setIsLoggedIn(true);
+        } else {
+            setIsLoggedIn(false);
         }
-        setIsLoggedIn(status);
+    };
+
+    useEffect(() => {
+        checkAuthStatus();
+
+        const handleAuthChange = () => {
+            checkAuthStatus();
+        };
+
+        window.addEventListener('authChange', handleAuthChange);
+
+        return () => {
+            window.removeEventListener('authChange', handleAuthChange);
+        };
     }, []);
 
     function getIdentity(identifier) {

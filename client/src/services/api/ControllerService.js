@@ -14,6 +14,10 @@ export const ControllerService = () => {
                 email: response.data.email
             }));
             localStorage.setItem('token', response.data.accessToken);
+
+            // Dispatch custom event after updating localStorage
+            const event = new Event('authChange');
+            window.dispatchEvent(event);
         } catch (error) {
             if (error.response) {
                 return error.response.data;
@@ -37,6 +41,10 @@ export const ControllerService = () => {
             }));
             localStorage.setItem('token', response.data.accessToken);
             localStorage.setItem('googleToken', idToken);
+
+            // Dispatch custom event after updating localStorage
+            const event = new Event('authChange');
+            window.dispatchEvent(event);
         } catch (error) {
             if (error.response) {
                 return error.response.data;
@@ -85,6 +93,10 @@ export const ControllerService = () => {
             }
 
             localStorage.removeItem('token');
+
+            // Dispatch custom event after updating localStorage
+            const event = new Event('authChange');
+            window.dispatchEvent(event);
             window.location.replace("/login");
         } catch (error) {
             if (error.response) {
