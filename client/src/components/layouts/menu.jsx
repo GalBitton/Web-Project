@@ -26,6 +26,7 @@ const menuStyles = {
     },
     bmMenuWrap: {
         position: 'fixed',
+        top: '0',
         alignItems: 'center',
         height: '100%'
     },
@@ -71,13 +72,13 @@ const AppMenu = () => {
     }
 
     return (
-        <header data-testid="menu-component" className={`bg-gray-200 dark:bg-gray-800 text-black dark:text-white p-4 flex items-center gap-10 ${'md:justify-between'}`}>
+        <header data-testid="menu-component" className={`bg-gradient-to-r from-purple-800 via-indigo-600 to-blue-900 dark:bg-gray-800 text-gray-100 dark:text-white p-4 flex items-center gap-10 ${'md:justify-between'} fixed top-0 w-full z-50 shadow-lg`}>
             <div className="md:hidden">
-                <Menu styles={ menuStyles }>
+                <Menu styles={menuStyles}>
                     {logoImage()}
                     {menuItems.map((item, index) =>
                         item.visible ? (
-                            <a key={index} href={item.href} onClick={item.onClick} className={`block px-4 py-2 text-lg w-full items-center hover:text-[#0059ff] ${location.pathname.includes(item.alias) ? "text-[#0059ff]" : '' }`}>{item.name}</a>
+                            <a key={index} href={item.href} onClick={item.onClick} className={`block px-4 py-2 text-lg w-full items-center hover:text-[#0059ff] ${location.pathname.includes(item.alias) ? "text-[#0059ff]" : ''}`}>{item.name}</a>
                         ) : null
                     )}
                 </Menu>
@@ -86,7 +87,7 @@ const AppMenu = () => {
                 {logoImage()}
                 {menuItems.map((item, index) =>
                     item.visible ? (
-                        <a key={index} href={item.href} onClick={item.onClick} className={`text-lg hover:text-[#0059ff] ${location.pathname.includes(item.alias) ? "text-[#0059ff]" : '' }`}>{item.name}</a>
+                        <a key={index} href={item.href} onClick={item.onClick} className={`text-lg hover:text-cyan-400 ${location.pathname.includes(item.alias) ? "text-cyan-400" : ''}`}>{item.name}</a>
                     ) : null
                 )}
             </nav>
