@@ -1,8 +1,6 @@
 import serviceData from "../../../package.json";
 import TextCard from "../../components/textcard.jsx";
-import React from "react";
 import { useAuth } from "@/contexts/AuthContext.jsx";
-import { FaSyncAlt, FaTools, FaChartLine } from 'react-icons/fa';
 
 const IndexPage = () => {
     const { isLoggedIn } = useAuth();
@@ -32,7 +30,7 @@ const IndexPage = () => {
             </div>
             <div className="relative z-10 flex flex-col md:flex-row justify-around p-4 bg-transparent w-full space-y-4 md:space-y-0">
             {Array.from({ length: 3 }, (_, i) => (
-                <TextCard 
+                <TextCard
                  key={i} index={i + 1} text={
                     i === 0 ? "Real-Time Data Synchronization, Instantly sync your health and activity data across all your devices, ensuring you always have the most up-to-date information at your fingertips."
                     : i === 1 ? "Comprehensive Device Management, Manage and configure your connected devices effortlessly. From firmware updates to customization options, take full control of your smart ecosystem."
