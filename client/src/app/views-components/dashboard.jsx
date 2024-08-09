@@ -190,33 +190,37 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard-full-container max-w-full">
+
             <div className="mt-24 mb-2 p-4 items-center">
                 <h1 className="text-4xl">Welcome back, {getIdentity('email')}</h1>
                 <p className="text-gray-700 dark:text-slate-500">Inspect your health charts and analytics</p>
             </div>
 
-            <div className="bg-gray-100 dark:bg-slate-900 mb-10 w-full rounded-lg shadow-lg">
-                <div className="flex justify-center mt-5">
-                    <h1 className="text-3xl text-black dark:text-white mt-16">Linked Devices</h1>
+            <div className="flex-container bg-gray-100 dark:bg-slate-900 ml-4 mr-4 w-full rounded-lg shadow-lg pb-5 mb-4">
+                <div className="relative flex justify-center items-center">
+                    <span className='flex items-center'>
+                        <h1 className="text-3xl text-black dark:text-white mt-8">Linked Devices</h1>
+                    </span>
+                    <span className="unlink bg-green-500 hover:bg-green-700 dark:bg-green-300 dark:hover:bg-green-500 text-white dark:text-black rounded-full w-[3rem] h-[3rem] flex items-center justify-center absolute right-0 mt-8 mr-10 transform transition-transform duration-300 hover:rotate-90"> 
+                        <button onClick={handleLinkDevice}>
+                            {/* Plus Icon */}
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                            </svg>
+                        </button>
+                    </span>
                 </div>
                 {devicesLoading && <LoadingAnimation/>}
                 {devicesError && <p>Error: {devicesError}</p>}
-                <div className="flex justify-center p-8 sm:h-[105vh] md:h-[80vh] lg:h-[60vh] mb-[15rem] lg:mb-0">
+                <div className="flex-1 justify-center p-10 mb-[15rem] lg:mb-0">
                     <div
-                        className="linked-devices flex flex-wrap justify-center sm:justify-between items-center w-full p-2 gap-14">
+                        className=" linked-devices flex flex-wrap justify-center sm:justify-between items-center w-full p-2 gap-14">
                         {linkedDevices.map(device => (
                             <DeviceCard key={device.name} device={device}/>
                         ))}
-                        <button
-                            className="unlink bg-green-500 hover:bg-green-700 dark:bg-green-300 dark:hover:bg-green-500 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem]"
-                            onClick={handleLinkDevice}
-                        >
-                            <div className="flex items-center gap-2">
-                                <img src="/assets/unlink.svg" className="w-[2rem] h-[2rem]" alt="Unlink" style={{ maxWidth: '100%', maxHeight: '100%' }}/>
-                                Link
-                            </div>
-                        </button>
+                        
                     </div>
+                    
                 </div>
             </div>
 
