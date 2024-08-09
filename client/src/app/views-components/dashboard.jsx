@@ -6,6 +6,7 @@ import ChartComponent from '../../components/chart';
 import { useAuth } from "@/contexts/AuthContext";
 import useAPIService from "@/hooks/useAPIService";
 import APIService from "@/services/api/APIService";
+import LoadingAnimation from '../../components/loading';
 
 const Dashboard = () => {
     const { data: devicesData, error: devicesError, loading: devicesLoading } = useAPIService({action: 'getLinkedDevices'});
@@ -194,11 +195,11 @@ const Dashboard = () => {
                 <p className="text-gray-700 dark:text-slate-500">Inspect your health charts and analytics</p>
             </div>
 
-            <div className="bg-gray-100 dark:bg-slate-900 mb-10 w-full">
+            <div className="bg-gray-100 dark:bg-slate-900 mb-10 w-full rounded-lg shadow-lg">
                 <div className="flex justify-center mt-5">
                     <h1 className="text-3xl text-black dark:text-white mt-16">Linked Devices</h1>
                 </div>
-                {devicesLoading && <p>Loading...</p>}
+                {devicesLoading && <LoadingAnimation/>}
                 {devicesError && <p>Error: {devicesError}</p>}
                 <div className="flex justify-center p-8 sm:h-[105vh] md:h-[80vh] lg:h-[60vh] mb-[15rem] lg:mb-0">
                     <div
@@ -220,7 +221,7 @@ const Dashboard = () => {
             </div>
 
             <div className="flex flex-wrap justify-center gap-14 max-w-full">
-                {avgDataLoading && <p>Loading...</p>}
+                {avgDataLoading && <LoadingAnimation/>}
                 {avgDataError && <p>Error: {avgDataError}</p>}
                 <ChartComponent
                     title="Average Heart Rate BPM"

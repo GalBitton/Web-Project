@@ -2,6 +2,7 @@ import serviceData from "../../../package.json";
 import TextCard from "../../components/textcard.jsx";
 import { useAuth } from "@/contexts/AuthContext.jsx";
 
+
 const IndexPage = () => {
     const { isLoggedIn } = useAuth();
     const getStarted = isLoggedIn ? "/dashboard" : "/register";

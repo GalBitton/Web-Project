@@ -7,6 +7,7 @@ import UnderConstruction from './under-construction.jsx';
 import Maintenance from './maintenance.jsx';
 import PrivacyPolicy from './privacy.jsx';
 import TermsOfService from './terms.jsx';
+import AboutUs from './about-us.jsx';
 
 export {
     IndexPage,
@@ -17,5 +18,6 @@ export {
     UnderConstruction,
     Maintenance,
     PrivacyPolicy,
-    TermsOfService
+    TermsOfService,
+    AboutUs
 }

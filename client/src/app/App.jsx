@@ -19,7 +19,7 @@ function App() {
                         {isMaintenance ? <Maintenance /> :
                             <>
                                 <AppMenu />
-                                <main className="flex-grow flex flex-col my-4 w-full px-4">
+                                <main className="flex-grow flex flex-col my-4 w-full ">
                                     <Outlet />
                                 </main>
                             </>

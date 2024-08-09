@@ -2,9 +2,10 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from './components/protectedroute';
-import { IndexPage, Dashboard, Login, Register, NotFound, Maintenance, UnderConstruction, PrivacyPolicy, TermsOfService } from './app/views-components/index.jsx';
+import { IndexPage, Dashboard, Login, Register, NotFound, Maintenance, UnderConstruction, PrivacyPolicy, TermsOfService, AboutUs } from './app/views-components/index.jsx';
 import App from './app/App.jsx'
 import './index.css'
+
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -15,7 +16,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 <Route element={<ProtectedRoute />}>
                     <Route path="dashboard" element={<Dashboard />} />
                 </Route>
-                <Route path="about-us" element={<UnderConstruction />} />
+                <Route path="about-us" element={<AboutUs />} />
                 <Route path="contact-us" element={<UnderConstruction />} />
                 <Route path="login" element={<Login />} />
                 <Route path="register" element={<Register />} />
