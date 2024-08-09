@@ -11,10 +11,7 @@ const DataPointSchema = new mongoose.Schema({
 const DeviceDataSchema = new mongoose.Schema({
     device: { type: mongoose.Schema.Types.ObjectId, ref: 'Device', required: true },
     datapoints: [DataPointSchema],
-    lastSeeded: {
-        type: Date,
-        default: () => new Date(Date.now() - defaultLastSeeded * 24 * 60 * 60 * 1000) // 3 days ago
-    }
+    lastSeeded: { type: Date, default: null }
 }, {
     versionKey: false,
     timestamps: true,

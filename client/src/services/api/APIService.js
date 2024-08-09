@@ -39,6 +39,15 @@ class APIService {
                 this.callback = controller.getDeviceData;
                 this.parameters.push(this.request.deviceId);
                 break;
+            case 'linkDevice':
+                this.callback = controller.linkDevice;
+                this.parameters.push(this.request.brand);
+                this.parameters.push(this.request.type);
+                break;
+            case 'unlinkDevice':
+                this.callback = controller.unlinkDevice;
+                this.parameters.push(this.request.deviceId);
+                break;
             default:
                 break;
         }

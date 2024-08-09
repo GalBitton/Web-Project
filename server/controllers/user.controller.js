@@ -3,6 +3,8 @@
 import User from '../database/models/User.model.js';
 import Device from '../database/models/Device.model.js';
 import DeviceData from '../database/models/DeviceData.model.js';
+import HealthStory from "../services/healthStory.js";
+import Status from "../enums/device-statuses.js";
 import { calculateOverallAverage } from "../utils/mathUtils.js";
 
 class UserController {
@@ -15,35 +17,71 @@ class UserController {
         this.getLinkedDevices = this.getLinkedDevices.bind(this);
         this.getDeviceData = this.getDeviceData.bind(this);
         this.linkDevice = this.linkDevice.bind(this);
+        this.unlinkDevice = this.unlinkDevice.bind(this);
         this.getAverageDataAllDevices = this.getAverageDataAllDevices.bind(this);
+        this.getHealthStatus = this.getHealthStatus.bind(this);
     };
 
     async linkDevice(req, res) {
         try {
             const userId = req.user;
             const { brand, type } = req.body;
-            const newDevice = new Device({
-                user: userId,
-                brand,
-                type,
-                status: 'linked'
+            let device;
+            let deviceData;
+
+            device = await Device.findOne({ user: userId, brand, type, status: Status.UNLINKED }).exec();
+            if (!device) {
+                // Create device and deviceData
+                device = new Device({
+                    user: userId,
+                    brand,
+                    type,
+                    status: Status.LINKED
+                });
+                await device.save();
+
+                deviceData = new DeviceData({
+                    device: device._id,
+                    datapoints: []
+                });
+                await deviceData.save();
+
+                device.data = deviceData._id;
+                await device.save();
+
+                const user = await User.findById(userId).exec();
+                user.devices.push(device._id);
+                await user.save();
+            } else {
+                deviceData = await DeviceData.findOne({ device: device._id }).exec();
+                if (!deviceData) {
+                    this._logger.error('Device data not found, despite existence of deviceId:', device._id);
+                    return res.status(404).json({error: 'Device data not found'});
+                }
+            }
+
+            const deviceId = device._id;
+            const deviceInstance = this._deviceFactory.createDevice(brand, type, deviceId, deviceData.lastSeeded);
+            const newDataPoints = await this.generateDataPoints(deviceInstance, deviceId);
+            console.log(newDataPoints);
+
+            // Push valid data points to datapoints array
+            for (let i = 0; i < newDataPoints.length; i++) {
+                deviceData.datapoints.push(newDataPoints[i]);
+            }
+
+            await deviceData.save();
+
+            const data = deviceInstance.extractGraphData(deviceData.datapoints);
+            res.status(200).json({
+                device: {
+                    _id: deviceId,
+                    brand,
+                    type,
+                    status: device.status
+                },
+                data,
             });
-            await newDevice.save();
-
-            const newDeviceData = new DeviceData({
-                device: newDevice._id,
-                datapoints: []
-            });
-            await newDeviceData.save();
-
-            newDevice.data = newDeviceData._id;
-            await newDevice.save();
-
-            const user = await User.findById(userId).exec();
-            user.devices.push(newDevice._id);
-            await user.save();
-
-            res.status(200).json(newDevice);
         } catch (err) {
             this._logger.error('Error linking device:', err);
             res.status(500).json({ error: 'Internal Server Error' });
@@ -59,18 +97,19 @@ class UserController {
                 return res.status(404).json({error: 'Device not found'});
             }
 
-            device.status = 'unlinked';
+            device.status = Status.UNLINKED;
             await device.save();
+            res.status(200).json({ message: "Device has been unlinked successfully." });
         } catch (err) {
             this._logger.error('Error unlinking device:', err);
             res.status(500).json({ error: 'Internal Server Error' });
         }
-    }
+    };
 
     async getLinkedDevices(req, res) {
         try {
             const userId = req.user;
-            const linkedDevices = await Device.find({ user: userId, status: 'linked' }).lean().exec();
+            const linkedDevices = await Device.find({ user: userId, status: Status.LINKED }).lean().exec();
             res.status(200).json(linkedDevices);
         } catch (err) {
             this._logger.error('Error retrieving linked devices:', err);
@@ -92,27 +131,13 @@ class UserController {
             }
 
             const deviceInstance = this._deviceFactory.createDevice(device.brand, device.type, deviceId, deviceData.lastSeeded);
-            let generatedData = await deviceInstance.seedDatabase();
-
-            // Ensure datapoints is initialized and is an array
-            if (!Array.isArray(generatedData)) {
-                generatedData = [];
-                this._logger.error('Invalid data generated for device:', device._id);
-            }
-
-            // Validate structure of each data point
-            const validDataPoints = generatedData.map(dataPoint => {
-                const { timestamp, ...dataStats } = dataPoint;
-                return {
-                    timestamp,
-                    data: {
-                        ...dataStats
-                    }
-                }
-            });
+            const validDataPoints = await this.generateDataPoints(deviceInstance, deviceId);
 
             // Push valid data points to datapoints array
-            deviceData.datapoints.push(...validDataPoints);
+            for (let i = 0; i < validDataPoints.length; i++) {
+                deviceData.datapoints.push(validDataPoints[i]);
+            }
+
             await deviceData.save();
 
             const data = deviceInstance.extractGraphData(deviceData.datapoints);
@@ -126,7 +151,7 @@ class UserController {
     async getAverageDataAllDevices(req, res) {
         try {
             const userId = req.user;
-            const linkedDevices = await Device.find({ user: userId, status: 'linked' }).exec();
+            const linkedDevices = await Device.find({ user: userId, status: Status.LINKED }).exec();
 
             const heartRateAverages = {labels: [], values: []};
             const stepsAverages = {labels: [], values: []};
@@ -170,6 +195,47 @@ class UserController {
             res.status(500).json({ error: 'Internal Server Error' });
         }
     };
+
+    async getHealthStatus(req, res) {
+        try {
+            const userId = req.user;
+            const { stats } = req.body;
+
+            if (!stats) {
+                return res.status(404).json({})
+            }
+
+            const healthStory = new HealthStory(stats);
+            const healthStatus = healthStory.createStory()
+            return res.status(200).json(healthStatus);
+        } catch (err) {
+            this._logger.error('Error retrieving health status:', err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    };
+
+
+    /* ================================  Helper Functions ========================== */
+    async generateDataPoints(deviceInstance, deviceId) {
+        let generatedData = await deviceInstance.seedDatabase();
+
+        // Ensure datapoints is initialized and is an array
+        if (!Array.isArray(generatedData)) {
+            generatedData = [];
+            this._logger.error('Invalid data generated for device:', deviceId);
+        }
+
+        // Validate structure of each data point
+        return generatedData.map(dataPoint => {
+            const { timestamp, ...dataStats } = dataPoint;
+            return {
+                timestamp,
+                data: {
+                    ...dataStats
+                }
+            }
+        });
+    }
 }
 
 export default UserController;

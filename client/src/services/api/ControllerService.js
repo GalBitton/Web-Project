@@ -143,6 +143,19 @@ export const ControllerService = () => {
         return response.data;
     };
 
+    const linkDevice = async (brand, type) => {
+        const response = await axiosInstance.post(`${endpointAPI}/user/link-device`, {
+            brand,
+            type
+        });
+        return response.data;
+    }
+
+    const unlinkDevice = async (deviceId) => {
+        const response = await axiosInstance.post(`${endpointAPI}/user/unlink-device/${deviceId}`);
+        return response.data;
+    }
+
     return {
         login,
         loginGoogle,
@@ -151,6 +164,8 @@ export const ControllerService = () => {
         refreshToken,
         getLinkedDevices,
         getAverageDataAllDevices,
-        getDeviceData
+        getDeviceData,
+        linkDevice,
+        unlinkDevice
     };
 };

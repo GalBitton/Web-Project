@@ -56,7 +56,7 @@ export default class Device {
             for (let i = 0; i < count; i++) {
                 let baseValue = this.generateDataForField(field);
                 if (deviations[field] !== undefined) {
-                    baseValue += Math.random() * (deviations[field] + 1);
+                    baseValue += Math.random() * (deviations[field] + 1) - (deviations[field] / 2);
                 }
                 this.randomCache[field].push(baseValue);
             }
@@ -106,12 +106,17 @@ export default class Device {
         const batchSize = this._config.batchSize || 10; // Default batch size if not specified
 
         let points;
-        if (this.lastSeeded) {
-            const timeElapsed = Math.floor((now - this.lastSeeded) / (60 * 1000));
-            points = Math.floor(timeElapsed / intervalMinutes);
+        let difference;
+        const defaultLastSeededDaysAgo = new Date(now.getTime() - parseInt(this._config.defaultLastSeeded) * 24 * 60 * 60 * 1000);
+        if (this.lastSeeded && this.lastSeeded > defaultLastSeededDaysAgo) { // By default, lastSeeded is null.
+            difference = this.lastSeeded;
         } else {
-            points = this._config.points;
+            difference = defaultLastSeededDaysAgo;
         }
+
+        const timeElapsed = Math.floor((now - difference) / (60 * 1000));
+        points = Math.floor(timeElapsed / intervalMinutes);
+
 
         const fields = this.getFields();
         this.data = await this.generateDataBatch(points, intervalMinutes, fields, batchSize);
@@ -126,23 +131,24 @@ export default class Device {
         const processedData = {};
 
         for (const field of fields) {
-            const values = datapoints.map(entry => {
+            const dps = datapoints.map(entry => {
                 return {
                     timestamp: entry.timestamp,
                     data: this.getFieldValue(entry.data, field)
                 }
             });
 
-            if (values.every(value => value.data === 0)) {
+            if (dps.every(value => value.data === 0)) {
                 processedData[field] = {labels: [], values: []};
                 continue;
             }
 
-            const labels = values.map(value => {
+            const labels = dps.map(value => {
                 const date = new Date(value.timestamp);
                 return `${date.toLocaleTimeString('en-GB')} ${date.toLocaleDateString('en-GB').replace(/\//g, '-')}`;
             });
 
+            const values = dps.map(value => value.data);
 
             processedData[field] = { labels, values };
         }

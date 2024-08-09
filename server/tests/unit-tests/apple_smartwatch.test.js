@@ -36,11 +36,6 @@ describe('AppleWatch', () => {
         device = new AppleWatch(config, logger, 1, 'apple-smartwatch', null);
     });
 
-    test('should generate the correct number of data points', async () => {
-        await device.seedDatabase();
-        expect(device.data).toHaveLength(config.points);
-    });
-
     test('should generate 2 data points given lastSeeded value 20 minutes ago', async () => {
         const now = new Date();
         const difference = now.getMinutes() - 2 * config.timeWindowMinutes / config.points; // 20 Intervals ago (20 minutes ago)
@@ -71,6 +66,14 @@ describe('AppleWatch', () => {
         await device.seedDatabase();
 
         const expectedPoints = 0;
+        expect(device.data).toHaveLength(expectedPoints);
+    });
+
+    test('should generate data points for 3 days given lastSeeded value null', async () => {
+        device = new AppleWatch(config, logger, 1, 'apple-smartwatch', null);
+        await device.seedDatabase();
+
+        const expectedPoints = 432;
         expect(device.data).toHaveLength(expectedPoints);
     });
 

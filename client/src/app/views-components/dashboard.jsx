@@ -3,11 +3,14 @@ import Device from '@/services/device.js';
 import { getGraphSummary } from '@/utils';
 import DeviceCard from '../../components/devicecard';
 import ChartComponent from '../../components/chart';
+import { useAuth } from "@/contexts/AuthContext";
 import useAPIService from "@/hooks/useAPIService";
+import APIService from "@/services/api/APIService";
 
 const Dashboard = () => {
     const { data: devicesData, error: devicesError, loading: devicesLoading } = useAPIService({action: 'getLinkedDevices'});
     const { data: avgData, error: avgDataError, loading: avgDataLoading } = useAPIService({action: 'getAverageDataAllDevices'});
+    const { getIdentity } = useAuth();
     const [linkedDevices, setLinkedDevices] = useState([]);
     const [selectedBrand, setSelectedBrand] = useState('');
     const [selectedType, setSelectedType] = useState('');
@@ -137,21 +140,34 @@ const Dashboard = () => {
         });
     };
 
-    const handleUnlinkDevice = () => {
+    const handleLinkDevice = async () => {
+        const apiService = new APIService({action: 'linkDevice', brand: "Samsung", type: "Smartwatch" });
+        const newDevice = await apiService.execute();
+        // newDevice might be null if the device is already linked somehow
+        if (newDevice) {
+            setLinkedDevices([...linkedDevices, newDevice])
+        }
+    };
+
+    const handleUnlinkDevice = async () => {
         const image = document.querySelector(`.${selectedBrand}-${selectedType}-container`);
         if (image) {
             image.remove();
         }
 
         if (selectedType !== '') {
+            let deviceId;
             // Unlink the device in the devices array
             const updatedLinkedDevices = linkedDevices.map((device) => {
                 if (device.brand === selectedBrand && device.type === selectedType) {
+                    deviceId = device.device.id;
                     return {...device, status: 'unlinked'};
                 }
                 return device;
             });
 
+            const apiService = new APIService({action: 'unlinkDevice', deviceId });
+            await apiService.execute();
             setLinkedDevices(updatedLinkedDevices);
 
             // Update the charts with the new selection
@@ -173,8 +189,8 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard-full-container max-w-full">
-            <div className="mb-2 p-4 items-center">
-                <h1 className="text-4xl">Welcome back, John</h1>
+            <div className="mt-24 mb-2 p-4 items-center">
+                <h1 className="text-4xl">Welcome back, {getIdentity('email')}</h1>
                 <p className="text-gray-700 dark:text-slate-500">Inspect your health charts and analytics</p>
             </div>
 
@@ -190,6 +206,15 @@ const Dashboard = () => {
                         {linkedDevices.map(device => (
                             <DeviceCard key={device.name} device={device}/>
                         ))}
+                        <button
+                            className="unlink bg-green-500 hover:bg-green-700 dark:bg-green-300 dark:hover:bg-green-500 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem]"
+                            onClick={handleLinkDevice}
+                        >
+                            <div className="flex items-center gap-2">
+                                <img src="/assets/unlink.svg" className="w-[2rem] h-[2rem]" alt="Unlink" style={{ maxWidth: '100%', maxHeight: '100%' }}/>
+                                Link
+                            </div>
+                        </button>
                     </div>
                 </div>
             </div>
