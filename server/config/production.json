@@ -2,7 +2,7 @@
   "server": {
       "host": "localhost",
       "port": 8080,
-      "db_uri": "mongodb+srv://dev:dev123@cluster0.ecddkfl.mongodb.net/neurosync?retryWrites=true&w=majority&appName=Cluster0"
+      "db_uri": "mongodb+srv://dev:dev123@cluster0.akgq0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
   },
   "limiterLogic": {
       "limiter": {
@@ -22,32 +22,33 @@
     "points": 6,
     "timeWindowMinutes": 60,
     "batchSize": 50,
+    "defaultLastSeeded": 3,
     "commonFieldValueMaxDeviations": {
-      "heartRate": 10,
-      "steps": 100,
-      "caloriesBurned": 50,
-      "sleepDuration": 1,
-      "sleepQuality": 0.1
+      "heartRate": 20,
+      "steps": 300,
+      "caloriesBurned": 100,
+      "sleepDuration": 2,
+      "sleepQuality": 0.2
     },
     "valueRanges": {
-      "heartRate": { "min": 60, "max": 100 },
-      "steps": { "min": 0, "max": 1000 },
-      "caloriesBurned": { "min": 50, "max": 300 },
-      "sleepDuration": { "min": 0, "max": 8 },
-      "sleepQuality": { "min": 0, "max": 1 },
+      "heartRate": { "min": 50, "max": 110 },
+      "steps": { "min": 0, "max": 12000 },
+      "caloriesBurned": { "min": 100, "max": 350 },
+      "sleepDuration": { "min": 4, "max": 10 },
+      "sleepQuality": { "min": 0.1, "max": 1 },
       "stressScore": { "min": 0, "max": 10 },
-      "breathingRate": { "min": 10, "max": 20 },
+      "breathingRate": { "min": 10, "max": 25 },
       "bloodPressureSystolic": { "min": 90, "max": 140 },
       "bloodPressureDiastolic": { "min": 60, "max": 90 },
-      "eegAlpha": { "min": 0, "max": 1 },
-      "eegBeta": { "min": 0, "max": 1 },
-      "eegGamma": { "min": 0, "max": 1 },
-      "eegDelta": { "min": 0, "max": 1 },
-      "eegTheta": { "min": 0, "max": 1 },
-      "activityMove": { "min": 0, "max": 100 },
-      "activityExercise": { "min": 0, "max": 60 },
-      "activityStand": { "min": 0, "max": 12 },
-      "oxygenSaturation": { "min": 90, "max": 100 },
+      "eegAlpha": { "min": 0.3, "max": 0.7 },
+      "eegBeta": { "min": 0.3, "max": 0.8 },
+      "eegGamma": { "min": 0.2, "max": 0.9 },
+      "eegDelta": { "min": 0.1, "max": 0.5 },
+      "eegTheta": { "min": 0.2, "max": 0.6 },
+      "activityMove": { "min": 0, "max": 150 },
+      "activityExercise": { "min": 0, "max": 75 },
+      "activityStand": { "min": 0, "max": 20 },
+      "oxygenSaturation": { "min": 92, "max": 100 },
       "focusScore": { "min": 0, "max": 100 }
     }
   },

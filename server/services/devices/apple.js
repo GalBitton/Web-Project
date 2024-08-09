@@ -23,27 +23,29 @@ export default class AppleWatch extends Device {
         }
     }
 
-    generateDataForField(field, index) {
-        const ranges = this._config.valueRanges;
+    generateDataForField(field) {
         switch (field) {
             case 'sleep':
                 return {
-                    duration: Math.random() * (ranges.sleepDuration.max - ranges.sleepDuration.min) + ranges.sleepDuration.min,
-                    quality: "Good"
+                    duration: this._computeRandomValue("sleepDuration"),
+                    quality: this.translateSleepQualityIndex(this._computeRandomValue("sleepQuality"))
                 };
             case 'bloodPressure':
                 return {
-                    systolic: Math.random() * (ranges.bloodPressureSystolic.max - ranges.bloodPressureSystolic.min) + ranges.bloodPressureSystolic.min,
-                    diastolic: Math.random() * (ranges.bloodPressureDiastolic.max - ranges.bloodPressureDiastolic.min) + ranges.bloodPressureDiastolic.min
+                    systolic: this._computeRandomValue("bloodPressureSystolic"),
+                    diastolic: this._computeRandomValue("bloodPressureDiastolic")
                 };
             case 'activityRings':
                 return {
-                    move: Math.random() * ranges.activityMove.max,
-                    exercise: Math.random() * ranges.activityExercise.max,
-                    stand: Math.random() * ranges.activityStand.max
+                    move: this._computeRandomValue("activityMove"),
+                    exercise: this._computeRandomValue("activityExercise"),
+                    stand: this._computeRandomValue("activityStand")
                 };
             default:
-                return super.generateDataForField(field, index);
+                if (super.getFields().includes(field)) {
+                    return super.generateDataForField(field);
+                }
+                return 0;
         }
     }
 

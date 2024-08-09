@@ -14,7 +14,7 @@ export default class DreemHeadband extends Device {
             case 'sleep':
                 return {
                     "duration": entry.sleepData.totalDuration,
-                    "quality": super.translateQualityIndex(entry.sleepData.sleepQuality)
+                    "quality": super.translateSleepQualityIndex(entry.sleepData.sleepQuality)
                 }
             case 'meditationScore':
                 return entry[field];
@@ -23,26 +23,28 @@ export default class DreemHeadband extends Device {
         }
     }
 
-    generateDataForField(field, index) {
-        const ranges = this._config.valueRanges;
+    generateDataForField(field) {
         switch (field) {
             case 'EEG':
                 return {
-                    alpha: Math.random() * (ranges.eegAlpha.max - ranges.eegAlpha.min) + ranges.eegAlpha.min,
-                    beta: Math.random() * (ranges.eegBeta.max - ranges.eegBeta.min) + ranges.eegBeta.min,
-                    gamma: Math.random() * (ranges.eegGamma.max - ranges.eegGamma.min) + ranges.eegGamma.min,
-                    delta: Math.random() * (ranges.eegDelta.max - ranges.eegDelta.min) + ranges.eegDelta.min,
-                    theta: Math.random() * (ranges.eegTheta.max - ranges.eegTheta.min) + ranges.eegTheta.min
+                    alpha: this._computeRandomValue("eegAlpha"),
+                    beta: this._computeRandomValue("eegBeta"),
+                    gamma: this._computeRandomValue("eegGamma"),
+                    delta: this._computeRandomValue("eegDelta"),
+                    theta: this._computeRandomValue("eegTheta")
                 };
             case 'sleepData':
                 return {
-                    totalDuration: Math.random() * (ranges.sleepDuration.max - ranges.sleepDuration.min) + ranges.sleepDuration.min,
-                    sleepQuality: Math.random() * (ranges.sleepQuality.max - ranges.sleepQuality.min) + ranges.sleepQuality.min
+                    totalDuration: this._computeRandomValue("sleepDuration"),
+                    sleepQuality: this._computeRandomValue("sleepQuality")
                 };
             case 'meditationScore':
-                return Math.random() * (ranges.focusScore.max - ranges.focusScore.min) + ranges.focusScore.min;
+                return this._computeRandomValue("focusScore");
             default:
-                return super.generateDataForField(field, index);
+                if (super.getFields().includes(field)) {
+                    return super.generateDataForField(field);
+                }
+                return 0;
         }
     }
 

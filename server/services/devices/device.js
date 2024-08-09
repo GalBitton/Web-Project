@@ -1,27 +1,28 @@
 export default class Device {
-    constructor(config, logger, id) {
+    constructor(config, logger, id, name, lastSeeded) {
         this._config = config;
         this._logger = logger;
 
+        this.name = name;
         this.id = id;
-        this.data = {};
-        this.lastSeeded = null; // Store the timestamp of the last seeding
+        this.data = [];
+        this.lastSeeded = lastSeeded; // Store the timestamp of the last seeding
         this.randomCache = {}; // Cache for precomputed random values
-        this.intermediateResults = {}; // Cache for intermediate results
     }
 
-    translateQualityIndex(qualityIndex) {
-        if (qualityIndex <= 0.25) {
+    translateSleepQualityIndex(qualityIndex) {
+        if (qualityIndex <= 0.3) {
             return "Very Poor";
-        } else if (qualityIndex <= 0.5) {
+        } else if (qualityIndex <= 0.6) {
             return "Poor";
-        } else if (qualityIndex <= 0.75) {
+        } else if (qualityIndex <= 0.8) {
             return "Fair";
-        } else if (qualityIndex <= 1.00) {
+        } else if (qualityIndex <= 0.9) {
             return "Good";
-        } else {
+        } else if (qualityIndex <= 1.00) {
             return "Excellent";
-
+        } else {
+            return "Unknown";
         }
     }
 
@@ -31,65 +32,74 @@ export default class Device {
     }
 
     getFields() {
-        return ["timestamp", "heartRate", "steps", "caloriesBurned"];
+        return ["heartRate", "steps", "caloriesBurned"];
+    }
+
+    _computeRandomValue(field) {
+        const ranges = this._config.valueRanges;
+        return Math.random() * (ranges[field].max - ranges[field].min) + ranges[field].min;
+    }
+
+    // Abstract method to be implemented by subclasses
+    generateDataForField(field) {
+        return this._computeRandomValue(field);
     }
 
     precomputeRandomValues(fields, count) {
-        const ranges = this._config.valueRanges;
         const deviations = this._config.commonFieldValueMaxDeviations;
+
         for (const field of fields) {
             if (!this.randomCache[field]) {
                 this.randomCache[field] = [];
             }
+
             for (let i = 0; i < count; i++) {
-                let baseValue = Math.random() * (ranges[field].max - ranges[field].min) + ranges[field].min;
+                let baseValue = this.generateDataForField(field);
                 if (deviations[field] !== undefined) {
-                    baseValue += Math.random() * deviations[field] - (deviations[field] / 2);
+                    baseValue += Math.random() * (deviations[field] + 1);
                 }
                 this.randomCache[field].push(baseValue);
             }
         }
     }
-
-    generateDataForField(field, index) {
-        if (!this.intermediateResults[field]) {
-            this.intermediateResults[field] = this.randomCache[field][index % this.randomCache[field].length];
-        }
-        return this.intermediateResults[field];
+    getPrecomputedDataForField(field, index) {
+        return this.randomCache[field][index];
     }
-
     async generateDataBatch(points, intervalMinutes, fields, batchSize) {
         const now = new Date();
-        const data = [];
+        const accumulatedData = [];
 
         // Precompute random values asynchronously
         this.precomputeRandomValues(fields, points);
 
         for (let batchStart = 0; batchStart < points; batchStart += batchSize) {
             const batchEnd = Math.min(batchStart + batchSize, points);
+            const data = [];
             const batchPromises = [];
 
             for (let i = batchStart; i < batchEnd; i++) {
                 const entry = {};
-                for (const field of fields) {
-                    if (field === "timestamp") {
-                        entry[field] = new Date(now.getTime() - (i + 1) * intervalMinutes * 60 * 1000).toISOString();
-                    } else {
-                        batchPromises.push(new Promise(resolve => {
-                            entry[field] = this.generateDataForField(field, i);
-                            resolve();
-                        }));
-                    }
-                }
-                data.push(entry);
+                const fieldPromises = fields.map(field =>
+                    new Promise(resolve => {
+                        entry[field] = this.getPrecomputedDataForField(field, i);
+                        resolve();
+                    })
+                );
+
+                // Wait for all field promises to resolve before pushing the entry to data
+                batchPromises.push(Promise.all(fieldPromises).then(() => {
+                    entry["timestamp"] = new Date(now.getTime() - (i + 1) * intervalMinutes * 60 * 1000).toISOString();
+                    data.push(entry);
+                }));
             }
 
+            // Wait for all batch promises to resolve before continuing
             await Promise.all(batchPromises);
+            accumulatedData.push(...data);
         }
 
-        return data;
+        return accumulatedData;
     }
-
     async seedDatabase() {
         const now = new Date();
         const intervalMinutes = parseInt(this._config.timeWindowMinutes) / parseInt(this._config.points);
@@ -105,7 +115,10 @@ export default class Device {
 
         const fields = this.getFields();
         this.data = await this.generateDataBatch(points, intervalMinutes, fields, batchSize);
+        this._logger.debug(`Seeded ${this.data.length} data points for ${this.name} device.`);
+        this._logger.debug(`Data points: ${JSON.stringify(this.data, null, 4)}`);
         this.lastSeeded = now; // Update the last seeded timestamp
+        return this.data;
     }
 
     extractGraphData(datapoints) {
@@ -113,15 +126,20 @@ export default class Device {
         const processedData = {};
 
         for (const field of fields) {
-            const values = datapoints.map(entry => this.getFieldValue(entry.data, field));
+            const values = datapoints.map(entry => {
+                return {
+                    timestamp: entry.timestamp,
+                    data: this.getFieldValue(entry.data, field)
+                }
+            });
 
-            if (values.every(value => value === 0)) {
+            if (values.every(value => value.data === 0)) {
                 processedData[field] = {labels: [], values: []};
                 continue;
             }
 
-            const labels = datapoints.map(entry => {
-                const date = new Date(entry.timestamp);
+            const labels = values.map(value => {
+                const date = new Date(value.timestamp);
                 return `${date.toLocaleTimeString('en-GB')} ${date.toLocaleDateString('en-GB').replace(/\//g, '-')}`;
             });
 

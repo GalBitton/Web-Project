@@ -6,7 +6,11 @@ const connect = (url, logger) => {
         useUnifiedTopology: true
     })
     .then(() => {
-        logger.info('MongoDB connected')
+        logger.info('MongoDB connected');
+
+        const dbName = 'neurosync';
+        const db = mongoose.connection.useDb(dbName);
+        logger.info(`Switched to database: ${dbName}`);
     })
     .catch((err) => logger.error(`Error connecting to MongoDB: ${err}`));
 }

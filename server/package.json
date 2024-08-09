@@ -1,5 +1,6 @@
 {
   "name": "NeuroSync Server",
+  "author": "Team 1",
   "version": "1.0.0",
   "description": "NeuroSync Server & Endpoint API",
   "type": "module",
@@ -7,20 +8,22 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node ./api/index.js",
     "dev": "cross-env NODE_ENV=development nodemon --nolazy --inspect ./api/index.js",
-    "test": "cross-env NODE_ENV=testing nodemon node --nolazy --inspect ./api/index.js",
+    "test": "cross-env NODE_ENV=test jest",
     "migrate-demo-data": "cross-env NODE_ENV=development node ./database/migrations/migrate-demo-data-to-db.js",
     "curator": "cross-env NODE_ENV=development node ./database/migrations/database-curator.js"
   },
   "jest": {
-    "testEnvironment": "jsdom",
     "transform": {
       "^.+\\.js$": "babel-jest"
     }
   },
-  "author": "Team 1",
-  "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/plugin-proposal-import-attributes-to-assertions": "^7.24.7",
+    "@babel/plugin-syntax-import-attributes": "^7.24.7",
+    "@babel/preset-env": "^7.25.3",
     "@types/cookie-parser": "^1.4.7",
+    "babel-jest": "^29.7.0",
     "jest": "^29.7.0",
     "jest-dom": "^4.0.0",
     "jest-environment-jsdom": "^29.7.0",

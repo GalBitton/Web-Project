@@ -23,21 +23,23 @@ export default class FitbitBracelet extends Device {
         }
     }
 
-    generateDataForField(field, index) {
-        const ranges = this._config.valueRanges;
+    generateDataForField(field) {
         switch (field) {
             case 'sleep':
                 return {
-                    duration: Math.random() * (ranges.sleepDuration.max - ranges.sleepDuration.min) + ranges.sleepDuration.min,
-                    quality: "Good"
+                    duration: this._computeRandomValue("sleepDuration"),
+                    quality: this._computeRandomValue("sleepQuality")
                 };
             case 'stressManagement':
                 return {
-                    score: Math.random() * ranges.stressScore.max,
-                    breathingRate: Math.random() * (ranges.breathingRate.max - ranges.breathingRate.min) + ranges.breathingRate.min
+                    score: this._computeRandomValue("stressScore"),
+                    breathingRate: this._computeRandomValue("breathingRate")
                 };
             default:
-                return super.generateDataForField(field, index);
+                if (super.getFields().includes(field)) {
+                    return super.generateDataForField(field);
+                }
+                return 0;
         }
     }
 

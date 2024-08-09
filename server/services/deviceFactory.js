@@ -11,51 +11,52 @@ export default class DeviceFactory {
         this._logger = logger;
     }
 
-    createDevice(brand, device, id) {
+    createDevice(brand, device, id, lastSeeded) {
+        const name = `${brand}-${device}`.toLowerCase();
         switch (brand) {
             case 'Samsung':
                 switch (device) {
                     case 'Smartwatch':
-                        return new SamsungWatch(this._config, this._logger, id);
+                        return new SamsungWatch(this._config, this._logger, id, name, lastSeeded);
                     case 'Bracelet':
-                        return new SamsungBracelet(this._config, this._logger, id);
+                        return new SamsungBracelet(this._config, this._logger, id, name, lastSeeded);
                     default:
                         throw new Error('Unsupported device type for Samsung');
                 }
             case 'Apple':
                 switch (device) {
                     case 'Smartwatch':
-                        return new AppleWatch(this._config, this._logger, id);
+                        return new AppleWatch(this._config, this._logger, id, name, lastSeeded);
                     default:
                         throw new Error('Unsupported device type for Apple');
                 }
             case 'Xiaomi':
                 switch (device) {
                     case 'Smartwatch':
-                        return new XiaomiWatch(this._config, this._logger, id);
+                        return new XiaomiWatch(this._config, this._logger, id, name, lastSeeded);
                     case 'Bracelet':
-                        return new XiaomiBracelet(this._config, this._logger, id);
+                        return new XiaomiBracelet(this._config, this._logger, id, name, lastSeeded);
                     default:
                         throw new Error('Unsupported device type for Xiaomi');
                 }
             case 'FitBit':
                 switch (device) {
                     case 'Bracelet':
-                        return new FitbitBracelet(this._config, this._logger, id);
+                        return new FitbitBracelet(this._config, this._logger, id, name, lastSeeded);
                     default:
                         throw new Error('Unsupported device type for FitBit');
                 }
             case 'Dreem':
                 switch (device) {
                     case 'Headband':
-                        return new DreemHeadband(this._config, this._logger, id);
+                        return new DreemHeadband(this._config, this._logger, id, name, lastSeeded);
                     default:
                         throw new Error('Unsupported device type for Dreem');
                 }
             case 'Muse':
                 switch (device) {
                     case 'Headband':
-                        return new MuseHeadband(this._config, this._logger, id);
+                        return new MuseHeadband(this._config, this._logger, id, name, lastSeeded);
                     default:
                         throw new Error('Unsupported device type for Muse');
                 }

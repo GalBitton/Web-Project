@@ -16,6 +16,7 @@ class UserRouter {
     _registerRoutes() {
         this._router.get('/average-devices-data', this.authMiddleware.authenticateJWT, this.userController.getAverageDataAllDevices);
         this._router.get('/linked-devices', this.authMiddleware.authenticateJWT, this.userController.getLinkedDevices);
+        this._router.post('/link-device', this.authMiddleware.authenticateJWT, this.userController.linkDevice);
         this._router.get('/device-data/:deviceId', this.authMiddleware.authenticateJWT, this.userController.getDeviceData);
     }
 }

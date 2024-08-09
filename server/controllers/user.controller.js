@@ -14,6 +14,7 @@ class UserController {
         // Bind methods to ensure 'this' context is correct
         this.getLinkedDevices = this.getLinkedDevices.bind(this);
         this.getDeviceData = this.getDeviceData.bind(this);
+        this.linkDevice = this.linkDevice.bind(this);
         this.getAverageDataAllDevices = this.getAverageDataAllDevices.bind(this);
     };
 
@@ -37,6 +38,10 @@ class UserController {
 
             newDevice.data = newDeviceData._id;
             await newDevice.save();
+
+            const user = await User.findById(userId).exec();
+            user.devices.push(newDevice._id);
+            await user.save();
 
             res.status(200).json(newDevice);
         } catch (err) {
@@ -81,12 +86,35 @@ class UserController {
                 return res.status(404).json({ error: 'Device not found' });
             }
 
-            const deviceData = await DeviceData.findOne({ device: deviceId }).lean().exec();
+            const deviceData = await DeviceData.findOne({ device: deviceId }).exec();
             if (!deviceData) {
                 return res.status(404).json({ error: 'Device data not found' });
             }
 
-            const deviceInstance = this._deviceFactory.createDevice(device.brand, device.type, deviceId);
+            const deviceInstance = this._deviceFactory.createDevice(device.brand, device.type, deviceId, deviceData.lastSeeded);
+            let generatedData = await deviceInstance.seedDatabase();
+
+            // Ensure datapoints is initialized and is an array
+            if (!Array.isArray(generatedData)) {
+                generatedData = [];
+                this._logger.error('Invalid data generated for device:', device._id);
+            }
+
+            // Validate structure of each data point
+            const validDataPoints = generatedData.map(dataPoint => {
+                const { timestamp, ...dataStats } = dataPoint;
+                return {
+                    timestamp,
+                    data: {
+                        ...dataStats
+                    }
+                }
+            });
+
+            // Push valid data points to datapoints array
+            deviceData.datapoints.push(...validDataPoints);
+            await deviceData.save();
+
             const data = deviceInstance.extractGraphData(deviceData.datapoints);
             res.status(200).json({ ...data });
         } catch (err) {

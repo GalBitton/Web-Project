@@ -22,20 +22,22 @@ class SamsungWatch extends Device {
         }
     }
 
-    generateDataForField(field, index) {
-        const ranges = this._config.valueRanges;
+    generateDataForField(field) {
         switch (field) {
             case 'sleep':
                 return {
-                    duration: Math.random() * (ranges.sleepDuration.max - ranges.sleepDuration.min) + ranges.sleepDuration.min,
-                    quality: "Good"
+                    duration: this._computeRandomValue("sleepDuration"),
+                    quality: this.translateSleepQualityIndex(this._computeRandomValue("sleepQuality"))
                 };
             case 'stressLevel':
-                return Math.random() * (ranges.stressScore.max - ranges.stressScore.min) + ranges.stressScore.min;
+                return this._computeRandomValue("stressScore");
             case 'oxygenSaturation':
-                return Math.random() * (ranges.oxygenSaturation.max - ranges.oxygenSaturation.min) + ranges.oxygenSaturation.min;
+                return this._computeRandomValue("oxygenSaturation");
             default:
-                return super.generateDataForField(field, index);
+                if (super.getFields().includes(field)) {
+                    return super.generateDataForField(field);
+                }
+                return 0;
         }
     }
 
@@ -50,7 +52,7 @@ class SamsungBracelet extends Device {
             case 'sleep':
                 return {
                     "duration": entry[field].durationHours,
-                    "quality": super.translateQualityIndex(entry[field].qualityRating)
+                    "quality": super.translateSleepQualityIndex(entry[field].qualityRating)
                 }
             case 'stress':
                 return {
@@ -66,18 +68,22 @@ class SamsungBracelet extends Device {
         }
     }
 
-    generateDataForField(field, index) {
-        const ranges = this._config.valueRanges;
+    generateDataForField(field) {
         switch (field) {
             case 'sleep':
                 return {
-                    durationHours: Math.random() * (ranges.sleepDuration.max - ranges.sleepDuration.min) + ranges.sleepDuration.min,
-                    qualityRating: Math.random()
+                    durationHours: this._computeRandomValue("sleepDuration"),
+                    qualityRating: this._computeRandomValue("sleepQuality")
                 };
             case 'stressLevel':
-                return Math.random() * (ranges.stressScore.max - ranges.stressScore.min) + ranges.stressScore.min;
+                return this._computeRandomValue("stressScore");
+            case 'breathingRate':
+                return this._computeRandomValue("breathingRate");
             default:
-                return super.generateDataForField(field, index);
+                if (super.getFields().includes(field)) {
+                    return super.generateDataForField(field);
+                }
+                return 0;
         }
     }
 

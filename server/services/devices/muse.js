@@ -23,26 +23,28 @@ export default class MuseHeadband extends Device {
         }
     }
 
-    generateDataForField(field, index) {
-        const ranges = this._config.valueRanges;
+    generateDataForField(field) {
         switch (field) {
             case 'EEG':
                 return {
-                    alphaWaves: Math.random() * (ranges.eegAlpha.max - ranges.eegAlpha.min) + ranges.eegAlpha.min,
-                    betaWaves: Math.random() * (ranges.eegBeta.max - ranges.eegBeta.min) + ranges.eegBeta.min,
-                    gammaWaves: Math.random() * (ranges.eegGamma.max - ranges.eegGamma.min) + ranges.eegGamma.min,
-                    deltaWaves: Math.random() * (ranges.eegDelta.max - ranges.eegDelta.min) + ranges.eegDelta.min,
-                    thetaWaves: Math.random() * (ranges.eegTheta.max - ranges.eegTheta.min) + ranges.eegTheta.min
+                    alpha: this._computeRandomValue("eegAlpha"),
+                    beta: this._computeRandomValue("eegBeta"),
+                    gamma: this._computeRandomValue("eegGamma"),
+                    delta: this._computeRandomValue("eegDelta"),
+                    theta: this._computeRandomValue("eegTheta")
                 };
             case 'sleep':
                 return {
-                    duration: Math.random() * (ranges.sleepDuration.max - ranges.sleepDuration.min) + ranges.sleepDuration.min,
-                    quality: Math.random() * (ranges.sleepQuality.max - ranges.sleepQuality.min) + ranges.sleepQuality.min
+                    duration: this._computeRandomValue("sleepDuration"),
+                    quality: this._computeRandomValue("sleepQuality")
                 };
             case 'focusScore':
-                return Math.random() * (ranges.focusScore.max - ranges.focusScore.min) + ranges.focusScore.min;
+                return this._computeRandomValue("focusScore");
             default:
-                return super.generateDataForField(field, index);
+                if (super.getFields().includes(field)) {
+                    return super.generateDataForField(field);
+                }
+                return 0;
         }
     }
 

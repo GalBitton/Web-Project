@@ -20,7 +20,7 @@ const DeviceSchema = new mongoose.Schema({
             message: props => `${props.value} is not a valid type for brand ${props.instance.brand}`
         }
     },
-    data: { type: mongoose.Schema.Types.ObjectId, ref: 'DeviceData' }
+    data: { type: mongoose.Schema.Types.ObjectId, ref: 'DeviceData' },
 }, {
     versionKey: false,
     timestamps: false,
