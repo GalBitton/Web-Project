@@ -8,6 +8,17 @@ import useAPIService from "@/hooks/useAPIService";
 import APIService from "@/services/api/APIService";
 import LoadingAnimation from '../../components/loading';
 
+const supportedDevices = [
+    { brand: 'Samsung', type: 'Smartwatch' },
+    { brand: 'Samsung', type: 'Bracelet' },
+    { brand: 'Apple', type: 'Smartwatch' },
+    { brand: 'Xiaomi', type: 'Smartwatch' },
+    { brand: 'Xiaomi', type: 'Bracelet' },
+    { brand: 'FitBit', type: 'Bracelet' },
+    { brand: 'Dreem', type: 'Headband' },
+    { brand: 'Muse', type: 'Headband' }
+];
+
 const Dashboard = () => {
     const { data: devicesData, error: devicesError, loading: devicesLoading } = useAPIService({action: 'getLinkedDevices'});
     const { data: avgData, error: avgDataError, loading: avgDataLoading } = useAPIService({action: 'getAverageDataAllDevices'});
@@ -15,6 +26,8 @@ const Dashboard = () => {
     const [linkedDevices, setLinkedDevices] = useState([]);
     const [selectedBrand, setSelectedBrand] = useState('');
     const [selectedType, setSelectedType] = useState('');
+    const [selectedDeviceToLink, setSelectedDeviceToLink] = useState('');
+    const [unlinkedDevices, setUnlinkedDevices] = useState([]);
     const [currentDevice, setCurrentDevice] = useState(null);
 
     const [chartsData, setChartsData] = useState({
@@ -42,6 +55,10 @@ const Dashboard = () => {
             if (devicesData) {
                 const linkedDevices = await createAllDevices();
                 setLinkedDevices(linkedDevices);
+                const availableDevices = supportedDevices.filter(device =>
+                    !linkedDevices.some(linked => linked.brand === device.brand && linked.type === device.type)
+                );
+                setUnlinkedDevices(availableDevices);
             }
         };
 
@@ -141,12 +158,13 @@ const Dashboard = () => {
         });
     };
 
-    const handleLinkDevice = async () => {
-        const apiService = new APIService({action: 'linkDevice', brand: "Samsung", type: "Smartwatch" });
+    const handleLinkDevice = async (brand, type) => {
+        const apiService = new APIService({action: 'linkDevice', brand: brand, type: type });
         const newDevice = await apiService.execute();
         // newDevice might be null if the device is already linked somehow
         if (newDevice) {
             setLinkedDevices([...linkedDevices, newDevice])
+            await updateCharts();
         }
     };
 
@@ -178,6 +196,17 @@ const Dashboard = () => {
         }
     };
 
+    const handleDeviceLinkChange = (event) => {
+        const selectedDevice = event.target.value;
+        setSelectedDeviceToLink(selectedDevice);
+    };
+
+    const handleHealthStory = async () => {
+        const latestStats = chartsData
+        const apiService = new APIService({action: 'getHealthStory', stats: chartsData });
+        await apiService.execute();
+    }
+
     const handleBrandChange = (event) => {
         const selectedBrand = event.target.value;
         setSelectedBrand(selectedBrand);
@@ -190,9 +219,8 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard-full-container max-w-full">
-
             <div className="mt-24 mb-2 p-4 items-center">
-                <h1 className="text-4xl">Welcome back, {getIdentity('email')}</h1>
+                <h1 className="text-4xl">Welcome back, {getIdentity('emailPrefix')}</h1>
                 <p className="text-gray-700 dark:text-slate-500">Inspect your health charts and analytics</p>
             </div>
 
@@ -201,7 +229,7 @@ const Dashboard = () => {
                     <span className='flex items-center'>
                         <h1 className="text-3xl text-black dark:text-white mt-8">Linked Devices</h1>
                     </span>
-                    <span className="unlink bg-green-500 hover:bg-green-700 dark:bg-green-300 dark:hover:bg-green-500 text-white dark:text-black rounded-full w-[3rem] h-[3rem] flex items-center justify-center absolute right-0 mt-8 mr-10 transform transition-transform duration-300 hover:rotate-90"> 
+                    <span className="unlink bg-green-500 hover:bg-green-700 dark:bg-green-300 dark:hover:bg-green-500 text-white dark:text-black rounded-full w-[3rem] h-[3rem] flex items-center justify-center absolute right-0 mt-8 mr-10 transform transition-transform duration-300 hover:rotate-90">
                         <button onClick={handleLinkDevice}>
                             {/* Plus Icon */}
                             <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -214,19 +242,34 @@ const Dashboard = () => {
                 {devicesError && <p>Error: {devicesError}</p>}
                 <div className="flex-1 justify-center p-10 mb-[15rem] lg:mb-0">
                     <div
-                        className=" linked-devices flex flex-wrap justify-center sm:justify-between items-center w-full p-2 gap-14">
+                        className="linked-devices flex flex-wrap justify-center sm:justify-between items-center w-full p-2 gap-14">
                         {linkedDevices.map(device => (
                             <DeviceCard key={device.name} device={device}/>
                         ))}
-                        
+                        <select
+                            className="brandCmbBox bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-2 rounded w-full sm:w-[10rem]"
+                            value={selectedDeviceToLink} onChange={handleDeviceLinkChange}>
+                            {unlinkedDevices.map((device, index) => (
+                                <option key={index} value={`${device.brand}-${device.type}`}>{device.brand + " " + device.type}</option>
+                            ))}
+                        </select>
+                        <button
+                            className="unlink bg-green-500 hover:bg-green-700 dark:bg-green-300 dark:hover:bg-green-500 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem]"
+                            onClick={async () => {
+                                const model = selectedDeviceToLink.split("-");
+                                await handleLinkDevice(model[0], model[1]);
+                            }}>Link</button>
                     </div>
-                    
                 </div>
             </div>
 
             <div className="flex flex-wrap justify-center gap-14 max-w-full">
                 {avgDataLoading && <LoadingAnimation/>}
                 {avgDataError && <p>Error: {avgDataError}</p>}
+                <button
+                    className="bg-green-500 hover:bg-green-700 dark:bg-green-300 dark:hover:bg-green-500 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem]"
+                    onClick={handleHealthStory}>View Analysis</button>
+
                 <ChartComponent
                     title="Average Heart Rate BPM"
                     chartId="avghealthDataChart"
