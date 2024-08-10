@@ -3,6 +3,11 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import YAML from 'yamljs';
+import swaggerUi from 'swagger-ui-express';
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import path from "path";
 
 import connect from "./database/connect.js";
 import container from './containerConfig.js';
@@ -14,6 +19,7 @@ export default class Server {
         this._config = config;
         this._logger = logger;
         this._port = this._config.port;
+        this._hostname = 'localhost';
         this._setupPolicies();
         this._setupRoutes();
         this._setupMiddlewares();
@@ -23,7 +29,8 @@ export default class Server {
         try {
             connect(this._config.db_uri, this._logger);
             this._app.listen(this._port, () => {
-                this._logger.info(`Listening on port ${this._port}. Environment: ${process.env.NODE_ENV}.`);
+                this._logger.info(`Server running on port http://${this._hostname}:${this._port}. Environment: ${process.env.NODE_ENV}.`);
+                this._logger.info(`Swagger UI available at http://${this._hostname}:${this._port}/api-docs`);
             });
         } catch (error) {
             console.error(error);
@@ -87,6 +94,20 @@ export default class Server {
 
         this._app.use('/auth', container.get('authRouter').getRouter());
         this._app.use('/user', container.get('userRouter').getRouter());
+
+        // Swagger
+        const __dirname = dirname(fileURLToPath(import.meta.url));
+
+        this._hostname = process.env.VERCEL_URL || process.env.HOSTNAME || 'localhost';
+
+        const swaggerDocument = YAML.load(path.join(__dirname, './docs/swagger.yaml'));
+        swaggerDocument.servers = [
+            {
+                url: `https://${this._hostname}`,
+                description: `${process.env.NODE_ENV} server`,
+            },
+        ];
+        this._app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
     }
 
     _setupMiddlewares() {

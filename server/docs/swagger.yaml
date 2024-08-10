@@ -1,0 +1,342 @@
+openapi: 3.0.0
+info:
+  title: NeuroSync API
+  description: API for managing user authentication and device data for health tracking.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local server
+
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                  email:
+                    type: string
+        '400':
+          description: Bad request
+
+  /auth/authenticate:
+    post:
+      summary: Authenticate a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: User authenticated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  userId:
+                    type: string
+                  email:
+                    type: string
+        '400':
+          description: Invalid email or password
+        '401':
+          description: Account associated with Google Sign In
+
+  /auth/authenticate-google:
+    post:
+      summary: Authenticate a user with Google
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idToken:
+                  type: string
+              required:
+                - idToken
+      responses:
+        '200':
+          description: User authenticated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  email:
+                    type: string
+                  userId:
+                    type: string
+        '500':
+          description: Error authenticating with Google
+
+  /auth/refresh:
+    post:
+      summary: Refresh an access token
+      responses:
+        '200':
+          description: New access token issued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+        '406':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+
+  /auth/logout:
+    post:
+      summary: Logout a user
+      responses:
+        '200':
+          description: Logged out successfully
+        '500':
+          description: Internal server error
+
+  /user/average-devices-data:
+    get:
+      summary: Get average data for all linked devices
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Average data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  overallAverages:
+                    type: object
+                    properties:
+                      heartRate:
+                        type: string
+                      steps:
+                        type: string
+                      calories:
+                        type: string
+                      sleep:
+                        type: string
+                  heartRateAverages:
+                    type: object
+                    properties:
+                      labels:
+                        type: array
+                        items:
+                          type: string
+                      values:
+                        type: array
+                        items:
+                          type: string
+                  stepsAverages:
+                    type: object
+                    properties:
+                      labels:
+                        type: array
+                        items:
+                          type: string
+                      values:
+                        type: array
+                        items:
+                          type: string
+                  caloriesAverages:
+                    type: object
+                    properties:
+                      labels:
+                        type: array
+                        items:
+                          type: string
+                      values:
+                        type: array
+                        items:
+                          type: string
+                  sleepAverages:
+                    type: object
+                    properties:
+                      labels:
+                        type: array
+                        items:
+                          type: string
+                      values:
+                        type: array
+                        items:
+                          type: string
+        '500':
+          description: Internal server error
+
+  /user/linked-devices:
+    get:
+      summary: Get all linked devices for a user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Linked devices retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    brand:
+                      type: string
+                    type:
+                      type: string
+                    status:
+                      type: string
+        '500':
+          description: Internal server error
+
+  /user/link-device:
+    post:
+      summary: Link a new device to the user
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                brand:
+                  type: string
+                type:
+                  type: string
+              required:
+                - brand
+                - type
+      responses:
+        '200':
+          description: Device linked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  device:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                      brand:
+                        type: string
+                      type:
+                        type: string
+                      status:
+                        type: string
+        '400':
+          description: Device already linked
+        '500':
+          description: Internal server error
+
+  /user/unlink-device/{deviceId}:
+    post:
+      summary: Unlink a device from the user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: deviceId
+          required: true
+          schema:
+            type: string
+          description: ID of the device to unlink
+      responses:
+        '200':
+          description: Device unlinked successfully
+        '404':
+          description: Device not found
+        '500':
+          description: Internal server error
+
+  /user/device-data/{deviceId}:
+    get:
+      summary: Get data for a specific device
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: deviceId
+          required: true
+          schema:
+            type: string
+          description: ID of the device
+      responses:
+        '200':
+          description: Device data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Device not found
+        '500':
+          description: Internal server error
+
+  /user/health-story:
+    get:
+      summary: Get the health story of the user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Health story retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          description: Internal server error
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

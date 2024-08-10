@@ -42,9 +42,11 @@
     "jsonwebtoken": "^9.0.2",
     "kontainer-di": "^0.9.9",
     "mongoose": "^8.5.1",
+    "swagger-ui-express": "^5.0.1",
     "validator": "^13.12.0",
     "winston": "^3.13.1",
     "winston-daily-rotate-file": "^5.0.0",
-    "winston-mongodb": "^5.1.1"
+    "winston-mongodb": "^5.1.1",
+    "yamljs": "^0.3.0"
   }
 }

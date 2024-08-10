@@ -2,6 +2,10 @@ import Device from "./device.js";
 
 class SamsungWatch extends Device {
     getFieldValue(entry, field) {
+        if (entry[field] === undefined) {
+            return 0;
+        }
+
         switch (field) {
             case 'sleep':
                 return {
@@ -48,6 +52,10 @@ class SamsungWatch extends Device {
 
 class SamsungBracelet extends Device {
     getFieldValue(entry, field) {
+        if (entry[field] === undefined) {
+            return 0;
+        }
+
         switch (field) {
             case 'sleep':
                 return {

@@ -2,6 +2,10 @@ import Device from "./device.js";
 
 export default class MuseHeadband extends Device {
     getFieldValue(entry, field) {
+        if (entry[field] === undefined) {
+            return 0;
+        }
+
         switch (field) {
             case 'EEG':
                 return {
