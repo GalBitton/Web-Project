@@ -20,7 +20,7 @@ const logFormat = format.printf(({ timestamp, level, message, request }) => {
     const requestData = request ? `\n\t\tUrl: ${request.url},\n\t\tmethod: ${request.method},\n\t\tparameters: ${JSON.stringify(request.params, null, 12)},\n\t\t${bodyString}` : '';
     const formattedRequest = requestData === '' ? '' : `Request - ${requestData}`;
 
-    return `[${timestamp}] ${level}: ${message} ${userIdPart}\n${formattedRequest}\n`;
+    return `[${timestamp}] ${level}: ${message} ${userIdPart}\n${formattedRequest}`;
 });
 
 class Logger {
@@ -37,6 +37,11 @@ class Logger {
             zippedArchive: true,
             maxSize: '2m',
             level: this._config.level,
+            format: winston.format.combine(
+                winston.format.timestamp({ format: 'DD-MM-YYYY HH:mm:ss' }),
+                winston.format.errors({ stack: true }),
+                logFormat
+            )
         };
 
         const MongoDBOptions = {
@@ -46,29 +51,31 @@ class Logger {
             capped: false,
             leaveConnectionOpen: true,
             level: 'info',
-        };
-
-        let logTransports = [];
-        const mongoDBTransport = new winston.transports.MongoDB(MongoDBOptions);
-        const consoleTransport = new winston.transports.Console({
-            format: winston.format.combine(
-                winston.format.colorize(),
-                winston.format.simple()
-            )
-        });
-
-        if (this._config.log2file) {
-            logTransports.push(new winston.transports.DailyRotateFile(FileOptions))
-        }
-        logTransports.push(consoleTransport);
-        logTransports.push(mongoDBTransport);
-
-        this.logger = winston.createLogger({
             format: winston.format.combine(
                 winston.format.timestamp({ format: 'DD-MM-YYYY HH:mm:ss' }),
                 winston.format.errors({ stack: true }),
                 logFormat
-            ),
+            )
+        };
+
+        const consoleTransport = new winston.transports.Console({
+            format: winston.format.combine(
+                winston.format.colorize(),
+                winston.format.timestamp({ format: 'DD-MM-YYYY HH:mm:ss' }),
+                winston.format.errors({ stack: true }),
+                logFormat
+            )
+        });
+
+        let logTransports = [];
+
+        if (this._config.log2file) {
+            logTransports.push(new winston.transports.DailyRotateFile(FileOptions));
+        }
+        logTransports.push(consoleTransport);
+        logTransports.push(new winston.transports.MongoDB(MongoDBOptions));
+
+        this.logger = winston.createLogger({
             transports: logTransports
         });
     };
