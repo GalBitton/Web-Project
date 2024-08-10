@@ -225,19 +225,44 @@ const Dashboard = () => {
                 <p className="text-gray-700 dark:text-slate-500">Inspect your health charts and analytics</p>
             </div>
 
-            <div className="flex-container bg-gray-100 dark:bg-slate-900 ml-4 mr-4 w-full rounded-lg shadow-lg pb-5 mb-4">
+            <div className="flex-container flex-wrap bg-gray-100 dark:bg-slate-900 ml-4 mr-4 rounded-lg shadow-lg pb-5 mb-4">
+               
                 <div className="relative flex justify-center items-center">
-                    <span className='flex items-center'>
+                    <div className='flex items-center'>
                         <h1 className="text-3xl text-black dark:text-white mt-8">Linked Devices</h1>
-                    </span>
-                    <span className="unlink bg-green-500 hover:bg-green-700 dark:bg-green-300 dark:hover:bg-green-500 text-white dark:text-black rounded-full w-[3rem] h-[3rem] flex items-center justify-center absolute right-0 mt-8 mr-10 transform transition-transform duration-300 hover:rotate-90">
+                    </div>
+
+                    <div className="flex mr-24 mt-8 absolute right-0 ">
+                        
+                        <div>
+                            <button
+                                className="unlink mr-1 bg-green-600 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-400 text-white dark:text-black px-4 py-2 rounded-lg w-full sm:w-[8rem]"
+                                onClick={async () => {
+                                    const model = selectedDeviceToLink.split("-");
+                                    await handleLinkDevice(model[0], model[1]);
+                                }}>Link</button>
+                        </div>
+                        <div>
+                            <select className="brandCmbBox bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-2 rounded-lg w-full sm:w-[10rem] "
+                            
+                            value={selectedDeviceToLink} onChange={handleDeviceLinkChange}>
+                                <option selected>Choose Device</option>
+                            {unlinkedDevices.map((device, index) => (
+                                <option key={index} value={`${device.brand}-${device.type}`}>{device.brand + " " + device.type}</option>
+                            ))}
+                        </select>
+                        </div>
+                    </div>
+                    <div className="unlink bg-green-600 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-400 text-white dark:text-black rounded-full w-[3rem] h-[3rem] flex items-center justify-center absolute right-0 mt-8 mr-10 transform transition-transform duration-300 hover:rotate-90">
+                        <div className="absolute inset-0 z-[-1] rounded-full opacity-40 bg-gradient-to-r from-green-400 to-green-600 blur-md"></div>
                         <button onClick={handleLinkDevice}>
                             {/* Plus Icon */}
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                             </svg>
                         </button>
-                    </span>
+                        
+                    </div>
                 </div>
                 {devicesLoading && <LoadingAnimation/>}
                 {devicesError && <p>Error: {devicesError}</p>}
@@ -247,19 +272,7 @@ const Dashboard = () => {
                         {linkedDevices.map(device => (
                             <DeviceCard key={device.name} device={device}/>
                         ))}
-                        <select
-                            className="brandCmbBox bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-2 rounded w-full sm:w-[10rem]"
-                            value={selectedDeviceToLink} onChange={handleDeviceLinkChange}>
-                            {unlinkedDevices.map((device, index) => (
-                                <option key={index} value={`${device.brand}-${device.type}`}>{device.brand + " " + device.type}</option>
-                            ))}
-                        </select>
-                        <button
-                            className="unlink bg-green-500 hover:bg-green-700 dark:bg-green-300 dark:hover:bg-green-500 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem]"
-                            onClick={async () => {
-                                const model = selectedDeviceToLink.split("-");
-                                await handleLinkDevice(model[0], model[1]);
-                            }}>Link</button>
+                        
                     </div>
                 </div>
             </div>
