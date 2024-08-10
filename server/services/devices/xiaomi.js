@@ -84,7 +84,7 @@ class XiaomiBracelet extends Device {
                     qualityIndex: this._computeRandomValue("sleepQuality")
                 };
             case 'relaxationScore':
-                return this._computeRandomValue("stressScore");
+                return this._computeRandomValue("stressScore") * 10; // relaxationScore is the inverse of stressScore
             case 'respiratoryRate':
                 return this._computeRandomValue("breathingRate");
             default:

@@ -39,6 +39,10 @@ export default class Device {
         const deviations = this._config.commonFieldValueMaxDeviations;
 
         for (const field of fields) {
+            if (field === 'sleep') {
+                continue; // Skip precomputing sleep data as it's generated differently in generateDataBatch.
+            }
+
             if (!this.randomCache[field]) {
                 this.randomCache[field] = [];
             }
@@ -55,12 +59,16 @@ export default class Device {
     getPrecomputedDataForField(field, index) {
         return this.randomCache[field][index];
     }
+
     async generateDataBatch(points, intervalMinutes, fields, batchSize) {
         const now = new Date();
+        const ranges = this._config.valueRanges;
         const accumulatedData = [];
 
         // Precompute random values asynchronously
         this.precomputeRandomValues(fields, points);
+
+        let sleepDataGenerated = false;
 
         for (let batchStart = 0; batchStart < points; batchStart += batchSize) {
             const batchEnd = Math.min(batchStart + batchSize, points);
@@ -80,7 +88,16 @@ export default class Device {
                 const filteredFields = fields.filter(field => {
                     if (isNightTime || isAfternoonNap) {
                         // During nighttime or Friday afternoon nap, generate sleep and select few metrics
-                        return ['heartRate', 'sleep', 'EEG', 'oxygenSaturation', 'bloodPressure'].includes(field);
+                        if (field === 'sleep') {
+                            // Ensure sleep data is only generated once during these periods
+                            if (!sleepDataGenerated) {
+                                sleepDataGenerated = true;
+                                return true;
+                            } else {
+                                return false;  // Skip generating additional sleep data points
+                            }
+                        }
+                        return ['heartRate', 'EEG', 'oxygenSaturation', 'bloodPressure'].includes(field);
                     } else {
                         // During day time, generate other metrics, excluding sleep
                         return field !== 'sleep';
@@ -89,7 +106,28 @@ export default class Device {
 
                 const fieldPromises = filteredFields.map(field =>
                     new Promise(resolve => {
-                        entry[field] = this.getPrecomputedDataForField(field, i);
+                        if (field === 'sleep') {
+                            // Generate realistic sleep duration based on the hour
+                            let maxDuration;
+                            if (hour >= 22) {
+                                maxDuration = 9 + (24 - hour);  // From 10 PM to 9 AM the next day
+                            } else if (hour < 9) {
+                                maxDuration = 9 - hour;  // From the current hour to 9 AM
+                            } else if (isAfternoonNap) {
+                                maxDuration = 3;  // Up to 3 hours for a nap
+                            } else {
+                                maxDuration = 0;  // No sleep during the day
+                            }
+
+                            // Ensure the generated duration is within the configured range
+                            const duration = Math.random() * Math.min(maxDuration, ranges.sleepDuration.max - ranges.sleepDuration.min) + ranges.sleepDuration.min;
+                            entry[field] = {
+                                duration: parseFloat(duration.toFixed(2)),  // Limiting duration to 2 decimal places
+                                quality: this._computeRandomValue('sleepQuality')  // Use _computeRandomValue for sleepQuality
+                            };
+                        } else {
+                            entry[field] = this.getPrecomputedDataForField(field, i);
+                        }
                         resolve();
                     })
                 );

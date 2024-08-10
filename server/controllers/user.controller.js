@@ -214,7 +214,7 @@ class UserController {
                     return res.status(404).json({ error: 'Device data not found' });
                 }
 
-                const latestDataRange = 24 * 6; // A day ago
+                const latestDataRange = 24 * 6; // A day ago, assuming 6 data points per hour
                 const latestPoints = deviceData.datapoints.slice(-latestDataRange);
                 const deviceInstance = this._deviceFactory.createDevice(device.brand, device.type, device._id, deviceData.lastSeeded);
 
@@ -239,19 +239,24 @@ class UserController {
                         };
                     }
 
-                    const fields = Object.keys(metricsByTimestamp[timestamp]);
-                    fields.forEach(field => {
+                    // Iterate over each field in point.data
+                    Object.keys(point.data).forEach(field => {
                         const fieldValue = deviceInstance.getFieldValue(point.data, field);
-                        if (fieldValue !== undefined && fieldValue !== null) {
-                            if (typeof fieldValue === 'object') {
-                                Object.keys(fieldValue).forEach(subField => {
-                                    const subFieldName = `${field}${subField.charAt(0).toUpperCase() + subField.slice(1)}`;
-                                    if (!metricsByTimestamp[timestamp][subFieldName]) {
-                                        metricsByTimestamp[timestamp][subFieldName] = [];
-                                    }
-                                    metricsByTimestamp[timestamp][subFieldName].push(fieldValue[subField]);
-                                });
-                            } else {
+                        if (field === 'sleep') {
+                            if (fieldValue.duration !== undefined) metricsByTimestamp[timestamp].sleepDuration.push(fieldValue.duration);
+                            if (fieldValue.quality !== undefined) translateSleepQualityToIndex(metricsByTimestamp[timestamp].sleepQuality.push(fieldValue.quality));
+                        } else if (field === 'bloodPressure') {
+                            if (fieldValue.systolic !== undefined) metricsByTimestamp[timestamp].systolicBloodPressure.push(fieldValue.systolic);
+                            if (fieldValue.diastolic !== undefined) metricsByTimestamp[timestamp].diastolicBloodPressure.push(fieldValue.diastolic);
+                        } else if (field === 'EEG') {
+                            if (fieldValue.alpha !== undefined) metricsByTimestamp[timestamp].eegAlpha.push(fieldValue.alpha);
+                            if (fieldValue.beta !== undefined) metricsByTimestamp[timestamp].eegBeta.push(fieldValue.beta);
+                            if (fieldValue.gamma !== undefined) metricsByTimestamp[timestamp].eegGamma.push(fieldValue.gamma);
+                            if (fieldValue.delta !== undefined) metricsByTimestamp[timestamp].eegDelta.push(fieldValue.delta);
+                            if (fieldValue.theta !== undefined) metricsByTimestamp[timestamp].eegTheta.push(fieldValue.theta);
+                        } else {
+                            // For other fields like heartRate, steps, etc.
+                            if (Array.isArray(metricsByTimestamp[timestamp][field])) {
                                 metricsByTimestamp[timestamp][field].push(fieldValue);
                             }
                         }
@@ -259,14 +264,10 @@ class UserController {
                 });
             }
 
-            // Calculate averages for each timestamp
-            const calculateAverage = (arr) => {
-                if (arr.length === 0) return null;
-                const sum = arr.reduce((acc, value) => acc + value, 0);
-                return sum / arr.length;
-            };
+            // Calculate the average for each metric at each timestamp
+            const calculateAverage = (arr) => arr.length ? arr.reduce((acc, value) => acc + value, 0) / arr.length : null;
 
-            const totalAverages = {
+            const aggregatedAverages = {
                 heartRate: [],
                 steps: [],
                 caloriesBurned: [],
@@ -283,46 +284,19 @@ class UserController {
                 eegTheta: []
             };
 
-            let validMetricsCount = {
-                heartRate: 0,
-                steps: 0,
-                caloriesBurned: 0,
-                sleepDuration: 0,
-                sleepQuality: 0,
-                stressScore: 0,
-                breathingRate: 0,
-                systolicBloodPressure: 0,
-                diastolicBloodPressure: 0,
-                eegAlpha: 0,
-                eegBeta: 0,
-                eegGamma: 0,
-                eegDelta: 0,
-                eegTheta: 0
-            };
-
-            // Calculate the average for each metric at each timestamp and store in totalAverages
             Object.keys(metricsByTimestamp).forEach(timestamp => {
                 const metrics = metricsByTimestamp[timestamp];
-
-                const updateAverages = (metricKey, value) => {
-                    if (value !== null) {
-                        totalAverages[metricKey].push(value);
-                        validMetricsCount[metricKey]++;
-                    }
-                };
-
                 Object.keys(metrics).forEach(metricKey => {
-                    updateAverages(metricKey, calculateAverage(metrics[metricKey]));
+                    const averageValue = calculateAverage(metrics[metricKey]);
+                    if (averageValue !== null) {
+                        aggregatedAverages[metricKey].push(averageValue);
+                    }
                 });
             });
 
-            // Now calculate the overall average for each metric, considering only valid metrics
-            const calculateFinalAverage = (key) => {
-                return validMetricsCount[key] > 0 ? calculateAverage(totalAverages[key]) : null;
-            };
+            // Calculate overall average for each metric
+            const calculateFinalAverage = (key) => calculateAverage(aggregatedAverages[key]);
 
-
-            // Now calculate the overall average for each metric
             const stats = {
                 heartRate: calculateFinalAverage('heartRate'),
                 steps: calculateFinalAverage('steps'),
@@ -340,7 +314,8 @@ class UserController {
                 eeg: null
             };
 
-            // Calculate EEG averages
+
+            // Check if any EEG metric is not null
             const eeg = {
                 alpha: calculateFinalAverage('eegAlpha'),
                 beta: calculateFinalAverage('eegBeta'),
@@ -349,14 +324,9 @@ class UserController {
                 theta: calculateFinalAverage('eegTheta'),
             };
 
-            console.log(eeg);
-
-            // Check if all EEG properties are null
             if (Object.values(eeg).some(value => value !== null)) {
                 stats.eeg = eeg;
             }
-
-            console.log(stats);
 
             const healthStory = new HealthStory(stats);
             const healthStatus = healthStory.createStory();

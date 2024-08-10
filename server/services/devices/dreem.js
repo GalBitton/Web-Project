@@ -45,14 +45,11 @@ export default class DreemHeadband extends Device {
             case 'meditationScore':
                 return this._computeRandomValue("focusScore");
             default:
-                if (super.getFields().includes(field)) {
-                    return super.generateDataForField(field);
-                }
                 return 0;
         }
     }
 
     getFields() {
-        return [...super.getFields(), "EEG", "sleepData", "meditationScore"];
+        return ["EEG", "sleepData", "meditationScore"];
     }
 }

@@ -53,6 +53,6 @@ export default class MuseHeadband extends Device {
     }
 
     getFields() {
-        return [...super.getFields(), "EEG", "sleep", "focusScore"];
+        return ["EEG", "sleep", "focusScore"];
     }
 }

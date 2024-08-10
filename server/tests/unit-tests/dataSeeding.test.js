@@ -123,6 +123,9 @@ describe('AppleWatch', () => {
         const fields = device.getFields();
 
         fields.forEach(field => {
+            if (field === 'sleep') {
+                return;
+            }
             expect(device.randomCache[field]).toHaveLength(config.points);
         });
     });
@@ -151,8 +154,8 @@ describe('AppleWatch', () => {
 
             expect(dataPoint.sleep.duration).toBeGreaterThanOrEqual(ranges.sleepDuration.min);
             expect(dataPoint.sleep.duration).toBeLessThanOrEqual(ranges.sleepDuration.max);
-            expect(translateSleepQualityToIndex(dataPoint.sleep.quality)).toBeGreaterThanOrEqual(ranges.sleepQuality.min);
-            expect(translateSleepQualityToIndex(dataPoint.sleep.quality)).toBeLessThanOrEqual(ranges.sleepQuality.max);
+            expect(dataPoint.sleep.quality).toBeGreaterThanOrEqual(ranges.sleepQuality.min);
+            expect(dataPoint.sleep.quality).toBeLessThanOrEqual(ranges.sleepQuality.max);
         });
 
         test('should include sleep field in generated data points during nighttime', async () => {

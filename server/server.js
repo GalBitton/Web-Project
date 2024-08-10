@@ -103,7 +103,7 @@ export default class Server {
         const swaggerDocument = YAML.load(path.join(__dirname, './docs/swagger.yaml'));
         swaggerDocument.servers = [
             {
-                url: `https://${this._hostname}`,
+                url: `http://${this._hostname}:${this._port}`,
                 description: `${process.env.NODE_ENV} server`,
             },
         ];
