@@ -148,13 +148,18 @@ export const ControllerService = () => {
             brand,
             type
         });
-        return response.data;
-    }
+        return response.data.device;
+    };
 
     const unlinkDevice = async (deviceId) => {
         const response = await axiosInstance.post(`${endpointAPI}/user/unlink-device/${deviceId}`);
         return response.data;
-    }
+    };
+
+    const getHealthStory = async () => {
+        const response = await axiosInstance.get(`${endpointAPI}/user/health-story`);
+        return response.data;
+    };
 
     return {
         login,
@@ -166,6 +171,7 @@ export const ControllerService = () => {
         getAverageDataAllDevices,
         getDeviceData,
         linkDevice,
-        unlinkDevice
+        unlinkDevice,
+        getHealthStory
     };
 };

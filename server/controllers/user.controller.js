@@ -6,6 +6,7 @@ import DeviceData from '../database/models/DeviceData.model.js';
 import HealthStory from "../services/healthStory.js";
 import Status from "../enums/device-statuses.js";
 import { calculateOverallAverage } from "../utils/mathUtils.js";
+import { translateSleepIndex, translateSleepQualityToIndex } from "../utils/sleepTranslation.js";
 
 class UserController {
     constructor(config, logger, deviceFactory) {
@@ -19,7 +20,7 @@ class UserController {
         this.linkDevice = this.linkDevice.bind(this);
         this.unlinkDevice = this.unlinkDevice.bind(this);
         this.getAverageDataAllDevices = this.getAverageDataAllDevices.bind(this);
-        this.getHealthStatus = this.getHealthStatus.bind(this);
+        this.getHealthStory = this.getHealthStory.bind(this);
     };
 
     async linkDevice(req, res) {
@@ -29,7 +30,7 @@ class UserController {
             let device;
             let deviceData;
 
-            device = await Device.findOne({ user: userId, brand, type, status: Status.UNLINKED }).exec();
+            device = await Device.findOne({ user: userId, brand, type }).exec();
             if (!device) {
                 // Create device and deviceData
                 device = new Device({
@@ -42,7 +43,8 @@ class UserController {
 
                 deviceData = new DeviceData({
                     device: device._id,
-                    datapoints: []
+                    datapoints: [],
+                    lastSeeded: null
                 });
                 await deviceData.save();
 
@@ -53,6 +55,12 @@ class UserController {
                 user.devices.push(device._id);
                 await user.save();
             } else {
+                if (device.status === Status.UNLINKED) {
+                    device.status = Status.LINKED;
+                    await device.save();
+                } else {
+                    return res.status(400).json({error: 'Device already linked'});
+                }
                 deviceData = await DeviceData.findOne({ device: device._id }).exec();
                 if (!deviceData) {
                     this._logger.error('Device data not found, despite existence of deviceId:', device._id);
@@ -63,7 +71,6 @@ class UserController {
             const deviceId = device._id;
             const deviceInstance = this._deviceFactory.createDevice(brand, type, deviceId, deviceData.lastSeeded);
             const newDataPoints = await this.generateDataPoints(deviceInstance, deviceId);
-            console.log(newDataPoints);
 
             // Push valid data points to datapoints array
             for (let i = 0; i < newDataPoints.length; i++) {
@@ -72,15 +79,13 @@ class UserController {
 
             await deviceData.save();
 
-            const data = deviceInstance.extractGraphData(deviceData.datapoints);
             res.status(200).json({
                 device: {
                     _id: deviceId,
                     brand,
                     type,
                     status: device.status
-                },
-                data,
+                }
             });
         } catch (err) {
             this._logger.error('Error linking device:', err);
@@ -109,7 +114,7 @@ class UserController {
     async getLinkedDevices(req, res) {
         try {
             const userId = req.user;
-            const linkedDevices = await Device.find({ user: userId, status: Status.LINKED }).lean().exec();
+            const linkedDevices = await Device.find({ user: userId, status: Status.LINKED }).select('-user -data').lean().exec();
             res.status(200).json(linkedDevices);
         } catch (err) {
             this._logger.error('Error retrieving linked devices:', err);
@@ -196,17 +201,165 @@ class UserController {
         }
     };
 
-    async getHealthStatus(req, res) {
+    async getHealthStory(req, res) {
         try {
             const userId = req.user;
-            const { stats } = req.body;
+            const linkedDevices = await Device.find({ user: userId, status: Status.LINKED }).exec();
 
-            if (!stats) {
-                return res.status(404).json({})
+            const metricsByTimestamp = {};
+
+            for (const device of linkedDevices) {
+                const deviceData = await DeviceData.findOne({ device: device._id }).exec();
+                if (!deviceData) {
+                    return res.status(404).json({ error: 'Device data not found' });
+                }
+
+                const latestDataRange = 24 * 6; // A day ago
+                const latestPoints = deviceData.datapoints.slice(-latestDataRange);
+                const deviceInstance = this._deviceFactory.createDevice(device.brand, device.type, device._id, deviceData.lastSeeded);
+
+                latestPoints.forEach(point => {
+                    const timestamp = point.timestamp.toISOString();
+                    if (!metricsByTimestamp[timestamp]) {
+                        metricsByTimestamp[timestamp] = {
+                            heartRate: [],
+                            steps: [],
+                            caloriesBurned: [],
+                            sleepDuration: [],
+                            sleepQuality: [],
+                            stressScore: [],
+                            breathingRate: [],
+                            systolicBloodPressure: [],
+                            diastolicBloodPressure: [],
+                            eegAlpha: [],
+                            eegBeta: [],
+                            eegGamma: [],
+                            eegDelta: [],
+                            eegTheta: []
+                        };
+                    }
+
+                    const fields = Object.keys(metricsByTimestamp[timestamp]);
+                    fields.forEach(field => {
+                        const fieldValue = deviceInstance.getFieldValue(point.data, field);
+                        if (fieldValue !== undefined && fieldValue !== null) {
+                            if (typeof fieldValue === 'object') {
+                                Object.keys(fieldValue).forEach(subField => {
+                                    const subFieldName = `${field}${subField.charAt(0).toUpperCase() + subField.slice(1)}`;
+                                    if (!metricsByTimestamp[timestamp][subFieldName]) {
+                                        metricsByTimestamp[timestamp][subFieldName] = [];
+                                    }
+                                    metricsByTimestamp[timestamp][subFieldName].push(fieldValue[subField]);
+                                });
+                            } else {
+                                metricsByTimestamp[timestamp][field].push(fieldValue);
+                            }
+                        }
+                    });
+                });
             }
 
+            // Calculate averages for each timestamp
+            const calculateAverage = (arr) => {
+                if (arr.length === 0) return null;
+                const sum = arr.reduce((acc, value) => acc + value, 0);
+                return sum / arr.length;
+            };
+
+            const totalAverages = {
+                heartRate: [],
+                steps: [],
+                caloriesBurned: [],
+                sleepDuration: [],
+                sleepQuality: [],
+                stressScore: [],
+                breathingRate: [],
+                systolicBloodPressure: [],
+                diastolicBloodPressure: [],
+                eegAlpha: [],
+                eegBeta: [],
+                eegGamma: [],
+                eegDelta: [],
+                eegTheta: []
+            };
+
+            let validMetricsCount = {
+                heartRate: 0,
+                steps: 0,
+                caloriesBurned: 0,
+                sleepDuration: 0,
+                sleepQuality: 0,
+                stressScore: 0,
+                breathingRate: 0,
+                systolicBloodPressure: 0,
+                diastolicBloodPressure: 0,
+                eegAlpha: 0,
+                eegBeta: 0,
+                eegGamma: 0,
+                eegDelta: 0,
+                eegTheta: 0
+            };
+
+            // Calculate the average for each metric at each timestamp and store in totalAverages
+            Object.keys(metricsByTimestamp).forEach(timestamp => {
+                const metrics = metricsByTimestamp[timestamp];
+
+                const updateAverages = (metricKey, value) => {
+                    if (value !== null) {
+                        totalAverages[metricKey].push(value);
+                        validMetricsCount[metricKey]++;
+                    }
+                };
+
+                Object.keys(metrics).forEach(metricKey => {
+                    updateAverages(metricKey, calculateAverage(metrics[metricKey]));
+                });
+            });
+
+            // Now calculate the overall average for each metric, considering only valid metrics
+            const calculateFinalAverage = (key) => {
+                return validMetricsCount[key] > 0 ? calculateAverage(totalAverages[key]) : null;
+            };
+
+
+            // Now calculate the overall average for each metric
+            const stats = {
+                heartRate: calculateFinalAverage('heartRate'),
+                steps: calculateFinalAverage('steps'),
+                caloriesBurned: calculateFinalAverage('caloriesBurned'),
+                sleep: {
+                    duration: calculateFinalAverage('sleepDuration'),
+                    quality: translateSleepIndex(calculateFinalAverage('sleepQuality')),
+                },
+                stressScore: calculateFinalAverage('stressScore'),
+                breathingRate: calculateFinalAverage('breathingRate'),
+                bloodPressure: {
+                    systolic: calculateFinalAverage('systolicBloodPressure'),
+                    diastolic: calculateFinalAverage('diastolicBloodPressure'),
+                },
+                eeg: null
+            };
+
+            // Calculate EEG averages
+            const eeg = {
+                alpha: calculateFinalAverage('eegAlpha'),
+                beta: calculateFinalAverage('eegBeta'),
+                gamma: calculateFinalAverage('eegGamma'),
+                delta: calculateFinalAverage('eegDelta'),
+                theta: calculateFinalAverage('eegTheta'),
+            };
+
+            console.log(eeg);
+
+            // Check if all EEG properties are null
+            if (Object.values(eeg).some(value => value !== null)) {
+                stats.eeg = eeg;
+            }
+
+            console.log(stats);
+
             const healthStory = new HealthStory(stats);
-            const healthStatus = healthStory.createStory()
+            const healthStatus = healthStory.createStory();
             return res.status(200).json(healthStatus);
         } catch (err) {
             this._logger.error('Error retrieving health status:', err);

@@ -1,10 +1,7 @@
 import mongoose from 'mongoose';
 
 const connect = (url, logger) => {
-    mongoose.connect(url, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    })
+    mongoose.connect(url)
     .then(() => {
         logger.info('MongoDB connected');
 

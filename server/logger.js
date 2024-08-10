@@ -45,7 +45,7 @@ class Logger {
             collection: 'logs',
             capped: false,
             leaveConnectionOpen: true,
-            level: this._config.level,
+            level: 'info',
         };
 
         let logTransports = [];

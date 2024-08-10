@@ -27,7 +27,7 @@ class XiaomiWatch extends Device {
             case 'sleep':
                 return {
                     duration: this._computeRandomValue("sleepDuration"),
-                    quality: this.translateSleepQualityIndex(this._computeRandomValue("sleepQuality"))
+                    quality: this.convertSleepIndex(this._computeRandomValue("sleepQuality"))
                 };
             case 'stressLevel':
                 return this._computeRandomValue("stressScore");
@@ -52,7 +52,7 @@ class XiaomiBracelet extends Device {
             case 'sleep':
                 return {
                     "duration": entry[field].totalDuration,
-                    "quality": super.translateSleepQualityIndex(entry[field].qualityIndex)
+                    "quality": super.convertSleepIndex(entry[field].qualityIndex)
                 }
             case 'stress':
                 return {

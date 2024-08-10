@@ -19,7 +19,7 @@ class UserRouter {
         this._router.post('/link-device', this.authMiddleware.authenticateJWT, this.userController.linkDevice);
         this._router.post('/unlink-device/:deviceId', this.authMiddleware.authenticateJWT, this.userController.unlinkDevice);
         this._router.get('/device-data/:deviceId', this.authMiddleware.authenticateJWT, this.userController.getDeviceData);
-        this._router.get('/health-status', this.authMiddleware.authenticateJWT, this.userController.getHealthStatus);
+        this._router.get('/health-story', this.authMiddleware.authenticateJWT, this.userController.getHealthStory);
     }
 }
 

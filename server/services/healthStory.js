@@ -40,7 +40,7 @@ export default class HealthStory {
 
         // Sleep
         if (this.sleepDuration !== null && this.sleepQuality !== null) {
-            story += `You got ${this.sleepDuration} hours of sleep, which is considered ${this.sleepQuality}. `;
+            story += `You got ${this.sleepDuration.toFixed(2)} hours of sleep, which is considered ${this.sleepQuality}. `;
             if (this.sleepQuality === "Very Poor" || this.sleepQuality === "Poor") {
                 story += "Poor sleep quality may lead to stress and reduced cognitive function. ";
             } else if (this.sleepQuality === "Excellent") {

@@ -1,3 +1,5 @@
+import { translateSleepIndex } from "../../utils/sleepTranslation.js";
+
 export default class Device {
     constructor(config, logger, id, name, lastSeeded) {
         this._config = config;
@@ -10,20 +12,8 @@ export default class Device {
         this.randomCache = {}; // Cache for precomputed random values
     }
 
-    translateSleepQualityIndex(qualityIndex) {
-        if (qualityIndex <= 0.3) {
-            return "Very Poor";
-        } else if (qualityIndex <= 0.6) {
-            return "Poor";
-        } else if (qualityIndex <= 0.8) {
-            return "Fair";
-        } else if (qualityIndex <= 0.9) {
-            return "Good";
-        } else if (qualityIndex <= 1.00) {
-            return "Excellent";
-        } else {
-            return "Unknown";
-        }
+    convertSleepIndex(qualityIndex) {
+        return translateSleepIndex(qualityIndex);
     }
 
     // Abstract method to be implemented by subclasses
@@ -79,7 +69,25 @@ export default class Device {
 
             for (let i = batchStart; i < batchEnd; i++) {
                 const entry = {};
-                const fieldPromises = fields.map(field =>
+                const timestamp = new Date(now.getTime() - (i + 1) * intervalMinutes * 60 * 1000);
+                const hour = timestamp.getHours();
+                const day = timestamp.getDay();
+
+                // Determine if it's nighttime (10pm to 9am) or day time (otherwise)
+                const isNightTime = (hour >= 22 || hour < 9);
+                const isAfternoonNap = (day === 5 && hour >= 12 && hour < 15); // Friday afternoon nap
+
+                const filteredFields = fields.filter(field => {
+                    if (isNightTime || isAfternoonNap) {
+                        // During nighttime or Friday afternoon nap, generate sleep and select few metrics
+                        return ['heartRate', 'sleep', 'EEG', 'oxygenSaturation', 'bloodPressure'].includes(field);
+                    } else {
+                        // During day time, generate other metrics, excluding sleep
+                        return field !== 'sleep';
+                    }
+                });
+
+                const fieldPromises = filteredFields.map(field =>
                     new Promise(resolve => {
                         entry[field] = this.getPrecomputedDataForField(field, i);
                         resolve();
@@ -88,7 +96,7 @@ export default class Device {
 
                 // Wait for all field promises to resolve before pushing the entry to data
                 batchPromises.push(Promise.all(fieldPromises).then(() => {
-                    entry["timestamp"] = new Date(now.getTime() - (i + 1) * intervalMinutes * 60 * 1000).toISOString();
+                    entry["timestamp"] = timestamp.toISOString();
                     data.push(entry);
                 }));
             }
@@ -100,6 +108,7 @@ export default class Device {
 
         return accumulatedData;
     }
+
     async seedDatabase() {
         const now = new Date();
         const intervalMinutes = parseInt(this._config.timeWindowMinutes) / parseInt(this._config.points);
@@ -120,8 +129,6 @@ export default class Device {
 
         const fields = this.getFields();
         this.data = await this.generateDataBatch(points, intervalMinutes, fields, batchSize);
-        this._logger.debug(`Seeded ${this.data.length} data points for ${this.name} device.`);
-        this._logger.debug(`Data points: ${JSON.stringify(this.data, null, 4)}`);
         this.lastSeeded = now; // Update the last seeded timestamp
         return this.data;
     }

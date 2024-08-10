@@ -48,9 +48,12 @@ class APIService {
                 this.callback = controller.unlinkDevice;
                 this.parameters.push(this.request.deviceId);
                 break;
+            case 'getHealthStory':
+                this.callback = controller.getHealthStory;
+                break;
             default:
                 break;
-        }
+        };
     }
 
     async execute() {

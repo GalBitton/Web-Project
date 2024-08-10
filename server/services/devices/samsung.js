@@ -27,7 +27,7 @@ class SamsungWatch extends Device {
             case 'sleep':
                 return {
                     duration: this._computeRandomValue("sleepDuration"),
-                    quality: this.translateSleepQualityIndex(this._computeRandomValue("sleepQuality"))
+                    quality: this.convertSleepIndex(this._computeRandomValue("sleepQuality"))
                 };
             case 'stressLevel':
                 return this._computeRandomValue("stressScore");
@@ -52,7 +52,7 @@ class SamsungBracelet extends Device {
             case 'sleep':
                 return {
                     "duration": entry[field].durationHours,
-                    "quality": super.translateSleepQualityIndex(entry[field].qualityRating)
+                    "quality": super.convertSleepIndex(entry[field].qualityRating)
                 }
             case 'stress':
                 return {

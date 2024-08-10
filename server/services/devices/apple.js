@@ -28,7 +28,7 @@ export default class AppleWatch extends Device {
             case 'sleep':
                 return {
                     duration: this._computeRandomValue("sleepDuration"),
-                    quality: this.translateSleepQualityIndex(this._computeRandomValue("sleepQuality"))
+                    quality: this.convertSleepIndex(this._computeRandomValue("sleepQuality"))
                 };
             case 'bloodPressure':
                 return {

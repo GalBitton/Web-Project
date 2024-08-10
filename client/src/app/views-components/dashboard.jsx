@@ -29,6 +29,7 @@ const Dashboard = () => {
     const [selectedDeviceToLink, setSelectedDeviceToLink] = useState('');
     const [unlinkedDevices, setUnlinkedDevices] = useState([]);
     const [currentDevice, setCurrentDevice] = useState(null);
+    const [healthStory, setHealthStory] = useState("");
 
     const [chartsData, setChartsData] = useState({
         heartRate: {labels: [], values: []},
@@ -202,9 +203,9 @@ const Dashboard = () => {
     };
 
     const handleHealthStory = async () => {
-        const latestStats = chartsData
-        const apiService = new APIService({action: 'getHealthStory', stats: chartsData });
-        await apiService.execute();
+        const apiService = new APIService({action: 'getHealthStory' });
+        const story = await apiService.execute();
+        setHealthStory(story);
     }
 
     const handleBrandChange = (event) => {
@@ -267,9 +268,8 @@ const Dashboard = () => {
                 {avgDataLoading && <LoadingAnimation/>}
                 {avgDataError && <p>Error: {avgDataError}</p>}
                 <button
-                    className="bg-green-500 hover:bg-green-700 dark:bg-green-300 dark:hover:bg-green-500 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem]"
+                    className="bg-green-500 hover:bg-green-700 dark:bg-green-300 dark:hover:bg-green-500 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem] sm:h-[4rem]"
                     onClick={handleHealthStory}>View Analysis</button>
-
                 <ChartComponent
                     title="Average Heart Rate BPM"
                     chartId="avghealthDataChart"
@@ -372,17 +372,8 @@ const Dashboard = () => {
                     </button>
                 </div>
             </div>
-
-            {/*<div*/}
-            {/*    className="flex justify-center items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full mb-10">*/}
-            {/*    <p className="text-lg text-gray-700 dark:text-slate-400">Select Filters: </p>*/}
-            {/*    <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-8 w-full sm:w-[60rem]">*/}
-            {/*    </div>*/}
-            {/*</div>*/}
-
             <div className="flex flex-wrap justify-center gap-14 max-w-full">
                 {chartsData.heartRate.labels.length > 0 && (
-
                     <ChartComponent
                         title="Heartrate BPM"
                         chartId="healthDataChart"
@@ -571,6 +562,12 @@ const Dashboard = () => {
                     </div>
                 )}
             </div>
+            {healthStory && (
+                // Styled div to display a large text
+                <div className="flex justify-center items-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full mb-10">
+                    <p className="text-lg text-gray-700 dark:text-slate-400">{healthStory}</p>
+                </div>
+            )}
         </div>
     );
 };

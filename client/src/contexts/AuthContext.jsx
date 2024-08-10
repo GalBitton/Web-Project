@@ -39,6 +39,8 @@ export const AuthProvider = ({ children }) => {
         switch (identifier) {
             case 'email':
                 return identity.email;
+            case 'emailPrefix':
+                return identity.email.split("@")[0];
             case 'userId':
                 return identity.userId;
             default:

@@ -19,7 +19,9 @@ const DeviceDataSchema = new mongoose.Schema({
 });
 
 DeviceDataSchema.pre('save', function(next) {
-    this.lastSeeded = new Date();
+    if (!this.isNew) {
+        this.lastSeeded = new Date();
+    }
     next();
 })
 

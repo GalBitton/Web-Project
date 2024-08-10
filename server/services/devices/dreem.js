@@ -14,7 +14,7 @@ export default class DreemHeadband extends Device {
             case 'sleep':
                 return {
                     "duration": entry.sleepData.totalDuration,
-                    "quality": super.translateSleepQualityIndex(entry.sleepData.sleepQuality)
+                    "quality": super.convertSleepIndex(entry.sleepData.sleepQuality)
                 }
             case 'meditationScore':
                 return entry[field];
