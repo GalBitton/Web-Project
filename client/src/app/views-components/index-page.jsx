@@ -6,14 +6,31 @@ import { useAuth } from "@/contexts/AuthContext.jsx";
 const IndexPage = () => {
     const { isLoggedIn } = useAuth();
 
+    const BackgroundImage = styled.img`
+        position: absolute;
+        width: 1445px;
+        height: 830px;
+        top: 0;
+        left: 0; /* Default position */
+    
+        @media (max-width: 1445px) {
+            left: calc(50% - 400px); /* Center the image horizontally */
+        }
+        @media (min-height: 830px) {
+            height: calc(100vh - 100px); /* Expand the height relative to the viewport height */
+            left: calc(50% - 550px);
+        }
+            
+    `;
     return (
-        <div className="mt-16 relative flex flex-col justify-between min-h-screen bg-indigo-100 dark:bg-slate-800 dark:from-gray-800 dark:via-gray-900 dark:to-black">
-            <img
-                src="/assets/backgrounds/landingPage-transparent.png"
+        <div className="mt-16 relative flex flex-col overflow-hidden justify-between min-h-screen bg-indigo-100 dark:bg-slate-800 dark:from-gray-800 dark:via-gray-900 dark:to-black">
+
+            <BackgroundImage
+                src="/assets/backgrounds/logo2.png"
                 alt="Landing Page Image"
-                className="absolute left-1/4 inset-0 w-[75vw] h-full opacity-60"
-                style={{ maxWidth: '100%', maxHeight: '100%' }}
+                className="opacity-60 h-auto w-auto"
             />
+
             <div className="relative z-10 flex flex-col items-start p-8 max-w-xl mt-24 ml-4 md:ml-16 bg-white dark:bg-slate-900 bg-opacity-80 dark:bg-opacity-90 rounded-lg shadow-lg animate-fadeIn">
                 <h1 className="text-5xl md:text-7xl font-bold mb-4 text-black dark:text-white">
                     {serviceData.name}

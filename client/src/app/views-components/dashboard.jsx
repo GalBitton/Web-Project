@@ -7,6 +7,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import useAPIService from "@/hooks/useAPIService";
 import APIService from "@/services/api/APIService";
 import LoadingAnimation from '../../components/loading';
+import ResponsiveChartComponent from './responsive-charts';
+import GenericSlider from '../../components/slider';
 
 const supportedDevices = [
     { brand: 'Samsung', type: 'Smartwatch' },
@@ -224,6 +226,88 @@ const Dashboard = () => {
         setIsVisible(!isVisible);
     };
 
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    const graphs = [
+        {
+            title: "Average Heart Rate BPM",
+            chartId: "avghealthDataChart",
+            labels: averageChartsData.heartRate.labels,
+            datasets: [
+                {
+                    label: 'Heart Rate BPM',
+                    data: averageChartsData.heartRate.values,
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    type: 'line',
+                }
+            ],
+            summary: getGraphSummary(overallAverages.heartRate, "heartRate")
+        },
+        {
+            title: "Average Steps Count",
+            chartId: "avgstepsChart",
+            labels: averageChartsData.steps.labels,
+            datasets: [
+                {
+                    label: 'Steps Count',
+                    data: averageChartsData.steps.values,
+                    backgroundColor: 'rgba(153, 102, 255, 0.5)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    type: 'bar',
+                }
+            ],
+            summary: getGraphSummary(overallAverages.steps, "steps")
+        },
+        {
+            title: "Average Calories Burned",
+            chartId: "avgcaloriesChart",
+            labels: averageChartsData.calories.labels,
+            datasets: [
+                {
+                    label: 'Calories Burned',
+                    data: averageChartsData.calories.values,
+                    backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    type: 'bar',
+                }
+            ],
+            summary: getGraphSummary(overallAverages.calories, "calories")
+        },
+        {
+            title: "Average Sleep Duration",
+            chartId: "avgsleepChart",
+            labels: averageChartsData.sleep.labels,
+            datasets: [
+                {
+                    label: 'Sleep Duration (hours)',
+                    data: averageChartsData.sleep.values,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    type: 'bar',
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Sleep Quality',
+                    data: averageChartsData.sleep.valuesY1,
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    type: 'line',
+                    yAxisID: 'y1'
+                }
+            ],
+            summary: getGraphSummary(overallAverages.sleep, "sleep")
+        }
+    ];
+
+    const handleNext = () => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % graphs.length);
+    };
+
+    const handlePrev = () => {
+        setCurrentIndex((prevIndex) => (prevIndex - 1 + graphs.length) % graphs.length);
+    };
+    
     return (
         <div className="dashboard-full-container max-w-full">
             <div className="mt-24 mb-2 p-4 items-center">
@@ -274,95 +358,39 @@ const Dashboard = () => {
                 {devicesLoading && <LoadingAnimation/>}
                 {devicesError && <p>Error: {devicesError}</p>}
                 <div className="flex-1 justify-center p-10 mb-[15rem] lg:mb-0">
-                    <div
+                    
+                <div
                         className="linked-devices flex flex-wrap justify-center sm:justify-between items-center w-full p-2 gap-14">
                         {linkedDevices.map(device => (
                             <DeviceCard key={device.name} device={device}/>
                         ))}
                         
                     </div>
-                </div>
+        </div>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-14 max-w-full">
-                {avgDataLoading && <LoadingAnimation/>}
-                {avgDataError && <p>Error: {avgDataError}</p>}
-                <button
-                    className="bg-green-500 hover:bg-green-700 dark:bg-green-300 dark:hover:bg-green-500 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem] sm:h-[4rem]"
-                    onClick={handleHealthStory}>View Analysis</button>
-                <ChartComponent
-                    title="Average Heart Rate BPM"
-                    chartId="avghealthDataChart"
-                    labels={averageChartsData.heartRate.labels}
-                    datasets={[
-                        {
-                            label: 'Heart Rate BPM',
-                            data: averageChartsData.heartRate.values,
-                            backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            type: 'line',
-                        }
-                    ]}
-                    summary={getGraphSummary(overallAverages.heartRate, "heartRate")}
-                />
-                <ChartComponent
-                    title="Average Steps Count"
-                    chartId="avgstepsChart"
-                    labels={averageChartsData.steps.labels}
-                    datasets={[
-                        {
-                            label: 'Steps Count',
-                            data: averageChartsData.steps.values,
-                            backgroundColor: 'rgba(153, 102, 255, 0.5)',
-                            borderColor: 'rgba(153, 102, 255, 1)',
-                            type: 'bar',
-                        }
-                    ]}
-                    summary={getGraphSummary(overallAverages.steps, "steps")}
-                />
-                <ChartComponent
-                    title="Average Calories Burned"
-                    chartId="avgcaloriesChart"
-                    labels={averageChartsData.calories.labels}
-                    datasets={[
-                        {
-                            label: 'Calories Burned',
-                            data: averageChartsData.calories.values,
-                            backgroundColor: 'rgba(255, 159, 64, 0.5)',
-                            borderColor: 'rgba(255, 159, 64, 1)',
-                            type: 'bar',
-                        }
-                    ]}
-                    summary={getGraphSummary(overallAverages.calories, "calories")}
-                />
-                <ChartComponent
-                    title="Average Sleep Duration"
-                    chartId="avgsleepChart"
-                    labels={averageChartsData.sleep.labels}
-                    datasets={[
-                        {
-                            label: 'Sleep Duration (hours)',
-                            data: averageChartsData.sleep.values,
-                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            type: 'bar',
-                            yAxisID: 'y'
-                        },
-                        {
-                            label: 'Sleep Quality',
-                            data: averageChartsData.sleep.valuesY1,
-                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            type: 'line',
-                            yAxisID: 'y1'
-                        }
-                    ]}
-                    summary={getGraphSummary(overallAverages.sleep, "sleep")}
-                />
+            <div className="justify-center m-4 p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg flex-grow">
+            <div className="flex flex-col items-center max-w-full">
+            <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white">Device Data Overview</h2>
+            {avgDataLoading && <LoadingAnimation />}
+            {avgDataError && <p>Error: {avgDataError}</p>}
+                        
+            <ResponsiveChartComponent
+                title={graphs[currentIndex].title}
+                chartId={graphs[currentIndex].chartId}
+                labels={graphs[currentIndex].labels}
+                datasets={graphs[currentIndex].datasets}
+                summary={graphs[currentIndex].summary}
+            />
+            
+            <div className="flex justify-between w-full mt-4">
+                <button onClick={handlePrev} className="px-4 py-2 bg-gray-300 rounded">← Prev</button>
+                <button onClick={handleNext} className="px-4 py-2 bg-gray-300 rounded">Next →</button>
             </div>
+        </div>
+        </div>
 
-            <div
-                className="flex justify-center items-center gap-4 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full mb-10">
+            <div className="flex justify-center m-4 p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg flex-grow">
                 <p className="text-lg text-gray-700 dark:text-slate-400">Select Model: </p>
                 <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-8 w-full sm:w-[60rem]">
                     <select
@@ -390,6 +418,9 @@ const Dashboard = () => {
                             Unlink
                         </div>
                     </button>
+                    <button   
+                    className="bg-green-600 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-400 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem] sm:h-[4rem]"
+                    onClick={handleHealthStory}>View Analysis</button>
                 </div>
             </div>
             <div className="flex flex-wrap justify-center gap-14 max-w-full">
