@@ -61,7 +61,7 @@ class UserController {
                 } else {
                     return res.status(400).json({error: 'Device already linked'});
                 }
-                deviceData = await DeviceData.findOne({ device: device._id }).exec();
+                deviceData = await DeviceData.findOne({ device: device._id }).sort({ timestamp: -1 }).exec();
                 if (!deviceData) {
                     this._logger.error('Device data not found, despite existence of deviceId:', device._id);
                     return res.status(404).json({error: 'Device data not found'});
@@ -72,13 +72,16 @@ class UserController {
             const deviceInstance = this._deviceFactory.createDevice(brand, type, deviceId, deviceData.lastSeeded);
             const dataBatches = await this.generateDataPoints(deviceInstance);
 
-            // Process and insert data batches into the database
-            for (const batch of dataBatches) {
-                await DeviceData.updateOne(
-                    { device: device._id },
-                    { $push: { datapoints: { $each: batch } } }
-                ).exec();
-            }
+            const bulkOps = dataBatches.map(batch => ({
+                updateOne: {
+                    filter: { device: device._id },
+                    update: { $push: { datapoints: { $each: batch } } }
+                }
+            }));
+
+            // Perform the bulk operation
+            await DeviceData.bulkWrite(bulkOps);
+            await deviceData.save();
 
             res.status(200).json({
                 device: {
@@ -131,7 +134,7 @@ class UserController {
                 return res.status(404).json({ error: 'Device not found' });
             }
 
-            const deviceData = await DeviceData.findOne({ device: deviceId }).exec();
+            const deviceData = await DeviceData.findOne({ device: deviceId }).sort({ timestamp: -1 }).exec();
             if (!deviceData) {
                 return res.status(404).json({ error: 'Device data not found' });
             }
@@ -139,13 +142,16 @@ class UserController {
             const deviceInstance = this._deviceFactory.createDevice(device.brand, device.type, deviceId, deviceData.lastSeeded);
             const dataBatches = await this.generateDataPoints(deviceInstance);
 
-            // Process and insert data batches into the database
-            for (const batch of dataBatches) {
-                await DeviceData.updateOne(
-                    { device: device._id },
-                    { $push: { datapoints: { $each: batch } } }
-                ).exec();
-            }
+            const bulkOps = dataBatches.map(batch => ({
+                updateOne: {
+                    filter: { device: device._id },
+                    update: { $push: { datapoints: { $each: batch } } }
+                }
+            }));
+
+            // Perform the bulk operation
+            await DeviceData.bulkWrite(bulkOps);
+            await deviceData.save();
 
             const data = deviceInstance.extractGraphData(deviceData.datapoints);
             res.status(200).json({ ...data });

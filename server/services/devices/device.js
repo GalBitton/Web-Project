@@ -137,32 +137,30 @@ export default class Device {
         const now = new Date();
         const intervalMinutes = parseInt(this._config.timeWindowMinutes) / parseInt(this._config.points);
 
-        let points;
-        let difference;
+        // Calculate the number of points to generate based on time elapsed since lastSeeded
         const defaultLastSeededDaysAgo = new Date(now.getTime() - parseInt(this._config.defaultLastSeeded) * 24 * 60 * 60 * 1000);
-        if (this.lastSeeded && this.lastSeeded > defaultLastSeededDaysAgo) { // By default, lastSeeded is null.
-            difference = this.lastSeeded;
-        } else {
-            difference = defaultLastSeededDaysAgo;
-        }
+        const lastSeededTime = this.lastSeeded && this.lastSeeded > defaultLastSeededDaysAgo
+            ? this.lastSeeded
+            : defaultLastSeededDaysAgo;
 
-        const timeElapsed = Math.floor((now - difference) / (60 * 1000));
-        points = Math.floor(timeElapsed / intervalMinutes);
-
-
+        const timeElapsed = Math.floor((now - lastSeededTime) / (60 * 1000));
+        const points = Math.floor(timeElapsed / intervalMinutes);
+        console.log('Points:', points, ' Time elapsed:', timeElapsed, ' Interval:', intervalMinutes);
         const fields = this.getFields();
 
-        // Generate data in batches
-        const dataBatches = [];
+        // Generate data batches in parallel
+        const batchPromises = [];
         for (let i = 0; i < points; i += batchSize) {
-            const batchPoints = Math.min(batchSize + i, points);
-            const batchData = await this.generateDataBatch(i, batchPoints, intervalMinutes, fields);
-            dataBatches.push(batchData);
+            const batchEnd = Math.min(batchSize + i, points);
+            batchPromises.push(this.generateDataBatch(i, batchEnd, intervalMinutes, fields));
         }
+
+        const dataBatches = await Promise.all(batchPromises);
 
         this.lastSeeded = now; // Update the last seeded timestamp
         return dataBatches; // Return data in batches
     }
+
 
     extractGraphData(datapoints) {
         const fields = ["heartRate", "steps", "caloriesBurned", "sleep", "bloodPressure", "activityRings", "stress", "oxygenSaturation", "EEG"];

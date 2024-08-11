@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import config from 'config';
 
-const defaultLastSeeded = parseInt(config.get('dataSeeding').defaultLastSeeded);
+const dataSeeding = config.get('dataSeeding');
 
 const DataPointSchema = new mongoose.Schema({
     timestamp: { type: Date, required: true },
@@ -22,6 +22,15 @@ DeviceDataSchema.pre('save', function(next) {
     if (!this.isNew) {
         this.lastSeeded = new Date();
     }
+
+    // We save the data only for a week. This is just for the sake of the example.
+    // In a real-world scenario, we would probably want to store more data and utilize a more sophisticated
+    // data management strategy. For example, we could store the data in a time-series database like InfluxDB.
+    // Or partition the data based on time and query it based on the partition key.
+    const pointsCap = dataSeeding.points * 24 * 7;
+    if (this.datapoints.length > pointsCap) {
+        this.datapoints = this.datapoints.slice(-pointsCap);
+    }
     next();
 })
 
@@ -30,6 +39,8 @@ DeviceDataSchema.index({
     device: 1,
     timestamp: -1
 });
+
+DeviceDataSchema.index({ device: 1 });
 
 const DeviceData = mongoose.model('DeviceData', DeviceDataSchema);
 

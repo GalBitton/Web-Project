@@ -19,7 +19,7 @@
         }
     },
     "dataSeeding": {
-        "points": 60,
+        "points": 6,
         "timeWindowMinutes": 60,
         "batchSize": 500,
         "defaultLastSeeded": 7,
