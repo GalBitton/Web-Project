@@ -2,10 +2,6 @@ import Device from "./device.js";
 
 class SamsungWatch extends Device {
     getFieldValue(entry, field) {
-        if (entry[field] === undefined) {
-            return 0;
-        }
-
         switch (field) {
             case 'sleep':
                 return {
@@ -20,6 +16,10 @@ class SamsungWatch extends Device {
             case 'caloriesBurned':
             case 'steps':
             case 'oxygenSaturation':
+                if (entry[field] === undefined) {
+                    return 0;
+                }
+
                 return entry[field];
             default:
                 return 0;
@@ -52,10 +52,6 @@ class SamsungWatch extends Device {
 
 class SamsungBracelet extends Device {
     getFieldValue(entry, field) {
-        if (entry[field] === undefined) {
-            return 0;
-        }
-
         switch (field) {
             case 'sleep':
                 return {
@@ -70,6 +66,9 @@ class SamsungBracelet extends Device {
             case 'caloriesBurned':
             case 'steps':
             case 'breathingRate':
+                if (entry[field] === undefined) {
+                    return 0;
+                }
                 return entry[field];
             default:
                 return 0;

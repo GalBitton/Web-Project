@@ -14,7 +14,13 @@
   },
   "jest": {
     "transform": {
-      "^.+\\.js$": "babel-jest"
+      "^.+\\.[tj]sx?$": "babel-jest"
+    },
+    "extensionsToTreatAsEsm": [".ts", ".tsx", ".jsx"],
+    "globals": {
+      "ts-jest": {
+        "useESM": true
+      }
     }
   },
   "devDependencies": {

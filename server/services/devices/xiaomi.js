@@ -52,10 +52,6 @@ class XiaomiWatch extends Device {
 
 class XiaomiBracelet extends Device {
     getFieldValue(entry, field) {
-        if (entry[field] === undefined) {
-            return 0;
-        }
-
         switch (field) {
             case 'sleep':
                 return {
@@ -70,6 +66,9 @@ class XiaomiBracelet extends Device {
             case 'caloriesBurned':
             case 'steps':
             case 'respiratoryRate':
+                if (entry[field] === undefined) {
+                    return 0;
+                }
                 return entry[field];
             default:
                 return 0;

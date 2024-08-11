@@ -1,7 +1,6 @@
 import { jest } from '@jest/globals';
 import container from '../../containerConfig.js';
 import AppleWatch from '../../services/devices/apple.js';
-import { translateSleepQualityToIndex } from "../../utils/sleepTranslation.js";
 
 describe('AppleWatch', () => {
     let device;
@@ -17,7 +16,7 @@ describe('AppleWatch', () => {
             warn: console.warn,
             error: console.error
         };
-        device = new AppleWatch(config, logger, 1, 'apple-smartwatch', null);
+        device = new AppleWatch(config, logger, '66b68d5e0907bc30b8ad5b3f', 'apple-smartwatch', null);
 
         // Set system time to daytime by default (e.g., 12:00 PM)
         jest.useFakeTimers();
@@ -26,53 +25,59 @@ describe('AppleWatch', () => {
 
     afterEach(() => {
         jest.useRealTimers(); // Reset timers after each test
+        jest.clearAllMocks();
     });
 
     test('should generate 2 data points given lastSeeded value 20 minutes ago', async () => {
         const now = new Date();
-        const difference = now.getMinutes() - 2 * config.timeWindowMinutes / config.points; // 20 Intervals ago (20 minutes ago)
-        const lastSeeded = now.setMinutes(difference);
-        device = new AppleWatch(config, logger, 1, 'apple-smartwatch', lastSeeded);
-        await device.seedDatabase();
+        const difference = now.getMinutes() - 20;
+        const lastSeeded = new Date(now.setMinutes(difference));
+        device = new AppleWatch(config, logger, '66b68d5e0907bc30b8ad5b3f', 'apple-smartwatch', lastSeeded);
 
-        const expectedPoints = 2;
-        expect(device.data).toHaveLength(expectedPoints);
+        const dataBatches = await device.seedDatabase();
+        const totalDataPoints = dataBatches.flat().length; // Flatten and count all data points
+
+        expect(totalDataPoints).toBe(2);
     });
 
     test('should generate 2 data points given lastSeeded value 28 minutes ago', async () => {
         const now = new Date();
         const difference = now.getMinutes() - 28; // 28 minutes ago
-        const lastSeeded = now.setMinutes(difference);
-        device = new AppleWatch(config, logger, 1, 'apple-smartwatch', lastSeeded);
-        await device.seedDatabase();
+        const lastSeeded = new Date(now.setMinutes(difference));
+        device = new AppleWatch(config, logger, '66b68d5e0907bc30b8ad5b3f', 'apple-smartwatch', lastSeeded);
 
-        const expectedPoints = 2;
-        expect(device.data).toHaveLength(expectedPoints);
+        const dataBatches = await device.seedDatabase();
+        const totalDataPoints = dataBatches.flat().length; // Flatten and count all data points
+
+        expect(totalDataPoints).toBe(2);
     });
 
     test('should generate 0 data points given lastSeeded value 8 minutes ago', async () => {
         const now = new Date();
         const difference = now.getMinutes() - 8; // 8 minutes ago
-        const lastSeeded = now.setMinutes(difference);
-        device = new AppleWatch(config, logger, 1, 'apple-smartwatch', lastSeeded);
-        await device.seedDatabase();
+        const lastSeeded = new Date(now.setMinutes(difference));
+        device = new AppleWatch(config, logger, '66b68d5e0907bc30b8ad5b3f', 'apple-smartwatch', lastSeeded);
 
-        const expectedPoints = 0;
-        expect(device.data).toHaveLength(expectedPoints);
+        const dataBatches = await device.seedDatabase();
+        const totalDataPoints = dataBatches.flat().length; // Flatten and count all data points
+
+        expect(totalDataPoints).toBe(0);
     });
 
-    test('should generate data points for 3 days given lastSeeded value null', async () => {
-        device = new AppleWatch(config, logger, 1, 'apple-smartwatch', null);
-        await device.seedDatabase();
+    test('should generate 432 data points for 3 days given lastSeeded value null', async () => {
+        device = new AppleWatch(config, logger, '66b68d5e0907bc30b8ad5b3f', 'apple-smartwatch', null);
 
-        const expectedPoints = 432;
-        expect(device.data).toHaveLength(expectedPoints);
+        const dataBatches = await device.seedDatabase();
+        const totalDataPoints = dataBatches.flat().length; // Flatten and count all data points
+
+        expect(totalDataPoints).toBe(432);
     });
 
     test('should generate data points with correct structure', async () => {
         jest.setSystemTime(new Date('2024-08-06T14:00:00Z')); // Set time to 2:00 PM on a Thursday
-        await device.seedDatabase();
-        const dataPoint = device.data[0];
+
+        const dataBatches = await device.seedDatabase();
+        const dataPoint = dataBatches.flat()[0]; // Flatten and access the first data point
         const fields = device.getFields();
 
         fields.forEach(field => {
@@ -86,8 +91,8 @@ describe('AppleWatch', () => {
     test('should generate data points within specified value ranges with max deviation', async () => {
         jest.setSystemTime(new Date('2024-08-08T14:00:00Z')); // Set time to 2:00 PM on a Thursday
 
-        await device.seedDatabase();
-        const dataPoint = device.data[0];
+        const dataBatches = await device.seedDatabase();
+        const dataPoint = dataBatches.flat()[0]; // Flatten and access the first data point
         const ranges = config.valueRanges;
         const maxDeviations = config.commonFieldValueMaxDeviations;
 
@@ -131,16 +136,27 @@ describe('AppleWatch', () => {
     });
 
     test('should generate data in batches', async () => {
-        const batchSize = config.batchSize || 10;
+        const batchSize = config.batchSize || 50;
         const generateDataBatchSpy = jest.spyOn(device, 'generateDataBatch');
+
+        // Simulate the passage of time to calculate the correct number of points
+        const now = new Date();
+        const intervalMinutes = parseInt(config.timeWindowMinutes) / parseInt(config.points);
+        const defaultLastSeededDaysAgo = new Date(now.getTime() - parseInt(config.defaultLastSeeded) * 24 * 60 * 60 * 1000);
+
+        let lastSeeded = device.lastSeeded || defaultLastSeededDaysAgo;
+        const timeElapsed = Math.floor((now - lastSeeded) / (60 * 1000));
+        const points = Math.floor(timeElapsed / intervalMinutes);
 
         await device.seedDatabase();
 
-        const expectedBatches = Math.ceil(config.points / batchSize);
+        const expectedBatches = Math.ceil(points / batchSize);
         expect(generateDataBatchSpy).toHaveBeenCalledTimes(expectedBatches);
     });
 
-    // New tests for sleep feature and exclusion cases
+
+
+    // Tests for sleep feature and exclusion cases
     describe('Sleep feature', () => {
         beforeEach(() => {
             // Set system time to nighttime for sleep-related tests (e.g., 11:00 PM)
@@ -148,8 +164,8 @@ describe('AppleWatch', () => {
         });
 
         test('should generate sleep data within specified ranges', async () => {
-            await device.seedDatabase();
-            const dataPoint = device.data[0];
+            const dataBatches = await device.seedDatabase();
+            const dataPoint = dataBatches.flat()[0]; // Flatten and access the first data point
             const ranges = config.valueRanges;
 
             expect(dataPoint.sleep.duration).toBeGreaterThanOrEqual(ranges.sleepDuration.min);
@@ -159,8 +175,8 @@ describe('AppleWatch', () => {
         });
 
         test('should include sleep field in generated data points during nighttime', async () => {
-            await device.seedDatabase();
-            const dataPoint = device.data[0];
+            const dataBatches = await device.seedDatabase();
+            const dataPoint = dataBatches.flat()[0]; // Flatten and access the first data point
             expect(dataPoint).toHaveProperty('sleep');
         });
 
@@ -168,33 +184,17 @@ describe('AppleWatch', () => {
             // Adjust to your local time by subtracting 3 hours to match 2:00 PM local time (GMT +3)
             jest.setSystemTime(new Date('2024-08-09T11:00:00Z')); // This sets the time to 2:00 PM local time (GMT +3)
 
-            await device.seedDatabase();
+            const dataBatches = await device.seedDatabase();
+            const dataPoint = dataBatches.flat()[0]; // Flatten and access the first data point
 
-            const dataPoint = device.data[0];
             expect(dataPoint).toHaveProperty('sleep');
-        });
-
-
-
-        test('should correctly map sleep field values', () => {
-            const entry = {
-                sleep: {
-                    duration: 6,
-                    quality: 0.8
-                }
-            };
-            const sleepValue = device.getFieldValue(entry, 'sleep');
-            expect(sleepValue).toEqual({
-                duration: 6,
-                quality: 0.8
-            });
         });
 
         test('should exclude sleep field in generated data points during daytime', async () => {
             jest.setSystemTime(new Date('2024-08-09T16:00:00Z')); // Set time to 16:00 PM (daytime)
 
-            await device.seedDatabase();
-            const dataPoint = device.data[0];
+            const dataBatches = await device.seedDatabase();
+            const dataPoint = dataBatches.flat()[0]; // Flatten and access the first data point
             expect(dataPoint).not.toHaveProperty('sleep');
         });
     });

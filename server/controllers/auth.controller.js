@@ -86,15 +86,15 @@ class AuthController {
                 maxAge: convertExpirationDateToMilliseconds(this._config.get('refresh_expiration'))
             });
 
+            user.refreshToken = refreshToken;
+            // Disable validation on save since we are only updating the refreshToken
+            await user.save({ validateModifiedOnly: true });
+
             res.status(200).json({
                 accessToken,
                 userId: user._id,
                 email
             });
-
-            user.refreshToken = refreshToken;
-            await user.save();
-
         } catch (error) {
             this._logger.error(`Error authenticating user: ${error}, request: ${req}`);
             res.status(500).json({ error: error.message });

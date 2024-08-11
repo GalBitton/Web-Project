@@ -46,7 +46,7 @@ const TermsOfService = () => {
 
                 <h2 className="text-3xl text-green-800 dark:text-[#128931] mb-4">8. Contact Us</h2>
                 <p className="mb-4 text-gray-900 dark:text-white">
-                    If you have any questions or concerns about these terms of use, please contact us at support@wearablehealth.com.
+                    If you have any questions or concerns about these terms of use, please contact us at support@neurosync.com.
                 </p>
             </div>
         </div>

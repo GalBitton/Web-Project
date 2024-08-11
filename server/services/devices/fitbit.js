@@ -2,10 +2,6 @@ import Device from "./device.js";
 
 export default class FitbitBracelet extends Device {
     getFieldValue(entry, field) {
-        if (entry[field] === undefined) {
-            return 0;
-        }
-
         switch (field) {
             case 'sleep':
                 return {
@@ -21,6 +17,10 @@ export default class FitbitBracelet extends Device {
             case 'steps':
             case 'heartRate':
             case 'caloriesBurned':
+                if (entry[field] === undefined) {
+                    return 0;
+                }
+
                 return entry[field];
             default:
                 return 0;

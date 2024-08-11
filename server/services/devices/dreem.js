@@ -2,10 +2,6 @@ import Device from "./device.js";
 
 export default class DreemHeadband extends Device {
     getFieldValue(entry, field) {
-        if (entry[field] === undefined) {
-            return 0;
-        }
-
         switch (field) {
             case 'EEG':
                 return {

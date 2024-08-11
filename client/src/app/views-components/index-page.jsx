@@ -5,7 +5,6 @@ import { useAuth } from "@/contexts/AuthContext.jsx";
 
 const IndexPage = () => {
     const { isLoggedIn } = useAuth();
-    const getStarted = isLoggedIn ? "/dashboard" : "/register";
 
     return (
         <div className="mt-16 relative flex flex-col justify-between min-h-screen bg-indigo-100 dark:bg-slate-800 dark:from-gray-800 dark:via-gray-900 dark:to-black">
@@ -23,7 +22,7 @@ const IndexPage = () => {
                     Transform the Way You Connect and Monitor Your Devices. Our application seamlessly integrates with your smartwatches, smart bands, and other wearable devices, allowing you to track and manage all your smart devices from a single platform.
                 </p>
                 <a
-                    href={getStarted}
+                    href="/dashboard"
                     className="hover:outline hover:outline-fuchsia-600 dark:hover:outline-cyan-300 bg-gradient-to-r from-purple-800 via-indigo-600 to-blue-900 text-white px-6 py-3 rounded-full hover:bg-indigo-700 dark:hover:bg-indigo-600 transition duration-300 shadow-lg hover:shadow-xl focus:ring-4 focus:ring-indigo-300 dark:focus:ring-slate-500 animate-pulse"
                 >
                     Get started

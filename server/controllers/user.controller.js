@@ -70,14 +70,15 @@ class UserController {
 
             const deviceId = device._id;
             const deviceInstance = this._deviceFactory.createDevice(brand, type, deviceId, deviceData.lastSeeded);
-            const newDataPoints = await this.generateDataPoints(deviceInstance, deviceId);
+            const dataBatches = await this.generateDataPoints(deviceInstance);
 
-            // Push valid data points to datapoints array
-            for (let i = 0; i < newDataPoints.length; i++) {
-                deviceData.datapoints.push(newDataPoints[i]);
+            // Process and insert data batches into the database
+            for (const batch of dataBatches) {
+                await DeviceData.updateOne(
+                    { device: device._id },
+                    { $push: { datapoints: { $each: batch } } }
+                ).exec();
             }
-
-            await deviceData.save();
 
             res.status(200).json({
                 device: {
@@ -136,14 +137,15 @@ class UserController {
             }
 
             const deviceInstance = this._deviceFactory.createDevice(device.brand, device.type, deviceId, deviceData.lastSeeded);
-            const validDataPoints = await this.generateDataPoints(deviceInstance, deviceId);
+            const dataBatches = await this.generateDataPoints(deviceInstance);
 
-            // Push valid data points to datapoints array
-            for (let i = 0; i < validDataPoints.length; i++) {
-                deviceData.datapoints.push(validDataPoints[i]);
+            // Process and insert data batches into the database
+            for (const batch of dataBatches) {
+                await DeviceData.updateOne(
+                    { device: device._id },
+                    { $push: { datapoints: { $each: batch } } }
+                ).exec();
             }
-
-            await deviceData.save();
 
             const data = deviceInstance.extractGraphData(deviceData.datapoints);
             res.status(200).json({ ...data });
@@ -214,8 +216,14 @@ class UserController {
                     return res.status(404).json({ error: 'Device data not found' });
                 }
 
-                const latestDataRange = 24 * 6; // A day ago, assuming 6 data points per hour
-                const latestPoints = deviceData.datapoints.slice(-latestDataRange);
+                const oneDayAgo = new Date();
+                oneDayAgo.setDate(oneDayAgo.getDate() - 1); // Calculate the timestamp for 24 hours ago
+
+                // Filter the datapoints based on the timestamp
+                const latestPoints = deviceData.datapoints.filter(point => {
+                    return new Date(point.timestamp) >= oneDayAgo;
+                });
+
                 const deviceInstance = this._deviceFactory.createDevice(device.brand, device.type, device._id, deviceData.lastSeeded);
 
                 latestPoints.forEach(point => {
@@ -339,25 +347,27 @@ class UserController {
 
 
     /* ================================  Helper Functions ========================== */
-    async generateDataPoints(deviceInstance, deviceId) {
-        let generatedData = await deviceInstance.seedDatabase();
+    async generateDataPoints(deviceInstance) {
+        const generatedDataBatches = await deviceInstance.seedDatabase();
 
-        // Ensure datapoints is initialized and is an array
-        if (!Array.isArray(generatedData)) {
-            generatedData = [];
-            this._logger.error('Invalid data generated for device:', deviceId);
-        }
-
-        // Validate structure of each data point
-        return generatedData.map(dataPoint => {
-            const { timestamp, ...dataStats } = dataPoint;
-            return {
-                timestamp,
-                data: {
-                    ...dataStats
-                }
+        // Ensure datapoints are initialized and are arrays
+        const validBatches = generatedDataBatches.map(batch => {
+            if (!Array.isArray(batch)) {
+                this._logger.error('Invalid data generated for device');
+                return [];
             }
+
+            // Validate and structure each data point within the batch
+            return batch.map(dataPoint => {
+                const { timestamp, ...dataStats } = dataPoint;
+                return {
+                    timestamp,
+                    data: { ...dataStats }
+                };
+            });
         });
+
+        return validBatches;
     }
 }
 

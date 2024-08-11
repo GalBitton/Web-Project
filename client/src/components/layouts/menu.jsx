@@ -60,7 +60,7 @@ const AppMenu = () => {
         { name: 'Sign In', alias: 'login', href: '/login', visible: !isLoggedIn },
         { name: 'Sign Up', alias: 'register', href: '/register', visible: !isLoggedIn },
         { name: 'About Us', alias: 'about', href: '/about-us', visible: true },
-        { name: 'Contact', alias: 'contact', href: '/contact-us', visible: true },
+        { name: 'Contact', alias: 'contact', href: '/contact-us', visible: true }
     ];
 
     const logoImage = () => {

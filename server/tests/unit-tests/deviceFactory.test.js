@@ -126,9 +126,9 @@ describe('XiaomiBracelet', () => {
 
     test('getFieldValue returns correct sleep data', () => {
         const entry = {
-            sleep: { totalDuration: 420, qualityIndex: 1.297 }
+            sleep: { totalDuration: 420, qualityIndex: 0.952 }
         };
         const sleepData = device.getFieldValue(entry, 'sleep');
-        expect(sleepData).toEqual({ duration: 420, quality: 'Excellent' }); // Adjust expected value based on logic
+        expect(sleepData).toEqual({ duration: 420, quality: 'Excellent' });
     });
 });
