@@ -1,11 +1,8 @@
 import serviceData from "../../../package.json";
 import TextCard from "../../components/textcard.jsx";
-import { useAuth } from "@/contexts/AuthContext.jsx";
-
+import styled from 'styled-components';
 
 const IndexPage = () => {
-    const { isLoggedIn } = useAuth();
-
     const BackgroundImage = styled.img`
         position: absolute;
         width: 1445px;
@@ -20,8 +17,8 @@ const IndexPage = () => {
             height: calc(100vh - 100px); /* Expand the height relative to the viewport height */
             left: calc(50% - 550px);
         }
-            
     `;
+
     return (
         <div className="mt-16 relative flex flex-col overflow-hidden justify-between min-h-screen bg-indigo-100 dark:bg-slate-800 dark:from-gray-800 dark:via-gray-900 dark:to-black">
 
