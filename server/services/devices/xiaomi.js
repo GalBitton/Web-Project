@@ -2,12 +2,13 @@ import Device from "./device.js";
 
 class XiaomiWatch extends Device {
     getFieldValue(entry, field) {
-        if (entry[field] === undefined) {
-            return 0;
-        }
-
         switch (field) {
             case 'sleep':
+                // Sleep is only generated once a day, so it might be undefined.
+                if (entry[field] === undefined) {
+                    return 0;
+                }
+
                 return {
                     "duration": entry[field].duration,
                     "quality": entry[field].quality
@@ -20,6 +21,10 @@ class XiaomiWatch extends Device {
             case 'caloriesBurned':
             case 'steps':
             case 'VO2Max':
+                if (entry[field] === undefined) {
+                    return 0;
+                }
+
                 return entry[field];
             default:
                 return 0;
@@ -54,6 +59,11 @@ class XiaomiBracelet extends Device {
     getFieldValue(entry, field) {
         switch (field) {
             case 'sleep':
+                // Sleep is only generated once a day, so it might be undefined.
+                if (entry[field] === undefined) {
+                    return 0;
+                }
+
                 return {
                     "duration": entry[field].totalDuration,
                     "quality": super.convertSleepIndex(entry[field].qualityIndex)

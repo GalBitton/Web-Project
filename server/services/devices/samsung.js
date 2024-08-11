@@ -4,6 +4,11 @@ class SamsungWatch extends Device {
     getFieldValue(entry, field) {
         switch (field) {
             case 'sleep':
+                // Sleep is only generated once a day, so it might be undefined.
+                if (entry[field] === undefined) {
+                    return 0;
+                }
+
                 return {
                     "duration": entry[field].duration,
                     "quality": entry[field].quality
@@ -54,6 +59,11 @@ class SamsungBracelet extends Device {
     getFieldValue(entry, field) {
         switch (field) {
             case 'sleep':
+                // Sleep is only generated once a day, so it might be undefined.
+                if (entry[field] === undefined) {
+                    return 0;
+                }
+
                 return {
                     "duration": entry[field].durationHours,
                     "quality": super.convertSleepIndex(entry[field].qualityRating)

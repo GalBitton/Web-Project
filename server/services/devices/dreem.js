@@ -12,6 +12,11 @@ export default class DreemHeadband extends Device {
                     "theta": entry[field].theta
                 }
             case 'sleep':
+                // Sleep is only generated once a day, so it might be undefined.
+                if (entry[field] === undefined) {
+                    return 0;
+                }
+
                 return {
                     "duration": entry.sleepData.totalDuration,
                     "quality": super.convertSleepIndex(entry.sleepData.sleepQuality)
