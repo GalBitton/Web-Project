@@ -9,6 +9,8 @@ import APIService from "@/services/api/APIService";
 import LoadingAnimation from '../../components/loading';
 import ResponsiveChartComponent from './responsive-charts';
 import GenericSlider from '../../components/slider';
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 const supportedDevices = [
     { brand: 'Samsung', type: 'Smartwatch' },
@@ -358,33 +360,48 @@ const Dashboard = () => {
                 {devicesLoading && <LoadingAnimation/>}
                 {devicesError && <p>Error: {devicesError}</p>}
                 <div className="flex-1 justify-center p-10 mb-[15rem] lg:mb-0">
-                    
-                <div
-                        className="linked-devices flex flex-wrap justify-center sm:justify-between items-center w-full p-2 gap-14">
-                        {linkedDevices.map(device => (
-                            <DeviceCard key={device.name} device={device}/>
-                        ))}
-                        
+
+                    <div className="linked-devices flex justify-center items-center w-full p-2">
+                        <Carousel
+                            selectedItem={linkedDevices.findIndex(device => device.brand === selectedBrand && device.type === selectedType)}
+                            showThumbs={false}
+                            showIndicators={false}
+                            showStatus={false}
+                            infiniteLoop={true} // Enable infinite loop
+                            centerMode={true} // Center the carousel
+                            centerSlidePercentage={linkedDevices.length > 0 ? 80 : 100} // Control the width of each slide
+                            swipeable={true} // Allow swiping
+                        >
+                            {linkedDevices.length > 0 ? linkedDevices.map(device => (
+                                <div key={device.name} className="flex justify-center">
+                                    <DeviceCard device={device}/>
+                                </div>
+                            )) : (
+                                <div className="flex justify-center">
+                                    <p>No devices linked yet. Please link a device.</p>
+                                </div>
+                            )}
+                        </Carousel>
                     </div>
-        </div>
+                </div>
             </div>
 
             <div className="justify-center m-4 p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg flex-grow">
-            <div className="flex flex-col items-center max-w-full">
-            <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white">Device Data Overview</h2>
-            {avgDataLoading && <LoadingAnimation />}
-            {avgDataError && <p>Error: {avgDataError}</p>}
-                        
-            <ResponsiveChartComponent
-                title={graphs[currentIndex].title}
-                chartId={graphs[currentIndex].chartId}
-                labels={graphs[currentIndex].labels}
-                datasets={graphs[currentIndex].datasets}
-                summary={graphs[currentIndex].summary}
-            />
-            
-            <div className="flex justify-between w-full mt-4">
-                <button onClick={handlePrev} className="px-4 py-2 bg-gray-300 rounded">← Prev</button>
+                <div className="flex flex-col items-center max-w-full">
+                    <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white">Device Data Overview</h2>
+                    {avgDataLoading && <LoadingAnimation/>}
+                    {avgDataError && <p>Error: {avgDataError}</p>}
+
+                    <ResponsiveChartComponent
+                        title={graphs[currentIndex].title}
+                        chartId={graphs[currentIndex].chartId}
+                        labels={graphs[currentIndex].labels}
+                        datasets={graphs[currentIndex].datasets}
+                        summary={graphs[currentIndex].summary}
+                    />
+
+                    <div className="flex justify-between w-full mt-4">
+                        <button onClick={handlePrev} className="px-4 py-2 bg-gray-300 rounded">← Prev</button>
                 <button onClick={handleNext} className="px-4 py-2 bg-gray-300 rounded">Next →</button>
             </div>
         </div>
