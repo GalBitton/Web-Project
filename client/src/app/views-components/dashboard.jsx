@@ -8,7 +8,6 @@ import useAPIService from "@/hooks/useAPIService";
 import APIService from "@/services/api/APIService";
 import LoadingAnimation from '../../components/loading';
 import ResponsiveChartComponent from './responsive-charts';
-import GenericSlider from '../../components/slider';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
@@ -302,13 +301,6 @@ const Dashboard = () => {
         }
     ];
 
-    const handleNext = () => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % graphs.length);
-    };
-
-    const handlePrev = () => {
-        setCurrentIndex((prevIndex) => (prevIndex - 1 + graphs.length) % graphs.length);
-    };
     
     return (
         <div className="dashboard-full-container max-w-full">
@@ -317,15 +309,17 @@ const Dashboard = () => {
                 <p className="text-gray-700 dark:text-slate-500">Inspect your health charts and analytics</p>
             </div>
 
-            <div className="flex-container flex-wrap bg-gray-100 dark:bg-slate-900 ml-4 mr-4 rounded-lg shadow-lg pb-5 mb-4">
-               
+            <div
+                className="flex-container flex-wrap bg-gray-100 dark:bg-slate-900 ml-4 mr-4 rounded-lg shadow-lg pb-5 mb-4">
+
                 <div className="relative flex justify-center items-center">
                     <div className='flex items-center'>
                         <h1 className="text-3xl text-black dark:text-white mt-8">Linked Devices</h1>
                     </div>
 
-                    <div className={`flex absolute right-0 transition-opacity duration-250 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                        
+                    <div
+                        className={`flex absolute right-0 transition-opacity duration-250 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+
                         <div className="flex mr-24 absolute right-0 ">
                             <div>
                                 <button
@@ -333,29 +327,35 @@ const Dashboard = () => {
                                     onClick={async () => {
                                         const model = selectedDeviceToLink.split("-");
                                         await handleLinkDevice(model[0], model[1]);
-                                    }}>Link</button>
+                                    }}>Link
+                                </button>
                             </div>
                             <div>
-                                <select className="brandCmbBox bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-2 rounded-lg w-full sm:w-[10rem] min-w-[10rem]"
-                                
-                                value={selectedDeviceToLink} onChange={handleDeviceLinkChange}>
+                                <select
+                                    className="brandCmbBox bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-2 rounded-lg w-full sm:w-[10rem] min-w-[10rem]"
+
+                                    value={selectedDeviceToLink} onChange={handleDeviceLinkChange}>
                                     <option selected>Choose Device</option>
-                                {unlinkedDevices.map((device, index) => (
-                                    <option key={index} value={`${device.brand}-${device.type}`}>{device.brand + " " + device.type}</option>
-                                ))}
-                            </select>
+                                    {unlinkedDevices.map((device, index) => (
+                                        <option key={index}
+                                                value={`${device.brand}-${device.type}`}>{device.brand + " " + device.type}</option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
                     </div>
-                        <div className="unlink bg-green-600 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-400 text-white dark:text-black rounded-full w-[3rem] h-[3rem] flex items-center justify-center absolute right-0 mt-10 mr-10 transform transition-transform duration-300 hover:rotate-90">
-                            <div className="absolute inset-0 z-[-1] rounded-full opacity-40 bg-gradient-to-r from-green-400 to-green-600 blur-md"></div>
-                            <button onClick={handlePlusClick}>
-                                {/* Plus Icon */}
-                                <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                                </svg>
-                            </button>
-                        </div>
+                    <div
+                        className="unlink bg-green-600 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-400 text-white dark:text-black rounded-full w-[3rem] h-[3rem] flex items-center justify-center absolute right-0 mt-10 mr-10 transform transition-transform duration-300 hover:rotate-90">
+                        <div
+                            className="absolute inset-0 z-[-1] rounded-full opacity-40 bg-gradient-to-r from-green-400 to-green-600 blur-md"></div>
+                        <button onClick={handlePlusClick}>
+                            {/* Plus Icon */}
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="none" viewBox="0 0 24 24"
+                                 stroke="currentColor" strokeWidth="3">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
                 {devicesLoading && <LoadingAnimation/>}
                 {devicesError && <p>Error: {devicesError}</p>}
@@ -364,9 +364,9 @@ const Dashboard = () => {
                     <div className="linked-devices flex justify-center items-center w-full p-2">
                         <Carousel
                             selectedItem={linkedDevices.findIndex(device => device.brand === selectedBrand && device.type === selectedType)}
-                            showThumbs={false}
-                            showIndicators={false}
-                            showStatus={false}
+                            showThumbs={true}
+                            showIndicators={true}
+                            showStatus={true}
                             infiniteLoop={true} // Enable infinite loop
                             centerMode={true} // Center the carousel
                             centerSlidePercentage={linkedDevices.length > 0 ? 80 : 100} // Control the width of each slide
@@ -387,25 +387,37 @@ const Dashboard = () => {
             </div>
 
             <div className="justify-center m-4 p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg flex-grow">
-                <div className="flex flex-col items-center max-w-full">
+                <div className="flex flex-col items-center max-w-full overflow-hidden">
                     <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white">Device Data Overview</h2>
                     {avgDataLoading && <LoadingAnimation/>}
-                    {avgDataError && <p>Error: {avgDataError}</p>}
+                    {avgDataError && <p>Error: {avgDataError.message}</p>}
 
-                    <ResponsiveChartComponent
-                        title={graphs[currentIndex].title}
-                        chartId={graphs[currentIndex].chartId}
-                        labels={graphs[currentIndex].labels}
-                        datasets={graphs[currentIndex].datasets}
-                        summary={graphs[currentIndex].summary}
-                    />
-
-                    <div className="flex justify-between w-full mt-4">
-                        <button onClick={handlePrev} className="px-4 py-2 bg-gray-300 rounded">← Prev</button>
-                <button onClick={handleNext} className="px-4 py-2 bg-gray-300 rounded">Next →</button>
+                    {/* Carousel for the chart components */}
+                    <Carousel
+                        selectedItem={currentIndex}
+                        showThumbs={false}
+                        showIndicators={true} // Show dots for navigation
+                        showStatus={true}
+                        infiniteLoop={true} // Enable infinite loop
+                        swipeable={true} // Allow swiping
+                        useKeyboardArrows={true} // Allow keyboard navigation
+                        onChange={(index) => setCurrentIndex(index)} // Update currentIndex when the slide changes
+                        className="w-full max-w-[100vw]" // Ensure the carousel does not exceed the viewport width
+                    >
+                        {graphs.map((graph, index) => (
+                            <div key={index} className="flex justify-center">
+                                <ResponsiveChartComponent
+                                    title={graph.title}
+                                    chartId={graph.chartId}
+                                    labels={graph.labels}
+                                    datasets={graph.datasets}
+                                    summary={graph.summary}
+                                />
+                            </div>
+                        ))}
+                    </Carousel>
+                </div>
             </div>
-        </div>
-        </div>
 
             <div className="flex justify-center m-4 p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg flex-grow">
                 <p className="text-lg text-gray-700 dark:text-slate-400">Select Model: </p>
@@ -431,13 +443,15 @@ const Dashboard = () => {
                         onClick={handleUnlinkDevice}
                     >
                         <div className="flex items-center gap-2">
-                            <img src="/assets/unlink.svg" className="w-[2rem] h-[2rem]" alt="Unlink" style={{ maxWidth: '100%', maxHeight: '100%' }}/>
+                            <img src="/assets/unlink.svg" className="w-[2rem] h-[2rem]" alt="Unlink"
+                                 style={{maxWidth: '100%', maxHeight: '100%'}}/>
                             Unlink
                         </div>
                     </button>
-                    <button   
-                    className="bg-green-600 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-400 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem] sm:h-[4rem]"
-                    onClick={handleHealthStory}>View Analysis</button>
+                    <button
+                        className="bg-green-600 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-400 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem] sm:h-[4rem]"
+                        onClick={handleHealthStory}>View Analysis
+                    </button>
                 </div>
             </div>
             <div className="flex flex-wrap justify-center gap-14 max-w-full">
@@ -632,7 +646,8 @@ const Dashboard = () => {
             </div>
             {healthStory && (
                 // Styled div to display a large text
-                <div className="flex justify-center items-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full mb-10">
+                <div
+                    className="flex justify-center items-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full mb-10">
                     <p className="text-lg text-gray-700 dark:text-slate-400">{healthStory}</p>
                 </div>
             )}
