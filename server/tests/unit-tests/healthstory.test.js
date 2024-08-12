@@ -1,7 +1,14 @@
+/**
+ * @fileoverview Tests for the HealthStory class, focusing on generating and analyzing health stories.
+ */
 import HealthStory from '../../services/healthStory.js';
 
 describe('HealthStory', () => {
 
+    /**
+     * Test case for generating a story with all health stats provided.
+     * It verifies that the story includes information on all provided health stats.
+     */
     test('should generate a story with all health stats provided', () => {
         const healthStats = {
             heartRate: 85,
@@ -41,6 +48,10 @@ describe('HealthStory', () => {
         expect(story).toContain('EEG Analysis');
     });
 
+    /**
+     * Test case for handling missing optional health stats gracefully.
+     * It verifies that the story excludes information on missing stats.
+     */
     test('should handle missing optional health stats gracefully', () => {
         const healthStats = {
             heartRate: 85,
@@ -74,6 +85,10 @@ describe('HealthStory', () => {
         expect(story).toContain('EEG Analysis');
     });
 
+    /**
+     * Test case for analyzing EEG data.
+     * It verifies that the EEG analysis includes accurate descriptions based on given data.
+     */
     test('should analyze EEG correctly based on given data', () => {
         const healthStats = {
             eeg: {
@@ -94,6 +109,10 @@ describe('HealthStory', () => {
         expect(eegAnalysis).toContain('theta wave activity is low');
     });
 
+    /**
+     * Test case for handling all missing EEG data gracefully.
+     * It verifies that the EEG analysis handles null data appropriately.
+     */
     test('should handle all missing EEG data gracefully', () => {
         const healthStats = {
             eeg: null
