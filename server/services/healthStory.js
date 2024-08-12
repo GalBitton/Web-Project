@@ -1,4 +1,12 @@
+/**
+ * @class HealthStory
+ * @description Creates a narrative based on health statistics.
+ */
 export default class HealthStory {
+    /**
+     * @constructor
+     * @param {Object} healthStats - Health statistics for the story.
+     */
     constructor(healthStats) {
         this.heartRate = healthStats.heartRate || null;
         this.steps = healthStats.steps || null;
@@ -13,6 +21,11 @@ export default class HealthStory {
         this.eeg = healthStats.eeg || null;
     }
 
+    /**
+     * @method createStory
+     * @returns {string} - A narrative based on the health statistics.
+     * @description Generates a personalized health story based on the provided statistics.
+     */
     createStory() {
         let story = "Your recent health data provides insights into your overall well-being.\n";
 
@@ -108,6 +121,11 @@ export default class HealthStory {
         return story.trim();
     }
 
+    /**
+     * @method analyzeEEG
+     * @returns {string|null} - Analysis of EEG data if available.
+     * @description Analyzes EEG data and provides insights into brain activity.
+     */
     analyzeEEG() {
         let eegStory = "";
         if (this.eeg !== null) {
