@@ -23,6 +23,13 @@ class UserController {
         this.getHealthStory = this.getHealthStory.bind(this);
     };
 
+    /**
+     * Links a device to the user.
+     * 
+     * @param {Object} req - The request object containing user ID and device details.
+     * @param {Object} res - The response object to send the result or errors.
+     * @returns {Promise<void>}
+     */
     async linkDevice(req, res) {
         try {
             const userId = req.user;
@@ -97,6 +104,13 @@ class UserController {
         }
     }
 
+    /**
+     * Unlinks a device from the user.
+     * 
+     * @param {Object} req - The request object containing the device ID.
+     * @param {Object} res - The response object to send the result or errors.
+     * @returns {Promise<void>}
+     */
     async unlinkDevice(req, res) {
         try {
             const userId = req.user;
@@ -115,6 +129,13 @@ class UserController {
         }
     };
 
+    /**
+     * Retrieves all linked devices for the user.
+     * 
+     * @param {Object} req - The request object.
+     * @param {Object} res - The response object to send the result or errors.
+     * @returns {Promise<void>}
+     */
     async getLinkedDevices(req, res) {
         try {
             const userId = req.user;
@@ -126,6 +147,13 @@ class UserController {
         }
     };
 
+    /**
+     * Retrieves data for a specific device.
+     * 
+     * @param {Object} req - The request object containing the device ID.
+     * @param {Object} res - The response object to send the result or errors.
+     * @returns {Promise<void>}
+     */
     async getDeviceData(req, res) {
         try {
             const { deviceId } = req.params;
@@ -161,6 +189,13 @@ class UserController {
         }
     };
 
+    /**
+     * Calculates average data for all linked devices.
+     * 
+     * @param {Object} req - The request object.
+     * @param {Object} res - The response object to send the result or errors.
+     * @returns {Promise<void>}
+     */
     async getAverageDataAllDevices(req, res) {
         try {
             const userId = req.user;
@@ -209,6 +244,13 @@ class UserController {
         }
     };
 
+    /**
+     * Generates a health story based on device data.
+     * 
+     * @param {Object} req - The request object.
+     * @param {Object} res - The response object to send the result or errors.
+     * @returns {Promise<void>}
+     */
     async getHealthStory(req, res) {
         try {
             const userId = req.user;
@@ -353,6 +395,13 @@ class UserController {
 
 
     /* ================================  Helper Functions ========================== */
+
+    /**
+     * Generates data points for a device.
+     * 
+     * @param {Object} deviceInstance - The instance of the device.
+     * @returns {Promise<Array>} - Returns a promise that resolves with an array of data batches.
+     */
     async generateDataPoints(deviceInstance) {
         const generatedDataBatches = await deviceInstance.seedDatabase();
 
