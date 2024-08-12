@@ -1,6 +1,18 @@
 import Device from "./device.js";
 
+/**
+ * @class SamsungWatch
+ * @extends Device
+ * @description Represents a Samsung Watch device, extending the base Device class to handle specific data fields.
+ */
 class SamsungWatch extends Device {
+    /**
+     * @method getFieldValue
+     * @param {Object} entry - Data entry containing field values.
+     * @param {string} field - The field name to retrieve.
+     * @returns {Object|number} - Value of the specified field.
+     * @description Retrieves the value for a specific field from the data entry, handling fields like sleep, stress, and oxygen saturation.
+     */
     getFieldValue(entry, field) {
         if (entry[field] === undefined) {
             return 0;
@@ -26,6 +38,12 @@ class SamsungWatch extends Device {
         }
     }
 
+    /**
+     * @method generateDataForField
+     * @param {string} field - The field name to generate data for.
+     * @returns {Object|number} - Generated data for the field.
+     * @description Generates data for a specific field, including sleep, stress, and oxygen saturation.
+     */
     generateDataForField(field) {
         switch (field) {
             case 'sleep':
@@ -45,12 +63,29 @@ class SamsungWatch extends Device {
         }
     }
 
+    /**
+     * @method getFields
+     * @returns {string[]} - List of field names supported by the Samsung Watch.
+     * @description Returns an array of field names specific to the Samsung Watch, including sleep, stress, and oxygen saturation.
+     */
     getFields() {
         return [...super.getFields(), "sleep", "stress", "oxygenSaturation"];
     }
 }
 
+/**
+ * @class SamsungBracelet
+ * @extends Device
+ * @description Represents a Samsung Bracelet device, extending the base Device class to handle specific data fields.
+ */
 class SamsungBracelet extends Device {
+    /**
+     * @method getFieldValue
+     * @param {Object} entry - Data entry containing field values.
+     * @param {string} field - The field name to retrieve.
+     * @returns {Object|number} - Value of the specified field.
+     * @description Retrieves the value for a specific field from the data entry, handling fields like sleep, stress, and breathing rate.
+     */
     getFieldValue(entry, field) {
         if (entry[field] === undefined) {
             return 0;
@@ -76,6 +111,12 @@ class SamsungBracelet extends Device {
         }
     }
 
+    /**
+     * @method generateDataForField
+     * @param {string} field - The field name to generate data for.
+     * @returns {Object|number} - Generated data for the field.
+     * @description Generates data for a specific field, including sleep, stress, and breathing rate.
+     */
     generateDataForField(field) {
         switch (field) {
             case 'sleep':
@@ -95,6 +136,11 @@ class SamsungBracelet extends Device {
         }
     }
 
+    /**
+     * @method getFields
+     * @returns {string[]} - List of field names supported by the Samsung Bracelet.
+     * @description Returns an array of field names specific to the Samsung Bracelet, including sleep, stress, and breathing rate.
+     */
     getFields() {
         return [...super.getFields(), "sleep", "stress", "breathingRate"];
     }
