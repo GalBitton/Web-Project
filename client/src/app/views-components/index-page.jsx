@@ -1,3 +1,4 @@
+import React from 'react';
 import serviceData from "../../../package.json";
 import TextCard from "../../components/cards/textcard.jsx";
 import styled from 'styled-components';
@@ -34,6 +35,13 @@ const IndexPage = () => {
         }
     ];
 
+    const companies = [
+        { name: "Apple", logoLight: "/assets/companies/apple-logo-light.svg", logoDark: "/assets/companies/apple-logo-dark.svg" },
+        { name: "Fitbit", logo: "/assets/companies/fitbit-logo.svg" },
+        { name: "Samsung", logoLight: "/assets/companies/samsung-logo-light.svg", logoDark: "/assets/companies/samsung-logo-dark.svg" },
+        { name: "Xiaomi", logo: "/assets/companies/xiaomi-logo.svg" },
+    ];
+
     return (
         <div className="mt-16 relative flex flex-col overflow-hidden justify-between min-h-screen bg-indigo-100 dark:bg-slate-800 dark:from-gray-800 dark:via-gray-900 dark:to-black">
             <BackgroundImage
@@ -59,6 +67,31 @@ const IndexPage = () => {
                 {cardContent.map((content) => (
                     <TextCard key={content.key} text={content.text} />
                 ))}
+            </div>
+
+            {/* Supported Companies Section */}
+            <div className="relative z-10 mt-16 p-8 bg-transparent w-full flex flex-col items-center">
+                <h2 className="text-3xl font-semibold mb-6 text-black dark:text-white">Trusted by Leading Companies</h2>
+                <div className="flex flex-wrap justify-center gap-8">
+                    {companies.map((company, index) => (
+                        <img
+                            key={index}
+                            src={company.logo || company.logoDark}
+                            alt={`${company.name} logo`}
+                            className="h-12 md:h-16 transition-transform duration-300 hover:scale-105 dark:hidden"
+                        />
+                    ))}
+                </div>
+                <div className="hidden dark:flex flex-wrap justify-center gap-8">
+                    {companies.map((company, index) => (
+                        <img
+                            key={index}
+                            src={company.logoLight || company.logo}
+                            alt={`${company.name} logo`}
+                            className="h-12 md:h-16 transition-transform duration-300 hover:scale-105"
+                        />
+                    ))}
+                </div>
             </div>
         </div>
     );

@@ -29,6 +29,7 @@ const Dashboard = () => {
     const [linkedDevices, setLinkedDevices] = useState([]);
     const [selectedBrand, setSelectedBrand] = useState('');
     const [selectedType, setSelectedType] = useState('');
+    const [selectedItem, setSelectedItem] = useState(0);
     const [selectedDeviceToLink, setSelectedDeviceToLink] = useState('');
     const [unlinkedDevices, setUnlinkedDevices] = useState([]);
     const [currentDevice, setCurrentDevice] = useState(null);
@@ -122,6 +123,15 @@ const Dashboard = () => {
         initializeDevices();
     }, [linkedDevices]);
 
+    // Update selectedBrand and selectedType based on the selectedItem index in the carousel
+    useEffect(() => {
+        if (linkedDevices.length > 0) {
+            const selectedDevice = linkedDevices[selectedItem];
+            setSelectedBrand(selectedDevice.brand);
+            setSelectedType(selectedDevice.type);
+        }
+    }, [selectedItem, linkedDevices]);
+
     const createAllDevices = async () => {
         if (devicesData) {
             return Promise.all(devicesData.map(async (device) => ({
@@ -211,15 +221,15 @@ const Dashboard = () => {
         setHealthStory(story);
     }
 
-    const handleBrandChange = (event) => {
-        const selectedBrand = event.target.value;
-        setSelectedBrand(selectedBrand);
-    };
-
-    const handleTypeChange = (event) => {
-        const selectedType = event.target.value;
-        setSelectedType(selectedType);
-    };
+    // const handleBrandChange = (event) => {
+    //     const selectedBrand = event.target.value;
+    //     setSelectedBrand(selectedBrand);
+    // };
+    //
+    // const handleTypeChange = (event) => {
+    //     const selectedType = event.target.value;
+    //     setSelectedType(selectedType);
+    // };
 
     const [isVisible, setIsVisible] = useState(false);
 
@@ -363,17 +373,18 @@ const Dashboard = () => {
                     <div className="linked-devices flex justify-center items-center w-full p-2">
                         <div className="w-full flex flex-col items-center">
                             <Carousel
-                                selectedItem={linkedDevices.findIndex(device => device.brand === selectedBrand && device.type === selectedType)}
+                                selectedItem={selectedItem}
                                 showThumbs={false}  // Hide the thumbs if you don't need them
                                 showIndicators={false} // Show the default indicators
-                                showStatus={true}  // Hide the status bar if not needed
+                                showStatus={true}  // Show the status bar
                                 infiniteLoop={true}
                                 centerMode={true}
                                 centerSlidePercentage={linkedDevices.length > 0 ? 80 : 100}
                                 swipeable={true}
                                 className="flex flex-col items-center w-full"
+                                onChange={(index) => setSelectedItem(index)} // Update selectedItem when carousel changes
                             >
-                                {linkedDevices.length > 0 ? linkedDevices.map(device => (
+                                {linkedDevices.length > 0 ? linkedDevices.map((device) => (
                                     <div key={device.name} className="flex flex-col items-center">
                                         <div className="flex justify-center">
                                             <DeviceCard device={device}/>
@@ -388,6 +399,10 @@ const Dashboard = () => {
                             </Carousel>
                         </div>
                     </div>
+                </div>
+                <div className="text-center mt-8">
+                    <h2 className="text-xl font-bold">{`Selected Brand: ${selectedBrand}`}</h2>
+                    <h3 className="text-lg">{`Selected Type: ${selectedType}`}</h3>
                 </div>
             </div>
 
@@ -426,23 +441,7 @@ const Dashboard = () => {
 
             <div className="flex justify-center m-4 p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg flex-grow">
                 <p className="text-lg text-gray-700 dark:text-slate-400">Select Model: </p>
-                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-8 w-full sm:w-[60rem]">
-                    <select
-                        className="brandCmbBox bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-2 rounded w-full sm:w-[10rem]"
-                        value={selectedBrand} onChange={handleBrandChange}>
-                        <option value="" disabled>Select Brand</option>
-                        {[...new Set(linkedDevices.map(device => device.brand))].map(brand => (
-                            <option key={brand} value={brand}>{brand}</option>
-                        ))}
-                    </select>
-                    <select
-                        className="deviceCmbBox bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-2 rounded w-full sm:w-[10rem]"
-                        value={selectedType} onChange={handleTypeChange}>
-                        <option value="" disabled>Select Device</option>
-                        {selectedBrand && linkedDevices.filter(device => device.brand === selectedBrand && device.status === 'linked').map(device => (
-                            <option key={device.type} value={device.type}>{device.type}</option>
-                        ))}
-                    </select>
+                <div className="flex flex-col ml-10 sm:flex-row space-y-4 sm:space-y-0 sm:space-x-8 w-full sm:w-[60rem]">
                     <button
                         className="unlink bg-red-500 hover:bg-red-700 dark:bg-red-300 dark:hover:bg-red-500 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem]"
                         onClick={handleUnlinkDevice}
