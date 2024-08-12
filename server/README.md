@@ -87,58 +87,71 @@ To switch between environments, set the NODE_ENV environment variable accordingl
 ```
 server/
 ├── api/
-│   └── index.js                    # Entry point
-├── config/
-│   ├── development.json            # Development environment configuration
-│   └── testing.json                # Testing environment configuration
-├── controllers/                    # Controllers
-│   ├── auth.controller.js          # Controller for authentication
-│   └── user.controller.js          # Controller for user operations
-├── database/
-│   ├── connect.js                  # Database connection setup
-│   ├── migrations/                 # Database migrations scripts
-│       ├── ...
-│   ├── demo-data/                  # Used for seeding the database with demo data using the migration scripts
-│   └── models/                     # Mongoose models
-│       ├── Device.model.js         # Device model
-│       ├── DeviceData.model.js     # DeviceData model
-│       └── User.model.js           # User model
+│   └── index.js                        # Entry point
+├── config/                             # Configuration
+│   ├── development.json                # Development environment 
+│   ├── production.json                 # Production environment 
+│   └── test.json                       # Testing environment
+├── controllers/                        # Controllers
+│   ├── auth.controller.js              # Controller for authentication
+│   └── user.controller.js              # Controller for user operations
+├── database/                           # Database
+│   ├── demo-data/                      # Used for seeding the database with demo data using the migration scripts
+│   ├── migrations/                     # Database migrations scripts
+│   │   ├── database-curator.js         # Script for deleting collections
+│   │   └── migrate-demo-data-to-db.js  # Migrates device data to MongoDB
+│   ├── models/                         # Mongoose models
+│   │   ├── Device.model.js             # Device model
+│   │   ├── DeviceData.model.js         # DeviceData model
+│   │   └── User.model.js               # User model
+│   └── connect.js                      # Database connection setup
+├── docs/
+│   └── swagger.yaml                    # API for user authentication and device management
 ├── enums/
-│   ├── supported-devices.js        # Utility for supported devices
-├── logs/                           # Log files directory
+│   ├── device-statuses.js              # Device Statuses
+│   └── supported-devices.js            # Utility for supported devices
+├── logs/                               # Log files directory (if log2File is enabled in config)
 ├── middlewares/
-│   ├── auth.middleware.js          # Middleware for authentication
-│   ├── rateLimiters.middleware.js  # Middleware for rate limiting
-│   └── errorHandler.middleware.js  # Middleware for error handling
+│   ├── auth.middleware.js              # Middleware for authentication
+│   ├── errorHandler.middleware.js      # Middleware for error handling
+│   ├── index.js                        # Exports error handler and rate limiter
+│   └── rateLimiters.middleware.js      # Middleware for rate limiting
 ├── public/
-│   ├── robots.txt
+│   └── robots.txt
 ├── routes/
-│   ├── auth.routes.js              # Routes for authentication
-│   └── user.routes.js              # Routes for user operations
+│   ├── auth.routes.js                  # Routes for authentication
+│   └── user.routes.js                  # Routes for user operations
 ├── services/
-│   ├── deviceFactory.js            # Factory design pattern for devices
-│   └── devices/                    # Devices using Template Method design pattern
-│       ├── apple.js                # Apple devices
-│       ├── device.js               # Device abstract class
-│       ├── dreem.js                # Dreem devices
-│       ├── fitbit.js               # Fitbit devices
-│       ├── muse.js                 # Muse devices
-│       ├── samsung.js              # Samsung devices
-│       └── xiaomi.js               # Xiaomi devices
+│   ├── devices/                        # Devices using Template Method design pattern
+│   │   ├── apple.js                    # Apple devices
+│   │   ├── device.js                   # Device abstract class
+│   │   ├── dreem.js                    # Dreem devices
+│   │   ├── fitbit.js                   # Fitbit devices
+│   │   ├── muse.js                     # Muse devices
+│   │   ├── samsung.js                  # Samsung devices
+│   │   └── xiaomi.js                   # Xiaomi devices
+│   ├── deviceFactory.js                # Factory design pattern for devices
+│   └── healthStory.js                  # Generates health-related narratives
 ├── tests/
-│   ├── unit-tests                  # Unit tests
-│       ├── ...
+│   └── unit-tests                      # Unit tests
+│       ├── dataSeeding.test.js         # Tests data generation & validation.
+│       ├── deviceFactory.test.js       # Tests devices getFieldValue method functionality
+│       ├── devices.test.js             # Tests for device data retrieval
+│       ├── healthstory.test.js         # Tests health story generation & analysis
+│       └── mathUtils.test.js           # Tests average calculation accuracy
 ├── utils/
-│   ├── expirationDateConverter.js  # Utility for converting expiration dates  
-│   └── mathUtils.js                # Utility for math operations
-├── views/
-│   └── index.ejs                   # Main view
-├── containerConfig.js              # Dependency injection container configuration
-├── server.js                       # Server class
-├── logger.js                       # Logger class
-├── package.json
-├── package-lock.json
-└── README.md
+│   ├── expirationDateConverter.js      # Utility for converting expiration dates
+│   ├── mathUtils.js                    # Utility for math operations
+│   └── sleepTranslation.js             # Utility for translating sleep quality/index
+├── .babelrc                            # Babel configuration file
+├── containerConfig.js                  # Dependency injection container configuration
+├── logger.js                           # Logger class
+├── package-lock.json                   # Lock file for npm package versions
+├── package.json                        # Project metadata and dependencies
+├── README.md                           # Project overview and instructions
+├── server.js                           # Server class
+├── vercel-setup.js                     # Vercel deployment setup configuration
+└── vercel.json                         # Vercel deployment configuration file
 ```
 
 ## API Endpoints
