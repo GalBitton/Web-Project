@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from '@/components/routes/protectedroute';
 import PublicRoute from "@/components/routes/publicroute";
-import { IndexPage, Dashboard, Login, Register, NotFound, Maintenance, UnderConstruction, PrivacyPolicy, TermsOfService, AboutUs, ContactUs } from './app/views-components/index.jsx';
+import { IndexPage, Dashboard, Login, Register, NotFound, Maintenance, UnderConstruction, PrivacyPolicy, TermsOfService, AboutUs, ContactUs } from './app/pages-components/index.jsx';
 import App from './app/App.jsx'
 import './index.css'
 

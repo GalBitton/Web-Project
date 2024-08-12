@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { Footer, AppMenu } from "../components/layouts/index.jsx";
 import { AppProvider } from "@/hooks/AppProvider";
 import AuthProvider from "../contexts/AuthContext.jsx";
-import { Maintenance } from "./views-components/index.jsx";
+import { Maintenance } from "./pages-components/index.jsx";
 
 function App() {
     const isMaintenance = import.meta.env.VITE_MAINTENANCE === 'true';
