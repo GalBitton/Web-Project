@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
 import Chart from 'chart.js/auto';
 import 'react-datepicker/dist/react-datepicker.css';
-import Exporter from '../utils/exporter.js';
+import Exporter from '@/utils/exporter.js';
 
 const ChartComponent = ({ title, chartId, labels, datasets, summary = "" }) => {
     const chartRef = useRef(null);

@@ -8,9 +8,9 @@ pipeline {
     }
 
     stages {
-        stage('Checkout HW2 Branch') {
+        stage('Checkout HW3 Branch') {
             steps {
-                git branch: 'HW2', url: 'https://github.com/GalBitton/Web-Project.git'
+                git branch: 'HW3', url: 'https://github.com/GalBitton/Web-Project.git'
             }
         }
 

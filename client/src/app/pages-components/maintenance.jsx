@@ -1,10 +1,10 @@
-import {ThemeProvider} from "@/hooks/ThemeProvider.jsx";
+import {UseTheme} from "@/hooks/useTheme.jsx";
 
 const Maintenance = () => {
     return (
         <div className="maintenance-container">
             <div className="theme-container absolute top-0 right-0 p-6">
-                <ThemeProvider></ThemeProvider>
+                <UseTheme></UseTheme>
             </div>
             <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-white to-gray-200 dark:from-gray-900 dark:to-slate-800">
                 <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">

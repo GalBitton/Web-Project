@@ -1,11 +1,9 @@
-import React from "react";
-import axios from 'axios';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Outlet } from 'react-router-dom';
 import { Footer, AppMenu } from "../components/layouts/index.jsx";
-import { AppProvider } from "../hooks/AppProvider.jsx";
+import { AppProvider } from "@/hooks/AppProvider";
 import AuthProvider from "../contexts/AuthContext.jsx";
-import { Maintenance } from "./views-components/index.jsx";
+import { Maintenance } from "./pages-components/index.jsx";
 
 function App() {
     const isMaintenance = import.meta.env.VITE_MAINTENANCE === 'true';
@@ -13,21 +11,19 @@ function App() {
 
     return (
         <GoogleOAuthProvider clientId={googleClientId}>
-            <AppProvider>
-                <AuthProvider>
-                    <div className="min-h-screen bg-gradient-to-b from-white to-gray-200 dark:from-gray-900 dark:to-slate-800 flex flex-col text-black dark:text-white max-w-full">
-                        {isMaintenance ? <Maintenance /> :
-                            <>
-                                <AppMenu />
-                                <main className="flex-grow flex flex-col my-4 w-full ">
-                                    <Outlet />
-                                </main>
-                            </>
-                        }
-                        <Footer />
-                    </div>
-                </AuthProvider>
-            </AppProvider>
+            <AuthProvider>
+                <AppProvider>
+                    {isMaintenance ? <Maintenance /> :
+                        <>
+                            <AppMenu />
+                            <main className="flex-grow flex flex-col my-4 w-full">
+                                <Outlet />
+                            </main>
+                        </>
+                    }
+                    <Footer />
+                </AppProvider>
+            </AuthProvider>
         </GoogleOAuthProvider>
     );
 }

@@ -102,7 +102,7 @@ client/
 │   ├── hooks/                          # Custom React hooks and providers
 │       ├── useAPIService.jsx           # API service hook
 │       ├── AppProvider.jsx             # App context provider to set title and app div wrapper class
-│       ├── ThemeProvider.jsx           # Theme provider for dark mode/light mode
+│       ├── UseTheme.jsx           # Theme provider for dark mode/light mode
 │       └── useLocation.jsx             # Custom hook to get current location and check specific routes
 │   ├── services/                       # API services and data classes
 │       ├── device.js                   # Device class utilized for IoT devices
