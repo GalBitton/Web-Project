@@ -12,7 +12,6 @@ export default class DreemHeadband extends Device {
                     "theta": entry[field].theta
                 }
             case 'sleep':
-                // Sleep is only generated once a day, so it might be undefined.
                 if (entry[field] === undefined) {
                     return 0;
                 }
@@ -38,7 +37,7 @@ export default class DreemHeadband extends Device {
                     delta: this._computeRandomValue("eegDelta"),
                     theta: this._computeRandomValue("eegTheta")
                 };
-            case 'sleepData':
+            case 'sleep':
                 return {
                     totalDuration: this._computeRandomValue("sleepDuration"),
                     sleepQuality: this._computeRandomValue("sleepQuality")
@@ -51,6 +50,6 @@ export default class DreemHeadband extends Device {
     }
 
     getFields() {
-        return ["EEG", "sleepData", "meditationScore"];
+        return ["EEG", "sleep", "meditationScore"];
     }
 }

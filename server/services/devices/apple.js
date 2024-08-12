@@ -2,13 +2,12 @@ import Device from "./device.js";
 
 export default class AppleWatch extends Device {
     getFieldValue(entry, field) {
+        if (entry[field] === undefined) {
+            return 0;
+        }
+
         switch (field) {
             case 'sleep':
-                // Sleep is only generated once a day, so it might be undefined.
-                if (entry[field] === undefined) {
-                    return 0;
-                }
-
                 return {
                     "duration": entry[field].duration,
                     "quality": entry[field].quality
@@ -22,9 +21,6 @@ export default class AppleWatch extends Device {
             case 'heartRate':
             case 'steps':
             case 'caloriesBurned':
-                if (entry[field] === undefined) {
-                    return 0;
-                }
                 return entry[field];
             default:
                 return 0;

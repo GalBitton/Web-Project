@@ -16,11 +16,6 @@ export default class MuseHeadband extends Device {
                     "theta": entry[field].thetaWaves
                 }
             case 'sleep':
-                // Sleep is only generated once a day, so it might be undefined.
-                if (entry[field] === undefined) {
-                    return 0;
-                }
-
                 return {
                     "duration": entry[field].duration,
                     "quality": entry[field].quality

@@ -2,13 +2,12 @@ import Device from "./device.js";
 
 export default class FitbitBracelet extends Device {
     getFieldValue(entry, field) {
+        if (entry[field] === undefined) {
+            return 0;
+        }
+
         switch (field) {
             case 'sleep':
-                // Sleep is only generated once a day, so it might be undefined.
-                if (entry[field] === undefined) {
-                    return 0;
-                }
-
                 return {
                     "duration": entry[field].duration,
                     "quality": entry[field].quality
@@ -22,10 +21,6 @@ export default class FitbitBracelet extends Device {
             case 'steps':
             case 'heartRate':
             case 'caloriesBurned':
-                if (entry[field] === undefined) {
-                    return 0;
-                }
-
                 return entry[field];
             default:
                 return 0;
@@ -39,7 +34,7 @@ export default class FitbitBracelet extends Device {
                     duration: this._computeRandomValue("sleepDuration"),
                     quality: this._computeRandomValue("sleepQuality")
                 };
-            case 'stressManagement':
+            case 'stress':
                 return {
                     score: this._computeRandomValue("stressScore"),
                     breathingRate: this._computeRandomValue("breathingRate")
@@ -53,6 +48,6 @@ export default class FitbitBracelet extends Device {
     }
 
     getFields() {
-        return [...super.getFields(), "sleep", "stressManagement"];
+        return [...super.getFields(), "sleep", "stress", "breathingRate"];
     }
 }
