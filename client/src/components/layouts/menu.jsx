@@ -71,8 +71,8 @@ const AppMenu = () => {
     }
 
     return (
-        <header data-testid="menu-component" className={`bg-gradient-to-r from-purple-800 via-indigo-600 to-blue-900 dark:bg-gray-800 text-gray-100 dark:text-white p-4 flex items-center gap-10 ${'md:justify-between'} fixed top-0 w-full z-50 shadow-lg`}>
-            <div className="md:hidden">
+        <header data-testid="menu-component" className="bg-gradient-to-r from-purple-800 via-indigo-600 to-blue-900 dark:bg-gray-800 text-gray-100 dark:text-white p-4 flex items-center justify-between fixed top-0 w-full z-50 shadow-lg">
+            <div className="md:hidden flex items-center">
                 <Menu styles={menuStyles}>
                     {logoImage()}
                     {menuItems.map((item, index) =>
@@ -90,11 +90,12 @@ const AppMenu = () => {
                     ) : null
                 )}
             </nav>
-            <div className="flex items-center">
-                <UseTheme></UseTheme>
+            <div className="flex items-center gap-4">
+                <UseTheme />
                 {isLoggedIn && <ProfileMenu />}
             </div>
         </header>
+
     );
 };
 
