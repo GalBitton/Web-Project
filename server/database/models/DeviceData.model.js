@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
 import config from 'config';
 
+// Retrieve data seeding configuration
 const dataSeeding = config.get('dataSeeding');
+
 
 const DataPointSchema = new mongoose.Schema({
     timestamp: { type: Date, required: true },
@@ -18,6 +20,15 @@ const DeviceDataSchema = new mongoose.Schema({
     collection: 'devices-data'
 });
 
+/**
+ * Middleware to update the `lastSeeded` timestamp and manage the size of the `datapoints` array.
+ * 
+ * This pre-save hook updates the `lastSeeded` field to the current date and time
+ * if the document is not new. It also ensures that the `datapoints` array does not exceed
+ * the limit defined by the `dataSeeding.points` configuration (for one week's worth of data).
+ * 
+ * @param {Function} next - The next middleware function to call.
+ */
 DeviceDataSchema.pre('save', function(next) {
     if (!this.isNew) {
         this.lastSeeded = new Date();
