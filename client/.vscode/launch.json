@@ -1,12 +1,14 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-      {
-        "type": "chrome",
-        "request": "launch",
-        "name": "Debug with Chrome",
-        "url": "http://localhost:5173",
-        "webRoot": "${workspaceFolder}/src"
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Debug with Chrome",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMaps": true,
+      "trace": true // Enables diagnostic output
     }
-    ]
-  }
+  ]
+}
