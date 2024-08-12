@@ -5,11 +5,7 @@ import config from "config";
 const serverConfig = config.get('server');
 const db_uri = serverConfig.get('db_uri');
 
-/**
- * List of collections to be deleted.
- * @constant
- * @type {string[]}
- */
+// List of collections to be deleted.
 const collectionsToDelete = [
     'devices',
     'devices-data',
