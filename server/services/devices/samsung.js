@@ -2,13 +2,12 @@ import Device from "./device.js";
 
 class SamsungWatch extends Device {
     getFieldValue(entry, field) {
+        if (entry[field] === undefined) {
+            return 0;
+        }
+
         switch (field) {
             case 'sleep':
-                // Sleep is only generated once a day, so it might be undefined.
-                if (entry[field] === undefined) {
-                    return 0;
-                }
-
                 return {
                     "duration": entry[field].duration,
                     "quality": entry[field].quality
@@ -21,10 +20,6 @@ class SamsungWatch extends Device {
             case 'caloriesBurned':
             case 'steps':
             case 'oxygenSaturation':
-                if (entry[field] === undefined) {
-                    return 0;
-                }
-
                 return entry[field];
             default:
                 return 0;
@@ -38,7 +33,7 @@ class SamsungWatch extends Device {
                     duration: this._computeRandomValue("sleepDuration"),
                     quality: this.convertSleepIndex(this._computeRandomValue("sleepQuality"))
                 };
-            case 'stressLevel':
+            case 'stress':
                 return this._computeRandomValue("stressScore");
             case 'oxygenSaturation':
                 return this._computeRandomValue("oxygenSaturation");
@@ -51,19 +46,18 @@ class SamsungWatch extends Device {
     }
 
     getFields() {
-        return [...super.getFields(), "sleep", "stressLevel", "oxygenSaturation"];
+        return [...super.getFields(), "sleep", "stress", "oxygenSaturation"];
     }
 }
 
 class SamsungBracelet extends Device {
     getFieldValue(entry, field) {
+        if (entry[field] === undefined) {
+            return 0;
+        }
+
         switch (field) {
             case 'sleep':
-                // Sleep is only generated once a day, so it might be undefined.
-                if (entry[field] === undefined) {
-                    return 0;
-                }
-
                 return {
                     "duration": entry[field].durationHours,
                     "quality": super.convertSleepIndex(entry[field].qualityRating)
@@ -72,13 +66,10 @@ class SamsungBracelet extends Device {
                 return {
                     "score": entry.stressLevel,
                 }
+            case 'breathingRate':
             case 'heartRate':
             case 'caloriesBurned':
             case 'steps':
-            case 'breathingRate':
-                if (entry[field] === undefined) {
-                    return 0;
-                }
                 return entry[field];
             default:
                 return 0;
@@ -92,7 +83,7 @@ class SamsungBracelet extends Device {
                     durationHours: this._computeRandomValue("sleepDuration"),
                     qualityRating: this._computeRandomValue("sleepQuality")
                 };
-            case 'stressLevel':
+            case 'stress':
                 return this._computeRandomValue("stressScore");
             case 'breathingRate':
                 return this._computeRandomValue("breathingRate");

@@ -17,7 +17,9 @@ export default class Device {
     }
 
     // Abstract method to be implemented by subclasses
-    getFieldValue(entry, field) {
+    getFieldValue(entry, field) {if (entry[field] === undefined) {
+            return 0;
+        }
         throw new Error("Method 'getFieldValue()' must be implemented.");
     }
 
@@ -89,7 +91,7 @@ export default class Device {
                             return false;
                         }
                     }
-                    return ['heartRate', 'EEG', 'oxygenSaturation', 'bloodPressure'].includes(field);
+                    return ['heartRate', 'EEG', 'oxygenSaturation', 'bloodPressure', 'breathingRate'].includes(field);
                 } else {
                     return field !== 'sleep';
                 }
@@ -145,7 +147,6 @@ export default class Device {
 
         const timeElapsed = Math.floor((now - lastSeededTime) / (60 * 1000));
         const points = Math.floor(timeElapsed / intervalMinutes);
-        console.log('Points:', points, ' Time elapsed:', timeElapsed, ' Interval:', intervalMinutes);
         const fields = this.getFields();
 
         // Generate data batches in parallel
