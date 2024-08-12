@@ -1,4 +1,29 @@
-// IoC Container
+/**
+ * @fileoverview
+ * Configures and exports the IoC (Inversion of Control) container for dependency injection.
+ * Registers various services, configurations, and controllers used throughout the application.
+ * 
+ * Dependencies:
+ * - `kontainer-di`: Dependency injection container
+ * - `config`: Configuration management
+ * - `Logger`: Custom logging utility
+ * - `Server`: Application server
+ * - Controllers: `AuthController`, `UserController`
+ * - Middlewares: `AuthMiddleware`
+ * - Routers: `AuthRouter`, `UserRouter`
+ * - Services: `DeviceFactory`
+ * 
+ * Registers the following components:
+ * - Service data and configuration
+ * - Logger instance
+ * - Authentication middleware and controller
+ * - User controller
+ * - Device factory
+ * - Application server
+ * 
+ * @module container
+ */
+
 'use strict';
 
 import container from 'kontainer-di';
