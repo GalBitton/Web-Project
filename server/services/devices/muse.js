@@ -1,6 +1,18 @@
 import Device from "./device.js";
 
+/**
+ * @class MuseHeadband
+ * @extends Device
+ * @description Represents a Muse Headband device, extending the base Device class to handle specific data fields.
+ */
 export default class MuseHeadband extends Device {
+    /**
+     * @method getFieldValue
+     * @param {Object} entry - Data entry containing field values.
+     * @param {string} field - The field name to retrieve.
+     * @returns {Object|number} - Value of the specified field.
+     * @description Retrieves the value for a specific field from the data entry. Handles fields such as EEG, sleep, and focus score.
+     */
     getFieldValue(entry, field) {
         if (entry[field] === undefined) {
             return 0;
@@ -27,6 +39,12 @@ export default class MuseHeadband extends Device {
         }
     }
 
+    /**
+     * @method generateDataForField
+     * @param {string} field - The field name to generate data for.
+     * @returns {Object|number} - Generated data for the field.
+     * @description Generates data for a specific field, including EEG, sleep, and focus score.
+     */
     generateDataForField(field) {
         switch (field) {
             case 'EEG':
@@ -52,6 +70,11 @@ export default class MuseHeadband extends Device {
         }
     }
 
+    /**
+     * @method getFields
+     * @returns {string[]} - List of field names supported by the Muse Headband.
+     * @description Returns an array of field names specific to the Muse Headband, including EEG, sleep, and focus score.
+     */
     getFields() {
         return ["EEG", "sleep", "focusScore"];
     }
