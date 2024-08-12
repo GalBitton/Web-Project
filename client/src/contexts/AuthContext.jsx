@@ -40,7 +40,9 @@ export const AuthProvider = ({ children }) => {
             case 'email':
                 return identity.email;
             case 'emailPrefix':
-                return identity.email.split("@")[0];
+                // eslint-disable-next-line no-case-declarations
+                const emailName = identity.email.split("@")[0];
+                return emailName.charAt(0).toUpperCase() + emailName.slice(1);
             case 'userId':
                 return identity.userId;
             default:

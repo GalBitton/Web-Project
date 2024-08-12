@@ -1,5 +1,5 @@
 import serviceData from "../../../package.json";
-import TextCard from "../../components/textcard.jsx";
+import TextCard from "../../components/cards/textcard.jsx";
 import styled from 'styled-components';
 
 const IndexPage = () => {
@@ -8,26 +8,39 @@ const IndexPage = () => {
         width: 1445px;
         height: 830px;
         top: 0;
-        left: 0; /* Default position */
+        left: 0;
     
         @media (max-width: 1445px) {
-            left: calc(50% - 400px); /* Center the image horizontally */
+            left: calc(50% - 400px);
         }
         @media (min-height: 830px) {
-            height: calc(100vh - 100px); /* Expand the height relative to the viewport height */
+            height: calc(100vh - 100px);
             left: calc(50% - 550px);
         }
     `;
 
+    const cardContent = [
+        {
+            key: 1,
+            text: "Real-Time Data Synchronization, Instantly sync your health and activity data across all your devices, ensuring you always have the most up-to-date information at your fingertips."
+        },
+        {
+            key: 2,
+            text: "Comprehensive Device Management, Manage and configure your connected devices effortlessly. From firmware updates to customization options, take full control of your smart ecosystem."
+        },
+        {
+            key: 3,
+            text: "Personalized Insights and Analytics, Receive tailored insights based on your device usage, helping you make informed decisions about your health, fitness, and lifestyle."
+        }
+    ];
+
     return (
         <div className="mt-16 relative flex flex-col overflow-hidden justify-between min-h-screen bg-indigo-100 dark:bg-slate-800 dark:from-gray-800 dark:via-gray-900 dark:to-black">
-
             <BackgroundImage
                 src="/assets/backgrounds/logo2.png"
                 alt="Landing Page Image"
                 className="opacity-60 h-auto w-auto"
             />
-
             <div className="relative z-10 flex flex-col items-start p-8 max-w-xl mt-24 ml-4 md:ml-16 bg-white dark:bg-slate-900 bg-opacity-80 dark:bg-opacity-90 rounded-lg shadow-lg animate-fadeIn">
                 <h1 className="text-5xl md:text-7xl font-bold mb-4 text-black dark:text-white">
                     {serviceData.name}
@@ -43,14 +56,9 @@ const IndexPage = () => {
                 </a>
             </div>
             <div className="relative z-10 flex flex-col md:flex-row justify-around p-4 bg-transparent w-full space-y-4 md:space-y-0">
-            {Array.from({ length: 3 }, (_, i) => (
-                <TextCard
-                 key={i} index={i + 1} text={
-                    i === 0 ? "Real-Time Data Synchronization, Instantly sync your health and activity data across all your devices, ensuring you always have the most up-to-date information at your fingertips."
-                    : i === 1 ? "Comprehensive Device Management, Manage and configure your connected devices effortlessly. From firmware updates to customization options, take full control of your smart ecosystem."
-                    : "Personalized Insights and Analytics, Receive tailored insights based on your device usage, helping you make informed decisions about your health, fitness, and lifestyle."
-                }/>
-            ))}
+                {cardContent.map((content) => (
+                    <TextCard key={content.key} text={content.text} />
+                ))}
             </div>
         </div>
     );

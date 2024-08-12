@@ -21,7 +21,7 @@
   "dataSeeding": {
     "points": 6,
     "timeWindowMinutes": 60,
-    "batchSize": 50,
+    "batchSize": 500,
     "defaultLastSeeded": 7,
     "commonFieldValueMaxDeviations": {
       "heartRate": 20,

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Device from '@/services/device.js';
 import { getGraphSummary } from '@/utils';
-import DeviceCard from '../../components/devicecard';
+import DeviceCard from '../../components/cards/devicecard';
 import ChartComponent from '../../components/chart';
 import { useAuth } from "@/contexts/AuthContext";
 import useAPIService from "@/hooks/useAPIService";
@@ -220,7 +220,7 @@ const Dashboard = () => {
         const selectedType = event.target.value;
         setSelectedType(selectedType);
     };
-    
+
     const [isVisible, setIsVisible] = useState(false);
 
     const handlePlusClick = () => {
@@ -301,7 +301,7 @@ const Dashboard = () => {
         }
     ];
 
-    
+
     return (
         <div className="dashboard-full-container max-w-full">
             <div className="mt-24 mb-2 p-4 items-center">

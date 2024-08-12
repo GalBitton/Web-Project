@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import { FaEnvelope, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
+import InputField from "@/components/form/inputfield";
 
 const ContactUs = () => {
     const [formData, setFormData] = useState({
@@ -60,39 +61,29 @@ const ContactUs = () => {
                     <div className="col-span-12 lg:col-span-6 p-8 bg-white dark:bg-slate-800 rounded-lg shadow-lg flex-grow">
                         <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white">Send Us a Message</h2>
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            <div>
-                                <label htmlFor="name" className="block text-lg text-gray-700 dark:text-gray-300">Your Name</label>
-                                <input
-                                    type="text"
-                                    id="name"
-                                    className="mt-2 p-3 w-full border rounded-lg bg-gray-100 dark:bg-gray-700 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                    placeholder="John Doe"
-                                    value={formData.name}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="email" className="block text-lg text-gray-700 dark:text-gray-300">Your Email</label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    className="mt-2 p-3 w-full border rounded-lg bg-gray-100 dark:bg-gray-700 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                    placeholder="you@example.com"
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="message" className="block text-lg text-gray-700 dark:text-gray-300">Your Message</label>
-                                <textarea
-                                    id="message"
-                                    rows="6"
-                                    className="mt-2 p-3 w-full border rounded-lg bg-gray-100 dark:bg-gray-700 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600"
-                                    placeholder="Type your message here..."
-                                    value={formData.message}
-                                    onChange={handleInputChange}
-                                ></textarea>
-                            </div>
+                            <InputField
+                                label="Your Name"
+                                id="name"
+                                value={formData.name}
+                                onChange={handleInputChange}
+                                placeholder="John Doe"
+                            />
+                            <InputField
+                                label="Your Email"
+                                id="email"
+                                type="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                placeholder="you@example.com"
+                            />
+                            <InputField
+                                label="Your Message"
+                                id="message"
+                                type="textarea"
+                                value={formData.message}
+                                onChange={handleInputChange}
+                                placeholder="Type your message here..."
+                            />
                             <div>
                                 <button
                                     type="submit"
