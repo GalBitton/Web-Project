@@ -5,6 +5,12 @@ import User from '../database/models/User.model.js';
 import { convertExpirationDateToMilliseconds } from '../utils/expirationDateConverter.js';
 
 class AuthController {
+    /**
+     * Creates an instance of AuthController.
+     * 
+     * @param {Object} config - Configuration object.
+     * @param {Object} logger - Logger instance.
+     */
     constructor(config, logger) {
         this._config = config;
         this._logger = logger;
@@ -20,6 +26,13 @@ class AuthController {
         this.logout = this.logout.bind(this);
     };
 
+    /**
+     * Registers a new user with the provided email and password.
+     * 
+     * @param {Object} req - The request object.
+     * @param {Object} res - The response object.
+     * @returns {Promise<void>}
+     */
     async register(req, res) {
         try {
             const { email, password } = req.body;
@@ -51,6 +64,13 @@ class AuthController {
         }
     };
 
+    /**
+     * Authenticates a user with the provided email and password, and returns JWT tokens.
+     * 
+     * @param {Object} req - The request object.
+     * @param {Object} res - The response object.
+     * @returns {Promise<void>}
+     */
     async authenticate(req, res) {
         try {
             const { email, password } = req.body;
@@ -101,6 +121,13 @@ class AuthController {
         }
     };
 
+    /**
+     * Authenticates a user using a Google ID token and returns JWT tokens.
+     * 
+     * @param {Object} req - The request object.
+     * @param {Object} res - The response object.
+     * @returns {Promise<void>}
+     */
     async authenticateGoogleToken(req, res) {
         try {
             const { idToken } = req.body;
@@ -168,6 +195,13 @@ class AuthController {
         }
     };
 
+    /**
+     * Refreshes the access token using a valid refresh token.
+     * 
+     * @param {Object} req - The request object.
+     * @param {Object} res - The response object.
+     * @returns {Promise<void>}
+     */
     async refresh(req, res) {
         try {
             const refreshToken = req.cookies.jwt;
@@ -201,6 +235,13 @@ class AuthController {
         }
     };
 
+    /**
+     * Logs out the user by clearing the JWT cookie and updating the user's refresh token.
+     * 
+     * @param {Object} req - The request object.
+     * @param {Object} res - The response object.
+     * @returns {Promise<void>}
+     */
     async logout(req, res) {
         try {
             res.clearCookie('jwt');

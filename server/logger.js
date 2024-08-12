@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import winston, { format } from 'winston';
 import 'winston-daily-rotate-file';
 
+// Define log format with timestamp and request details
 const logFormat = format.printf(({ timestamp, level, message, request }) => {
     // Clone request.body and remove or mask sensitive fields
     let bodyString = '';
@@ -23,13 +24,27 @@ const logFormat = format.printf(({ timestamp, level, message, request }) => {
     return `[${timestamp}] ${level}: ${message} ${userIdPart}\n${formattedRequest}`;
 });
 
+/**
+ * Logger class to handle logging operations.
+ * @class
+ */
 class Logger {
+    /**
+     * Creates an instance of Logger.
+     * @param {Object} config - Configuration for the logger.
+     * @param {string} config.level - Logging level.
+     * @param {boolean} [config.log2file] - Flag to log to file.
+     */
     constructor(config) {
         this.logger = null;
         this._config = config;
         this._createLogger();
     };
 
+    /**
+     * Initializes the logger with defined transports.
+     * @private
+     */
     _createLogger() {
         const FileOptions = {
             filename: 'logs/%DATE%.txt',

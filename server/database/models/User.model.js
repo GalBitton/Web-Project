@@ -39,14 +39,30 @@ const UserSchema = new mongoose.Schema({
 });
 
 
+/**
+ * Hashes the user's password using bcrypt.
+ * 
+ * This method hashes the password before saving it to the database.
+ */
 UserSchema.methods.hashPassword = async function() {
     this.password = await bcrypt.hash(this.password, 10);
 };
 
+/**
+ * Compares a given password with the user's hashed password.
+ * 
+ * @param {string} password - The password to compare.
+ * @returns {Promise<boolean>} - A promise that resolves to a boolean indicating whether the passwords match.
+ */
 UserSchema.methods.comparePassword = function (password) {
     return bcrypt.compare(password, this.password);
 };
 
+/**
+ * Generates a reset password token and updates the user document with it.
+ * 
+ * @returns {Promise<string>} - A promise that resolves to the generated token.
+ */
 UserSchema.methods.generateResetPasswordToken = async function() {
     const token = jwt.sign(
         {
@@ -67,6 +83,11 @@ UserSchema.methods.generateResetPasswordToken = async function() {
     return token;
 };
 
+/**
+ * Pre-save hook to hash the password if it has been modified.
+ * 
+ * @param {Function} next - The next middleware function to call.
+ */
 UserSchema.pre('save', async function (next) {
     try {
         if (this.isModified('password')) {

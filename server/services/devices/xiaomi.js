@@ -1,6 +1,18 @@
 import Device from "./device.js";
 
+/**
+ * @class XiaomiWatch
+ * @extends Device
+ * @description Represents a Xiaomi Watch device, extending the base Device class to handle specific data fields.
+ */
 class XiaomiWatch extends Device {
+    /**
+     * @method getFieldValue
+     * @param {Object} entry - Data entry containing field values.
+     * @param {string} field - The field name to retrieve.
+     * @returns {Object|number} - Value of the specified field.
+     * @description Retrieves the value for a specific field from the data entry, handling fields like sleep, stress, and VO2Max.
+     */
     getFieldValue(entry, field) {
         if (entry[field] === undefined) {
             return 0;
@@ -26,6 +38,12 @@ class XiaomiWatch extends Device {
         }
     }
 
+    /**
+     * @method generateDataForField
+     * @param {string} field - The field name to generate data for.
+     * @returns {Object|number} - Generated data for the field.
+     * @description Generates data for a specific field, including sleep, stress, and VO2Max.
+     */
     generateDataForField(field) {
         switch (field) {
             case 'sleep':
@@ -45,12 +63,29 @@ class XiaomiWatch extends Device {
         }
     }
 
+    /**
+     * @method getFields
+     * @returns {string[]} - List of field names supported by the Xiaomi Watch.
+     * @description Returns an array of field names specific to the Xiaomi Watch, including sleep, stress, and VO2Max.
+     */
     getFields() {
         return [...super.getFields(), "sleep", "stress", "VO2Max"];
     }
 }
 
+/**
+ * @class XiaomiBracelet
+ * @extends Device
+ * @description Represents a Xiaomi Bracelet device, extending the base Device class to handle specific data fields.
+ */
 class XiaomiBracelet extends Device {
+    /**
+     * @method getFieldValue
+     * @param {Object} entry - Data entry containing field values.
+     * @param {string} field - The field name to retrieve.
+     * @returns {Object|number} - Value of the specified field.
+     * @description Retrieves the value for a specific field from the data entry, handling fields like sleep, stress, and respiratory rate.
+     */
     getFieldValue(entry, field) {
         if (entry[field] === undefined) {
             return 0;
@@ -76,6 +111,12 @@ class XiaomiBracelet extends Device {
         }
     }
 
+    /**
+     * @method generateDataForField
+     * @param {string} field - The field name to generate data for.
+     * @returns {Object|number} - Generated data for the field.
+     * @description Generates data for a specific field, including sleep, stress, and respiratory rate.
+     */
     generateDataForField(field) {
         switch (field) {
             case 'sleep':
@@ -95,6 +136,11 @@ class XiaomiBracelet extends Device {
         }
     }
 
+    /**
+     * @method getFields
+     * @returns {string[]} - List of field names supported by the Xiaomi Bracelet.
+     * @description Returns an array of field names specific to the Xiaomi Bracelet, including sleep, stress, and respiratory rate.
+     */
     getFields() {
         return [...super.getFields(), "sleep", "stress", "respiratoryRate"];
     }

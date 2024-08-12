@@ -10,6 +10,7 @@ const serverConfig = config.get('server');
 const db_uri = serverConfig.db_uri;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+// List of JSON files to be migrated along with their metadata
 const jsonFiles = [
     { filePath: '../demo-data/apple_watch_data_v2.json', brand: 'Apple', type: 'Smartwatch' },
     { filePath: '../demo-data/dreem_headband_data_v2.json', brand: 'Dreem', type: 'Headband' },
@@ -21,6 +22,11 @@ const jsonFiles = [
     { filePath: '../demo-data/xiaomi_watch_data_v2.json', brand: 'Xiaomi', type: 'Smartwatch' }
 ];
 
+/**
+ * Function to migrate data from JSON files to MongoDB.
+ * @async
+ * @function migrateData
+ */
 const migrateData = async () => {
     try {
         // Connect to MongoDB
@@ -65,4 +71,5 @@ const migrateData = async () => {
     }
 };
 
+// Invoke the data migration function
 migrateData();

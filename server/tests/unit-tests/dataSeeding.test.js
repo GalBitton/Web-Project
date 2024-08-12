@@ -1,3 +1,7 @@
+/**
+ * @module AppleWatch
+ * @description Tests for the AppleWatch service, covering data generation and validation.
+ */
 import { jest } from '@jest/globals';
 import container from '../../containerConfig.js';
 import AppleWatch from '../../services/devices/apple.js';
@@ -28,6 +32,10 @@ describe('AppleWatch', () => {
         jest.clearAllMocks();
     });
 
+    /**
+     * @test
+     * @description Verifies generation of 2 data points with lastSeeded value 20 minutes ago.
+     */
     test('should generate 2 data points given lastSeeded value 20 minutes ago', async () => {
         const now = new Date();
         const difference = now.getMinutes() - 20;
@@ -40,6 +48,10 @@ describe('AppleWatch', () => {
         expect(totalDataPoints).toBe(2);
     });
 
+    /**
+     * @test
+     * @description Verifies generation of 2 data points with lastSeeded value 28 minutes ago.
+     */
     test('should generate 2 data points given lastSeeded value 28 minutes ago', async () => {
         const now = new Date();
         const difference = now.getMinutes() - 28; // 28 minutes ago
@@ -52,6 +64,10 @@ describe('AppleWatch', () => {
         expect(totalDataPoints).toBe(2);
     });
 
+    /**
+     * @test
+     * @description Verifies generation of 0 data points with lastSeeded value 8 minutes ago.
+     */
     test('should generate 0 data points given lastSeeded value 8 minutes ago', async () => {
         const now = new Date();
         const difference = now.getMinutes() - 8; // 8 minutes ago
@@ -64,6 +80,10 @@ describe('AppleWatch', () => {
         expect(totalDataPoints).toBe(0);
     });
 
+    /**
+     * @test
+     * @description Verifies generation of 432 data points for 3 days with lastSeeded value null.
+     */
     test('should generate 432 data points for 3 days given lastSeeded value null', async () => {
         device = new AppleWatch(config, logger, '66b68d5e0907bc30b8ad5b3f', 'apple-smartwatch', null);
 
@@ -73,6 +93,10 @@ describe('AppleWatch', () => {
         expect(totalDataPoints).toBe(432);
     });
 
+    /**
+     * @test
+     * @description Verifies data points have the correct structure.
+     */
     test('should generate data points with correct structure', async () => {
         jest.setSystemTime(new Date('2024-08-06T14:00:00Z')); // Set time to 2:00 PM on a Thursday
 
@@ -88,6 +112,10 @@ describe('AppleWatch', () => {
         });
     });
 
+    /**
+     * @test
+     * @description Verifies data points are within specified value ranges with max deviation.
+     */
     test('should generate data points within specified value ranges with max deviation', async () => {
         jest.setSystemTime(new Date('2024-08-08T14:00:00Z')); // Set time to 2:00 PM on a Thursday
 
@@ -123,6 +151,10 @@ describe('AppleWatch', () => {
         expect(dataPoint.bloodPressure.diastolic).toBeLessThanOrEqual(diastolicBPRange.upperBound);
     });
 
+    /**
+     * @test
+     * @description Verifies random values are precomputed correctly.
+     */
     test('should precompute random values correctly', () => {
         device.precomputeRandomValues(device.getFields(), config.points);
         const fields = device.getFields();
@@ -135,6 +167,10 @@ describe('AppleWatch', () => {
         });
     });
 
+    /**
+     * @test
+     * @description Verifies data generation in batches.
+     */
     test('should generate data in batches', async () => {
         const batchSize = config.batchSize || 50;
         const generateDataBatchSpy = jest.spyOn(device, 'generateDataBatch');
@@ -154,15 +190,20 @@ describe('AppleWatch', () => {
         expect(generateDataBatchSpy).toHaveBeenCalledTimes(expectedBatches);
     });
 
-
-
-    // Tests for sleep feature and exclusion cases
+    /**
+     * @module SleepFeature
+     * @description Tests for the sleep feature in the AppleWatch service.
+     */
     describe('Sleep feature', () => {
         beforeEach(() => {
             // Set system time to nighttime for sleep-related tests (e.g., 11:00 PM)
             jest.setSystemTime(new Date('2024-08-09T23:00:00Z')); // 11:00 PM
         });
 
+        /**
+         * @test
+         * @description Verifies sleep data is within specified ranges.
+         */
         test('should generate sleep data within specified ranges', async () => {
             const dataBatches = await device.seedDatabase();
             const dataPoint = dataBatches.flat()[0]; // Flatten and access the first data point
@@ -174,12 +215,20 @@ describe('AppleWatch', () => {
             expect(dataPoint.sleep.quality).toBeLessThanOrEqual(ranges.sleepQuality.max);
         });
 
+        /**
+         * @test
+         * @description Verifies sleep field is included in nighttime data points.
+         */
         test('should include sleep field in generated data points during nighttime', async () => {
             const dataBatches = await device.seedDatabase();
             const dataPoint = dataBatches.flat()[0]; // Flatten and access the first data point
             expect(dataPoint).toHaveProperty('sleep');
         });
 
+        /**
+         * @test
+         * @description Verifies sleep field is included in Friday afternoon nap data points.
+         */
         test('should include sleep field in generated data points during Friday afternoon nap', async () => {
             // Adjust to your local time by subtracting 3 hours to match 2:00 PM local time (GMT +3)
             jest.setSystemTime(new Date('2024-08-09T11:00:00Z')); // This sets the time to 2:00 PM local time (GMT +3)
@@ -190,6 +239,10 @@ describe('AppleWatch', () => {
             expect(dataPoint).toHaveProperty('sleep');
         });
 
+        /**
+         * @test
+         * @description Verifies sleep field is excluded in daytime data points.
+         */
         test('should exclude sleep field in generated data points during daytime', async () => {
             jest.setSystemTime(new Date('2024-08-09T16:00:00Z')); // Set time to 16:00 PM (daytime)
 

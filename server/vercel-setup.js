@@ -4,6 +4,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const newConfigPath = path.join(__dirname, 'config');
 
+/**
+ * Sets up the configuration directory based on the environment.
+ * @function
+ * @exports setupVercel
+ */
 export default function setupVercel() {
     if (process.env.NODE_ENV === 'production') {
         process.env.NODE_CONFIG_DIR = newConfigPath;

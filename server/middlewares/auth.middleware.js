@@ -2,7 +2,15 @@
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 
+/**
+ * Middleware for authentication using JWT.
+ */
 class AuthMiddleware {
+    /**
+     * Creates an instance of AuthMiddleware.
+     * @param {Object} config - Configuration object.
+     * @param {Object} logger - Logger instance.
+     */
     constructor(config, logger) {
         this._config = config;
         this._logger = logger;
@@ -12,6 +20,13 @@ class AuthMiddleware {
         this.authenticateJWT = this.authenticateJWT.bind(this);
     }
 
+    /**
+     * Middleware function to authenticate JWT.
+     * @param {Object} req - Express request object.
+     * @param {Object} res - Express response object.
+     * @param {Function} next - Next middleware function.
+     * @returns {void}
+     */
     async authenticateJWT(req, res, next) {
         const authHeader = req.headers.authorization;
 

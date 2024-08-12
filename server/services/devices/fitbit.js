@@ -1,6 +1,18 @@
 import Device from "./device.js";
 
+/**
+ * @class FitbitBracelet
+ * @extends Device
+ * @description Represents a Fitbit Bracelet device, extending the base Device class to handle specific data fields.
+ */
 export default class FitbitBracelet extends Device {
+    /**
+     * @method getFieldValue
+     * @param {Object} entry - Data entry containing field values.
+     * @param {string} field - The field name to retrieve.
+     * @returns {Object|number} - Value of the specified field.
+     * @description Retrieves the value for a specific field from the data entry. Handles fields such as sleep, stress, and breathing rate.
+     */
     getFieldValue(entry, field) {
         if (entry[field] === undefined) {
             return 0;
@@ -27,6 +39,12 @@ export default class FitbitBracelet extends Device {
         }
     }
 
+    /**
+     * @method generateDataForField
+     * @param {string} field - The field name to generate data for.
+     * @returns {Object|number} - Generated data for the field.
+     * @description Generates data for a specific field, including sleep, stress, and breathing rate.
+     */
     generateDataForField(field) {
         switch (field) {
             case 'sleep':
@@ -47,6 +65,11 @@ export default class FitbitBracelet extends Device {
         }
     }
 
+    /**
+     * @method getFields
+     * @returns {string[]} - List of field names supported by the Fitbit Bracelet.
+     * @description Returns an array of field names specific to the Fitbit Bracelet, including sleep, stress, and breathing rate.
+     */
     getFields() {
         return [...super.getFields(), "sleep", "stress", "breathingRate"];
     }

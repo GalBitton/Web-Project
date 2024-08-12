@@ -1,3 +1,7 @@
+/**
+ * @module DeviceTests
+ * @description Tests for various device services, verifying the correct retrieval and transformation of data.
+ */
 import container from '../../containerConfig.js';
 import AppleWatch from '../../services/devices/apple.js';
 import FitbitBracelet from '../../services/devices/fitbit.js';
@@ -21,11 +25,18 @@ beforeEach(() => {
     };
 });
 
+/**
+ * @description Tests for the AppleWatch service.
+ */
 describe('AppleWatch', () => {
     beforeEach(() => {
         device = new AppleWatch(config, logger, 0, 'Apple Watch', null);
     });
 
+    /**
+     * @test
+     * @description Verifies getFieldValue returns correct sleep data.
+     */
     test('getFieldValue returns correct sleep data', () => {
         const entry = {
             sleep: { duration: 480, quality: 'Good' }
@@ -35,11 +46,18 @@ describe('AppleWatch', () => {
     });
 });
 
+/**
+ * @description Tests for the FitbitBracelet service.
+ */
 describe('FitbitBracelet', () => {
     beforeEach(() => {
         device = new FitbitBracelet(config, logger, 0, 'Fitbit Bracelet', null);
     });
 
+    /**
+     * @test
+     * @description Verifies getFieldValue returns correct stress data.
+     */
     test('getFieldValue returns correct stress data', () => {
         const entry = {
             stressManagement: { score: 2.0 }
@@ -49,11 +67,18 @@ describe('FitbitBracelet', () => {
     });
 });
 
+/**
+ * @description Tests for the MuseHeadband service.
+ */
 describe('MuseHeadband', () => {
     beforeEach(() => {
         device = new MuseHeadband(config, logger, 0, 'Muse Headband', null);
     });
 
+    /**
+     * @test
+     * @description Verifies getFieldValue returns correct EEG data.
+     */
     test('getFieldValue returns correct EEG data', () => {
         const entry = {
             EEG: { alphaWaves: 10, betaWaves: 20, gammaWaves: 30 }
@@ -63,11 +88,18 @@ describe('MuseHeadband', () => {
     });
 });
 
+/**
+ * @description Tests for the DreemHeadband service.
+ */
 describe('DreemHeadband', () => {
     beforeEach(() => {
         device = new DreemHeadband(config, logger, 0, 'Dreem Headband', null);
     });
 
+    /**
+     * @test
+     * @description Verifies getFieldValue returns correct sleep data.
+     */
     test('getFieldValue returns correct sleep data', () => {
         const entry = {
             sleepData: { totalDuration: 480, sleepQuality: 0.8567 }
@@ -77,11 +109,18 @@ describe('DreemHeadband', () => {
     });
 });
 
+/**
+ * @description Tests for the SamsungWatch service.
+ */
 describe('SamsungWatch', () => {
     beforeEach(() => {
         device = new SamsungWatch(config, logger, 0, 'Samsung Watch', null);
     });
 
+    /**
+     * @test
+     * @description Verifies getFieldValue returns correct heartRate data.
+     */
     test('getFieldValue returns correct heartRate data', () => {
         const entry = {
             heartRate: 72
@@ -91,11 +130,18 @@ describe('SamsungWatch', () => {
     });
 });
 
+/**
+ * @description Tests for the SamsungBracelet service.
+ */
 describe('SamsungBracelet', () => {
     beforeEach(() => {
         device = new SamsungBracelet(config, logger, 0, 'Samsung Bracelet', null);
     });
 
+    /**
+     * @test
+     * @description Verifies getFieldValue returns correct stress data.
+     */
     test('getFieldValue returns correct stress data', () => {
         const entry = {
             stressLevel: 5
@@ -105,11 +151,18 @@ describe('SamsungBracelet', () => {
     });
 });
 
+/**
+ * @description Tests for the XiaomiWatch service.
+ */
 describe('XiaomiWatch', () => {
     beforeEach(() => {
         device = new XiaomiWatch(config, logger, 0, 'Xiaomi Watch', null);
     });
 
+    /**
+     * @test
+     * @description Verifies getFieldValue returns correct VO2Max data.
+     */
     test('getFieldValue returns correct VO2Max data', () => {
         const entry = {
             VO2Max: 45
@@ -119,11 +172,18 @@ describe('XiaomiWatch', () => {
     });
 });
 
+/**
+ * @description Tests for the XiaomiBracelet service.
+ */
 describe('XiaomiBracelet', () => {
     beforeEach(() => {
         device = new XiaomiBracelet(config, logger, 0, 'Xiaomi Bracelet', null);
     });
 
+    /**
+     * @test
+     * @description Verifies getFieldValue returns correct sleep data.
+     */
     test('getFieldValue returns correct sleep data', () => {
         const entry = {
             sleep: { totalDuration: 420, qualityIndex: 0.952 }
