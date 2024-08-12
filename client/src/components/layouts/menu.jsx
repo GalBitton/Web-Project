@@ -1,4 +1,3 @@
-import React from 'react';
 import { stack as Menu } from '@katasonovyp/react-burger-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import ProfileMenu from './profile-menu.jsx';

@@ -1,4 +1,3 @@
-import React from 'react';
 import serviceData from '../../../package.json';
 import useLocation from "../../hooks/useLocation";
 
