@@ -1,3 +1,20 @@
+/**
+ * Tests for data retrieval methods of various devices.
+ * 
+ * The suite includes tests for the following devices:
+ * - AppleWatch
+ * - FitbitBracelet
+ * - MuseHeadband
+ * - DreemHeadband
+ * - SamsungWatch
+ * - SamsungBracelet
+ * - XiaomiWatch
+ * - XiaomiBracelet
+ * 
+ * Each test verifies that the `getFieldValue` method of the device class correctly returns the expected data from a given input.
+ *
+ * @module deviceTests
+ */
 import container from '../../containerConfig.js';
 import AppleWatch from '../../services/devices/apple.js';
 import FitbitBracelet from '../../services/devices/fitbit.js';
@@ -26,6 +43,9 @@ describe('AppleWatch', () => {
         device = new AppleWatch(config, logger, 0, 'Apple Watch', null);
     });
 
+    /**
+     * Verifies that `getFieldValue` returns the correct sleep data from AppleWatch.
+     */
     test('getFieldValue returns correct sleep data', () => {
         const entry = {
             sleep: { duration: 480, quality: 'Good' }
@@ -40,6 +60,9 @@ describe('FitbitBracelet', () => {
         device = new FitbitBracelet(config, logger, 0, 'Fitbit Bracelet', null);
     });
 
+    /**
+     * Verifies that `getFieldValue` returns the correct stress data from FitbitBracelet.
+     */
     test('getFieldValue returns correct stress data', () => {
         const entry = {
             stressManagement: { score: 2.0 }
@@ -54,6 +77,9 @@ describe('MuseHeadband', () => {
         device = new MuseHeadband(config, logger, 0, 'Muse Headband', null);
     });
 
+    /**
+     * Verifies that `getFieldValue` returns the correct EEG data from MuseHeadband.
+     */
     test('getFieldValue returns correct EEG data', () => {
         const entry = {
             EEG: { alphaWaves: 10, betaWaves: 20, gammaWaves: 30 }
@@ -68,6 +94,9 @@ describe('DreemHeadband', () => {
         device = new DreemHeadband(config, logger, 0, 'Dreem Headband', null);
     });
 
+    /**
+     * Verifies that `getFieldValue` returns the correct sleep data from DreemHeadband.
+     */
     test('getFieldValue returns correct sleep data', () => {
         const entry = {
             sleepData: { totalDuration: 480, sleepQuality: 0.8567 }
@@ -82,6 +111,9 @@ describe('SamsungWatch', () => {
         device = new SamsungWatch(config, logger, 0, 'Samsung Watch', null);
     });
 
+    /**
+     * Verifies that `getFieldValue` returns the correct heart rate data from SamsungWatch.
+     */
     test('getFieldValue returns correct heartRate data', () => {
         const entry = {
             heartRate: 72
@@ -96,6 +128,9 @@ describe('SamsungBracelet', () => {
         device = new SamsungBracelet(config, logger, 0, 'Samsung Bracelet', null);
     });
 
+    /**
+     * Verifies that `getFieldValue` returns the correct stress data from SamsungBracelet.
+     */
     test('getFieldValue returns correct stress data', () => {
         const entry = {
             stressLevel: 5
@@ -110,6 +145,9 @@ describe('XiaomiWatch', () => {
         device = new XiaomiWatch(config, logger, 0, 'Xiaomi Watch', null);
     });
 
+    /**
+     * Verifies that `getFieldValue` returns the correct VO2Max data from XiaomiWatch.
+     */
     test('getFieldValue returns correct VO2Max data', () => {
         const entry = {
             VO2Max: 45
@@ -124,6 +162,9 @@ describe('XiaomiBracelet', () => {
         device = new XiaomiBracelet(config, logger, 0, 'Xiaomi Bracelet', null);
     });
 
+    /**
+     * Verifies that `getFieldValue` returns the correct sleep data from XiaomiBracelet.
+     */
     test('getFieldValue returns correct sleep data', () => {
         const entry = {
             sleep: { totalDuration: 420, qualityIndex: 1.297 }
