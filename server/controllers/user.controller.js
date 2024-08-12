@@ -9,6 +9,13 @@ import { calculateOverallAverage } from "../utils/mathUtils.js";
 import { translateSleepIndex, translateSleepQualityToIndex } from "../utils/sleepTranslation.js";
 
 class UserController {
+    /**
+     * Creates an instance of UserController.
+     * 
+     * @param {Object} config - The configuration object for the controller.
+     * @param {Object} logger - The logger instance for logging messages and errors.
+     * @param {Object} deviceFactory - The factory used to create device instances.
+     */
     constructor(config, logger, deviceFactory) {
         this._config = config;
         this._logger = logger;
