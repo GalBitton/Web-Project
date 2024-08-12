@@ -2,6 +2,22 @@ import mongoose from 'mongoose';
 import validator from 'validator';
 import { getSupportedDeviceBrands, getSupportedDeviceTypes } from "../../enums/supported-devices.js";
 
+/**
+ * Schema for device documents in MongoDB.
+ * 
+ * @typedef {Object} DeviceSchema
+ * @property {mongoose.Schema.Types.ObjectId} user - Reference to the User document.
+ * @property {string} status - Status of the device ('linked' or 'unlinked'). Default is 'linked'.
+ * @property {string} brand - Brand of the device. Must be one of the supported brands.
+ * @property {string} type - Type of the device. Must be valid for the specified brand.
+ * @property {mongoose.Schema.Types.ObjectId} data - Reference to the DeviceData document.
+ */
+
+/**
+ * Device schema definition.
+ * 
+ * @type {mongoose.Schema}
+ */
 const DeviceSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     status: { type: String, enum: ['linked', 'unlinked'], default: 'linked' },
