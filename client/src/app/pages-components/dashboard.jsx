@@ -1,16 +1,13 @@
 import { useState, useEffect } from 'react';
-import Device from '@/services/device.js';
-import { getGraphSummary } from '@/utils';
-import DeviceCard from '@/components/cards/devicecard';
-import ChartComponent from '@/components/charts/chart';
-import { useAuth } from "@/contexts/AuthContext";
 import useAPIService from "@/hooks/useAPIService";
-import APIService from "@/services/api/APIService";
-import LoadingAnimation from '../../components/loading';
-import ResponsiveChartComponent from '@/components/charts/responsive-charts';
-import { Carousel } from 'react-responsive-carousel';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
-import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { useAuth } from "@/contexts/AuthContext";
+import DeviceList from '@/components/dashboard/DeviceList';
+import ChartCarousel from '@/components/dashboard/ChartCarousel';
+import DeviceSummary from '@/components/dashboard/DeviceSummary';
+import LoadingErrorComponent from '@/components/dashboard/LoadingErrorComponent';
+import useLinkedDevices from '@/hooks/useLinkedDevices';
+import useChartData from '@/hooks/useChartData';
+import { getGraphSummary } from '@/utils';
 
 const supportedDevices = [
     { brand: 'Samsung', type: 'Smartwatch' },
@@ -24,241 +21,254 @@ const supportedDevices = [
 ];
 
 const Dashboard = () => {
-    const { data: devicesData, error: devicesError, loading: devicesLoading } = useAPIService({action: 'getLinkedDevices'});
-    const { data: avgData, error: avgDataError, loading: avgDataLoading } = useAPIService({action: 'getAverageDataAllDevices'});
+    const { data: devicesData, error: devicesError, loading: devicesLoading } = useAPIService({ action: 'getLinkedDevices' });
+    const { data: avgData, error: avgDataError, loading: avgDataLoading } = useAPIService({ action: 'getAverageDataAllDevices' });
     const { getIdentity } = useAuth();
-    const [linkedDevices, setLinkedDevices] = useState([]);
+
+    const [selectedItem, setSelectedItem] = useState(0);
     const [selectedBrand, setSelectedBrand] = useState('');
     const [selectedType, setSelectedType] = useState('');
-    const [selectedItem, setSelectedItem] = useState(0);
-    
-    const [selectedDeviceToLink, setSelectedDeviceToLink] = useState('');
-    const [unlinkedDevices, setUnlinkedDevices] = useState([]);
     const [currentDevice, setCurrentDevice] = useState(null);
+    const [allDevicesCurrentIndex, setAllDevicesCurrentIndex] = useState(0);
+    const [specificDeviceCurrentIndex, setSpecificDeviceCurrentIndex] = useState(0);
+    const [overallAverages, setOverallAverages] = useState({});
     const [healthStory, setHealthStory] = useState("");
 
-    const [chartsData, setChartsData] = useState({
-        heartRate: {labels: [], values: []},
-        steps: {labels: [], values: []},
-        calories: {labels: [], values: []},
-        sleep: {labels: [], values: [], valuesY1: []},
-        stress: {labels: [], values: []},
-        oxygen: {labels: [], values: []},
-        bloodPressure: {labels: [], systolic: [], diastolic: []},
-        eeg: {labels: [], alpha: [], beta: [], gamma: [], delta: [], theta: []}
+    const [linkedDevices, setLinkedDevices] = useState([]);
+    const [unlinkedDevices, setUnlinkedDevices] = useState([]);
+
+    const { chartsData, averageChartsData, updateCharts } = useChartData(currentDevice, avgData);
+
+    const { handleLinkDevice, handleUnlinkDevice } = useLinkedDevices({
+        devicesData,
+        supportedDevices,
+        setLinkedDevices,
+        setUnlinkedDevices,
+        setSelectedItem,
+        setSelectedBrand,
+        setSelectedType,
+        setCurrentDevice,
+        updateCharts
     });
 
-    const [overallAverages, setOverallAverages] = useState({});
-    const [averageChartsData, setAverageChartsData] = useState({
-        heartRate: {labels: [], values: []},
-        steps: {labels: [], values: []},
-        calories: {labels: [], values: []},
-        sleep: {labels: [], values: [], valuesY1: []}
-    });
+    useEffect(() => {
+        if (linkedDevices.length > 0) {
+            const adjustedSelectedItem = Math.min(selectedItem, linkedDevices.length - 1);
+            const selectedDevice = linkedDevices[adjustedSelectedItem];
+            setSelectedItem(adjustedSelectedItem);
+            setSelectedBrand(selectedDevice.brand);
+            setSelectedType(selectedDevice.type);
+            setCurrentDevice(selectedDevice.device);
+            updateCharts(selectedDevice.device);
+        } else {
+            setSelectedBrand('');
+            setSelectedType('');
+            setCurrentDevice(null);
+        }
+    }, [selectedItem, linkedDevices]);
 
-    // useEffect to set the linked devices
-    useEffect (() => {
-        const getDevicesData = async () => {
-            if (devicesData) {
-                const linkedDevices = await createAllDevices();
-                setLinkedDevices(linkedDevices);
-                const availableDevices = supportedDevices.filter(device =>
-                    !linkedDevices.some(linked => linked.brand === device.brand && linked.type === device.type)
-                );
-                setUnlinkedDevices(availableDevices);
-            }
-        };
-
-        getDevicesData();
-    }, [devicesData]);
-
-    // useEffect to reload the brand and device options
     useEffect(() => {
         if (selectedBrand !== '') {
             const availableDevices = linkedDevices.filter(device => device.brand === selectedBrand && device.status === 'linked');
             if (availableDevices.length > 0) {
                 setSelectedType(availableDevices[0].type);
+                setCurrentDevice(availableDevices[0].device);
+                updateCharts(availableDevices[0].device);
             }
         }
-    }, [selectedBrand]);
-
-    // useEffect to reload the charts when the brand or device changes
-    useEffect(() => {
-        if (selectedBrand !== '' && selectedType !== '') {
-            const model = linkedDevices.find(device => device.brand === selectedBrand && device.type === selectedType);
-            if (model && model.status === 'linked') {
-                setCurrentDevice(model.device);
-            }
-        }
-    }, [selectedBrand, selectedType, linkedDevices]);
+    }, [selectedBrand, linkedDevices]);
 
     useEffect(() => {
-        if (currentDevice) {
-            updateCharts();
+        if (avgData) {
+            setOverallAverages(avgData.overallAverages || {});
         }
-    }, [currentDevice]);
-
-    // useEffect to set the average charts data
-    useEffect (() => {
-        setAverageChartsData({
-            heartRate: avgData?.heartRateAverages || {labels: [], values: []},
-            steps: avgData?.stepsAverages || {labels: [], values: []},
-            calories: avgData?.caloriesAverages || {labels: [], values: []},
-            sleep: avgData?.sleepAverages || {labels: [], values: []}
-        });
-
-        setOverallAverages(avgData?.overallAverages || {});
     }, [avgData]);
 
-    // useEffect on mount to initialize the linked devices
-    useEffect(() => {
-        const initializeDevices = async () => {
-            if (linkedDevices.length > 0) {
-                const defaultBrand = linkedDevices[0].brand;
-                const defaultType = linkedDevices.find(device => device.brand === defaultBrand).type;
-
-                setSelectedBrand(defaultBrand);
-                setSelectedType(defaultType);
-            }
-        };
-
-        initializeDevices();
-    }, [linkedDevices]);
-
-    // Update selectedBrand and selectedType based on the selectedItem index in the carousel
-    useEffect(() => {
-        if (linkedDevices.length > 0) {
-            const selectedDevice = linkedDevices[selectedItem];
-            setSelectedBrand(selectedDevice.brand);
-            setSelectedType(selectedDevice.type);
-        }
-    }, [selectedItem, linkedDevices]);
-
-    // Update selectedBrand and selectedType based on the selectedItem index in the carousel
-    useEffect(() => {
-        if (linkedDevices.length > 0) {
-            const selectedDevice = linkedDevices[selectedItem];
-            setSelectedBrand(selectedDevice.brand);
-            setSelectedType(selectedDevice.type);
-        }
-    }, [selectedItem, linkedDevices]);
-
-    const createAllDevices = async () => {
-        if (devicesData) {
-            return Promise.all(devicesData.map(async (device) => ({
-                ...device,
-                name: `${device.brand} ${device.type}`,
-                imageSrc: '/assets/watches/' + device.brand.toLowerCase() + '-' + device.type.toLowerCase() + '.png',
-                device: new Device(device._id),
-            })));
-        }
-        return [];
-    };
-
-    const updateCharts = async () => {
-        if(!currentDevice)
-            return;
-
-        await currentDevice.fetchAnalyzeData();
-
-        const heartRate = currentDevice.getAnalysisData('heartRate');
-        const steps = currentDevice.getAnalysisData('steps');
-        const calories = currentDevice.getAnalysisData('caloriesBurned');
-        const sleep = currentDevice.getAnalysisData('sleep');
-        const stress = currentDevice.getAnalysisData('stressLevel');
-        const oxygen = currentDevice.getAnalysisData('oxygenSaturation');
-        const bloodPressure = currentDevice.getAnalysisData('bloodPressure');
-        const eeg = currentDevice.getAnalysisData('eeg');
-
-
-        setChartsData({
-            heartRate,
-            steps,
-            calories,
-            sleep,
-            stress,
-            oxygen,
-            bloodPressure,
-            eeg
-        });
-    };
-
-    const handleLinkDevice = async (brand, type) => {
-        const apiService = new APIService({action: 'linkDevice', brand: brand, type: type });
-        const newDevice = await apiService.execute();
-        // newDevice might be null if the device is already linked somehow
-        if (newDevice) {
-            setLinkedDevices([...linkedDevices, newDevice])
-            await updateCharts();
-        }
-    };
-
-    const handleUnlinkDevice = async () => {
-        const image = document.querySelector(`.${selectedBrand}-${selectedType}-container`);
-        if (image) {
-            image.remove();
-        }
-
-        if (selectedType !== '') {
-            let deviceId;
-            // Unlink the device in the devices array
-            const updatedLinkedDevices = linkedDevices.map((device) => {
-                if (device.brand === selectedBrand && device.type === selectedType) {
-                    deviceId = device.device.id;
-                    return {...device, status: 'unlinked'};
-                }
-                return device;
-            });
-
-            const apiService = new APIService({action: 'unlinkDevice', deviceId });
-            await apiService.execute();
-            setLinkedDevices(updatedLinkedDevices);
-
-            // Update the charts with the new selection
-            setSelectedType('');
-            setSelectedBrand('');
-            setCurrentDevice(null);
-        }
-    };
-
-    const handleDeviceLinkChange = (event) => {
-        const selectedDevice = event.target.value;
-        setSelectedDeviceToLink(selectedDevice);
-    };
-
     const handleHealthStory = async () => {
-        const apiService = new APIService({action: 'getHealthStory' });
-        const story = await apiService.execute();
-        setHealthStory(story);
-    }
-
-    // const handleBrandChange = (event) => {
-    //     const selectedBrand = event.target.value;
-    //     setSelectedBrand(selectedBrand);
-    // };
-    //
-    // const handleTypeChange = (event) => {
-    //     const selectedType = event.target.value;
-    //     setSelectedType(selectedType);
-    // };
-
-    const [isVisible, setIsVisible] = useState(false);
-
-    const handlePlusClick = () => {
-        setIsVisible(!isVisible);
+        if (currentDevice) {
+            const story = await currentDevice.getHealthStory();
+            setHealthStory(story);
+        }
     };
 
-    const [currentIndex, setCurrentIndex] = useState(0);
-    
-    const graphs = [
+    // Specific device graphs
+    const specificDeviceGraphs = [
         {
-            title: "Average Heart Rate BPM",
+            title: `Heartrate BPM${selectedBrand && selectedType ? ` - (${selectedBrand} ${selectedType})` : ''}`,
+            chartId: "healthDataChart",
+            labels: chartsData.heartRate?.labels || [],
+            datasets: [
+                {
+                    label: 'Heartrate BPM',
+                    data: chartsData.heartRate?.values || [],
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    type: 'line',
+                }
+            ],
+            summary: currentDevice ? currentDevice.getAnalysisSummary('heartRate') : 'No device selected'
+        },
+        {
+            title: `Steps Count${selectedBrand && selectedType ? ` - (${selectedBrand} ${selectedType})` : ''}`,
+            chartId: "stepsChart",
+            labels: chartsData.steps?.labels || [],
+            datasets: [
+                {
+                    label: 'Steps Count',
+                    data: chartsData.steps?.values || [],
+                    backgroundColor: 'rgba(153, 102, 255, 0.5)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    type: 'bar',
+                }
+            ],
+            summary: currentDevice ? currentDevice.getAnalysisSummary('steps') : 'No device selected'
+        },
+        {
+            title: `Calories Burned${selectedBrand && selectedType ? ` - (${selectedBrand} ${selectedType})` : ''}`,
+            chartId: "caloriesChart",
+            labels: chartsData.calories?.labels || [],
+            datasets: [
+                {
+                    label: 'Calories Burned',
+                    data: chartsData.calories?.values || [],
+                    backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    type: 'bar',
+                }
+            ],
+            summary: currentDevice ? currentDevice.getAnalysisSummary('caloriesBurned') : 'No device selected'
+        },
+        {
+            title: `Sleep Statistics${selectedBrand && selectedType ? ` - (${selectedBrand} ${selectedType})` : ''}`,
+            chartId: "sleepChart",
+            labels: chartsData.sleep?.labels || [],
+            datasets: [
+                {
+                    label: 'Sleep Duration (hours)',
+                    data: chartsData.sleep?.values || [],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    type: 'bar',
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Sleep Quality',
+                    data: chartsData.sleep?.valuesY1 || [],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    type: 'line',
+                    yAxisID: 'y1'
+                }
+            ],
+            summary: currentDevice ? currentDevice.getAnalysisSummary('sleep') : 'No device selected'
+        },
+        {
+            title: `Stress Management Score${selectedBrand && selectedType ? ` - (${selectedBrand} ${selectedType})` : ''}`,
+            chartId: "stressChart",
+            labels: chartsData.stress?.labels || [],
+            datasets: [
+                {
+                    label: 'Stress Management Score',
+                    data: chartsData.stress?.values || [],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    type: 'line',
+                }
+            ],
+            summary: currentDevice ? currentDevice.getAnalysisSummary('stressLevel') : 'No device selected'
+        },
+        {
+            title: `Oxygen Saturation Levels${selectedBrand && selectedType ? ` - (${selectedBrand} ${selectedType})` : ''}`,
+            chartId: "oxygenChart",
+            labels: chartsData.oxygen?.labels || [],
+            datasets: [
+                {
+                    label: 'Oxygen Saturation Levels (%)',
+                    data: chartsData.oxygen?.values || [],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    type: 'line',
+                }
+            ],
+            summary: currentDevice ? currentDevice.getAnalysisSummary('oxygenSaturation') : 'No device selected'
+        },
+        {
+            title: `Blood Pressure${selectedBrand && selectedType ? ` - (${selectedBrand} ${selectedType})` : ''}`,
+            chartId: "bloodPressureChart",
+            labels: chartsData.bloodPressure?.labels || [],
+            datasets: [
+                {
+                    label: 'Systolic Blood Pressure',
+                    data: chartsData.bloodPressure?.systolic || [],
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    type: 'line',
+                },
+                {
+                    label: 'Diastolic Blood Pressure',
+                    data: chartsData.bloodPressure?.diastolic || [],
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    type: 'line',
+                }
+            ],
+            summary: currentDevice ? currentDevice.getAnalysisSummary('bloodPressure') : 'No device selected'
+        },
+        {
+            title: `EEG Data${selectedBrand && selectedType ? ` - (${selectedBrand} ${selectedType})` : ''}`,
+            chartId: "eegChart",
+            labels: chartsData.eeg?.labels || [],
+            datasets: [
+                {
+                    label: 'Alpha Waves',
+                    data: chartsData.eeg?.alpha || [],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    type: 'line',
+                },
+                {
+                    label: 'Beta Waves',
+                    data: chartsData.eeg?.beta || [],
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    type: 'line',
+                },
+                {
+                    label: 'Gamma Waves',
+                    data: chartsData.eeg?.gamma || [],
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    type: 'line',
+                },
+                {
+                    label: 'Delta Waves',
+                    data: chartsData.eeg?.delta || [],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    type: 'line',
+                },
+                {
+                    label: 'Theta Waves',
+                    data: chartsData.eeg?.theta || [],
+                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    type: 'line',
+                }
+            ],
+            summary: currentDevice ? currentDevice.getAnalysisSummary('eeg') : 'No device selected'
+        }
+    ];
+
+    // All devices graphs
+    const allDevicesGraphs = [
+        {
+            title: "Average Heart Rate BPM - All Devices",
             chartId: "avghealthDataChart",
-            labels: averageChartsData.heartRate.labels,
+            labels: averageChartsData.heartRate?.labels || [],
             datasets: [
                 {
                     label: 'Heart Rate BPM',
-                    data: averageChartsData.heartRate.values,
+                    data: averageChartsData.heartRate?.values || [],
                     backgroundColor: 'rgba(75, 192, 192, 0.5)',
                     borderColor: 'rgba(75, 192, 192, 1)',
                     type: 'line',
@@ -267,13 +277,13 @@ const Dashboard = () => {
             summary: getGraphSummary(overallAverages.heartRate, "heartRate")
         },
         {
-            title: "Average Steps Count",
+            title: "Average Steps Count - All Devices",
             chartId: "avgstepsChart",
-            labels: averageChartsData.steps.labels,
+            labels: averageChartsData.steps?.labels || [],
             datasets: [
                 {
                     label: 'Steps Count',
-                    data: averageChartsData.steps.values,
+                    data: averageChartsData.steps?.values || [],
                     backgroundColor: 'rgba(153, 102, 255, 0.5)',
                     borderColor: 'rgba(153, 102, 255, 1)',
                     type: 'bar',
@@ -282,13 +292,13 @@ const Dashboard = () => {
             summary: getGraphSummary(overallAverages.steps, "steps")
         },
         {
-            title: "Average Calories Burned",
+            title: "Average Calories Burned - All Devices",
             chartId: "avgcaloriesChart",
-            labels: averageChartsData.calories.labels,
+            labels: averageChartsData.calories?.labels || [],
             datasets: [
                 {
                     label: 'Calories Burned',
-                    data: averageChartsData.calories.values,
+                    data: averageChartsData.calories?.values || [],
                     backgroundColor: 'rgba(255, 159, 64, 0.5)',
                     borderColor: 'rgba(255, 159, 64, 1)',
                     type: 'bar',
@@ -297,13 +307,13 @@ const Dashboard = () => {
             summary: getGraphSummary(overallAverages.calories, "calories")
         },
         {
-            title: "Average Sleep Duration",
+            title: "Average Sleep Duration - All Devices",
             chartId: "avgsleepChart",
-            labels: averageChartsData.sleep.labels,
+            labels: averageChartsData.sleep?.labels || [],
             datasets: [
                 {
                     label: 'Sleep Duration (hours)',
-                    data: averageChartsData.sleep.values,
+                    data: averageChartsData.sleep?.values || [],
                     backgroundColor: 'rgba(54, 162, 235, 0.5)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     type: 'bar',
@@ -311,7 +321,7 @@ const Dashboard = () => {
                 },
                 {
                     label: 'Sleep Quality',
-                    data: averageChartsData.sleep.valuesY1,
+                    data: averageChartsData.sleep?.valuesY1 || [],
                     backgroundColor: 'rgba(255, 99, 132, 0.5)',
                     borderColor: 'rgba(255, 99, 132, 1)',
                     type: 'line',
@@ -322,6 +332,14 @@ const Dashboard = () => {
         }
     ];
 
+    const filteredSpecificDeviceGraphs = linkedDevices.length > 0 ? specificDeviceGraphs.filter(graph => {
+        return graph.datasets?.some(dataset => dataset?.data?.length > 0);
+    }) : [];
+
+    const filteredAllDevicesGraphs = linkedDevices.length > 0 ? allDevicesGraphs.filter(graph => {
+        return graph.datasets?.some(dataset => dataset?.data?.length > 0);
+    }):[];
+
 
     return (
         <div className="dashboard-full-container max-w-full">
@@ -330,165 +348,43 @@ const Dashboard = () => {
                 <p className="text-gray-700 dark:text-slate-500">Inspect your health charts and analytics</p>
             </div>
 
-            <div
-                className="flex-container flex-wrap bg-gray-100 dark:bg-slate-900 ml-4 mr-4 rounded-lg shadow-lg pb-5 mb-4">
-
-                <div className="relative flex justify-center items-center">
-                    <div className='flex items-center mb-4'>
-                        <h1 className="text-3xl text-black dark:text-white mt-8">Linked Devices</h1>
-                    </div>
-
-                    <div
-                        className={`flex absolute right-0 transition-opacity duration-250 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-
-                        <div className="flex mr-24 absolute right-0 ">
-                            <div>
-                                <button
-                                    className="unlink mr-1 bg-green-600 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-400 text-white dark:text-black px-4 py-2 rounded-lg w-full sm:w-[8rem]"
-                                    onClick={async () => {
-                                        const model = selectedDeviceToLink.split("-");
-                                        await handleLinkDevice(model[0], model[1]);
-                                    }}>Link
-                                </button>
-                            </div>
-                            <div>
-                                <select
-                                    className="brandCmbBox bg-gray-200 dark:bg-gray-700 text-black dark:text-white p-2 rounded-lg w-full sm:w-[10rem] min-w-[10rem]"
-
-                                    value={selectedDeviceToLink} onChange={handleDeviceLinkChange}>
-                                    <option selected>Choose Device</option>
-                                    {unlinkedDevices.map((device, index) => (
-                                        <option key={index}
-                                                value={`${device.brand}-${device.type}`}>{device.brand + " " + device.type}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div
-                        className="unlink bg-green-600 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-400 text-white dark:text-black rounded-full w-[3rem] h-[3rem] flex items-center justify-center absolute right-0 mt-10 mr-10 transform transition-transform duration-300 hover:rotate-90">
-                        <div
-                            className="absolute inset-0 z-[-1] rounded-full opacity-40 bg-gradient-to-r from-green-400 to-green-600 blur-md"></div>
-                        <button onClick={handlePlusClick}>
-                            {/* Plus Icon */}
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" fill="none" viewBox="0 0 24 24"
-                                 stroke="currentColor" strokeWidth="3">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                {devicesLoading && <LoadingAnimation/>}
-                {devicesError && <p>Error: {devicesError}</p>}
-                <div className="flex-1 justify-center p-4 lg:mb-0">
-                    <div className="linked-devices flex justify-center items-center p-2">
-                        <div className="w-full flex flex-col items-center">
-                            <Carousel
-                                selectedItem={selectedItem}
-                                showThumbs={false}  // Hide the thumbs if you don't need them
-                                showIndicators={false} // Hide the default indicators
-                                showStatus={false}  // Hide the status bar
-                                infiniteLoop={true}
-                                centerMode={true}
-                                swipeable={true}
-                                className="flex flex-col items-center w-full"
-                                onChange={(index) => setSelectedItem(index)} // Update selectedItem when carousel changes
-                                renderArrowPrev={(clickHandler, hasPrev) =>
-                                    hasPrev && (
-                                        <button
-                                            type="button"
-                                            onClick={clickHandler}
-                                            className="absolute left-0 z-10 p-2 transform -translate-y-1/2 top-1/2 text-black dark:text-white"
-                                        >
-                                            <FaArrowLeft size={30} />
-                                        </button>
-                                    )
-                                }
-                                renderArrowNext={(clickHandler, hasNext) =>
-                                    hasNext && (
-                                        <button
-                                            type="button"
-                                            onClick={clickHandler}
-                                            className="absolute right-0 z-10 p-2 transform -translate-y-1/2 top-1/2 text-black dark:text-white"
-                                        >
-                                            <FaArrowRight size={30} />
-                                        </button>
-                                    )
-                                }
-                            >
-                                {linkedDevices.length > 0 ? linkedDevices.map((device) => (
-                                    <div key={device.name} className="flex flex-col items-center">
-                                        <div className="flex justify-center">
-                                            <DeviceCard device={device}/>
-                                        </div>
-                                    </div>
-                                )) : (
-                                    <div className="flex justify-center">
-                                        <p>No devices linked yet. Please link a device.</p>
-                                    </div>
-                                )}
-                            </Carousel>
-                        </div>
-                    </div>
-                </div>
-                <div className="text-center">
-                    <h2 className="text-xl font-bold">{`Selected Brand: ${selectedBrand}`}</h2>
-                    <h3 className="text-lg">{`Selected Type: ${selectedType}`}</h3>
-                </div>
+            <div className="flex-container flex-wrap bg-gray-100 dark:bg-slate-900 ml-4 mr-4 rounded-lg shadow-lg pb-5 mb-4">
+                <LoadingErrorComponent loading={devicesLoading} error={devicesError} />
+                <DeviceList
+                    linkedDevices={linkedDevices}
+                    selectedItem={selectedItem}
+                    setSelectedItem={setSelectedItem}
+                    handleLinkDevice={handleLinkDevice}
+                    unlinkedDevices={unlinkedDevices}
+                />
+                <DeviceSummary selectedBrand={selectedBrand} selectedType={selectedType} />
             </div>
 
-            <div className="justify-center m-4 p-4 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg flex-grow">
-                <div className="flex flex-col items-center max-w-full overflow-hidden">
-                    <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white">Device Data Overview</h2>
-                    {avgDataLoading && <LoadingAnimation/>}
-                    {avgDataError && <p>Error: {avgDataError.message}</p>}
+            <div className="grid grid-cols-12 gap-4 p-4">
+                {/* All Devices Graphs Carousel */}
+                <div className="col-span-12 lg:col-span-6 flex flex-col justify-center p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg flex-grow">
+                    <div className="flex flex-col items-center max-w-full overflow-hidden">
+                        <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white">All Devices Data Overview</h2>
+                        <LoadingErrorComponent loading={avgDataLoading} error={avgDataError} />
+                        <ChartCarousel
+                            graphs={filteredAllDevicesGraphs}
+                            currentIndex={allDevicesCurrentIndex}
+                            setCurrentIndex={setAllDevicesCurrentIndex}
+                        />
+                    </div>
+                </div>
 
-                    {/* Carousel for the chart components */}
-                    <Carousel
-                        selectedItem={currentIndex}
-                        showThumbs={false}
-                        showIndicators={false} // Show dots for navigation
-                        showStatus={false}
-                        infiniteLoop={true} // Enable infinite loop
-                        swipeable={true} // Allow swiping
-                        useKeyboardArrows={true} // Allow keyboard navigation
-                        onChange={(index) => setCurrentIndex(index)} // Update currentIndex when the slide changes
-                        className="w-full max-w-[100vw]" // Ensure the carousel does not exceed the viewport width
-                        renderArrowPrev={(clickHandler, hasPrev) =>
-                            hasPrev && (
-                                <button
-                                    type="button"
-                                    onClick={clickHandler}
-                                    className="absolute left-0 z-10 p-2 transform -translate-y-1/2 top-1/2 text-black dark:text-white"
-                                >
-                                    <FaArrowLeft size={30} />
-                                </button>
-                            )
-                        }
-                        renderArrowNext={(clickHandler, hasNext) =>
-                            hasNext && (
-                                <button
-                                    type="button"
-                                    onClick={clickHandler}
-                                    className="absolute right-0 z-10 p-2 transform -translate-y-1/2 top-1/2 text-black dark:text-white"
-                                >
-                                    <FaArrowRight size={30} />
-                                </button>
-                            )
-                        }
-                   >
-                        {graphs.map((graph, index) => (
-                            <div key={index} className="flex mb-24 justify-center">
-                                <ResponsiveChartComponent
-                                    title={graph.title}
-                                    chartId={graph.chartId}
-                                    labels={graph.labels}
-                                    datasets={graph.datasets}
-                                    summary={graph.summary}
-                                />
-                            </div>
-                        ))}
-                    </Carousel>
+                {/* Specific Device Graphs Carousel */}
+                <div className="col-span-12 lg:col-span-6 flex flex-col justify-center p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg flex-grow">
+                    <div className="flex flex-col items-center max-w-full overflow-hidden">
+                        <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white">Device Data Overview</h2>
+                        <LoadingErrorComponent loading={avgDataLoading} error={avgDataError} />
+                        <ChartCarousel
+                            graphs={filteredSpecificDeviceGraphs}
+                            currentIndex={specificDeviceCurrentIndex}
+                            setCurrentIndex={setSpecificDeviceCurrentIndex}
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -497,254 +393,31 @@ const Dashboard = () => {
                 <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-8 w-full sm:w-[60rem]">
                     <button
                         className="unlink bg-red-500 hover:bg-red-700 dark:bg-red-300 dark:hover:bg-red-500 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem]"
-                        onClick={handleUnlinkDevice}
+                        onClick={() => {
+                            if (currentDevice?.id) {
+                                handleUnlinkDevice(currentDevice.id);
+                            } else {
+                                console.warn('No valid device object found');
+                            }
+                        }}
                     >
                         <div className="flex items-center gap-2">
                             <img src="/assets/unlink.svg" className="w-[2rem] h-[2rem]" alt="Unlink"
-                                 style={{maxWidth: '100%', maxHeight: '100%'}}/>
+                                 style={{ maxWidth: '100%', maxHeight: '100%' }} />
                             Unlink
                         </div>
                     </button>
                     <button
                         className="bg-green-600 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-400 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem] sm:h-[4rem]"
-                        onClick={handleHealthStory}>View Analysis
+                        onClick={handleHealthStory}
+                    >
+                        View Analysis
                     </button>
                 </div>
             </div>
-        <div
-                className="flex-container flex-wrap justify-center bg-gray-100 dark:bg-slate-900 ml-4 mr-4 rounded-lg shadow-lg pb-5 mb-4">
-            <Carousel
-                showThumbs={false}
-                showIndicators={true}
-                showStatus={false}
-                infiniteLoop={true}
-                swipeable={true}
-                useKeyboardArrows={true}
-                className="w-full max-w-full"
-                renderArrowPrev={(clickHandler, hasPrev) =>
-                    hasPrev && (
-                        <button
-                            type="button"
-                            onClick={clickHandler}
-                            className="absolute left-0 z-10 p-2 transform -translate-y-1/2 top-1/2 text-black dark:text-white"
-                        >
-                            <FaArrowLeft size={30} />
-                        </button>
-                    )
-                }
-                renderArrowNext={(clickHandler, hasNext) =>
-                    hasNext && (
-                        <button
-                            type="button"
-                            onClick={clickHandler}
-                            className="absolute right-0 z-10 p-2 transform -translate-y-1/2 top-1/2 text-black dark:text-white"
-                        >
-                            <FaArrowRight size={30} />
-                        </button>
-                    )
-                }
-            >
-                {chartsData.heartRate.labels.length > 0 && (
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                        <ChartComponent
-                            title="Heartrate BPM"
-                            chartId="healthDataChart"
-                            labels={chartsData.heartRate.labels}
-                            datasets={[
-                                {
-                                    label: 'Heartrate BPM',
-                                    data: chartsData.heartRate.values,
-                                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                                    borderColor: 'rgba(75, 192, 192, 1)',
-                                    type: 'line',
-                                }
-                            ]}
-                            summary={currentDevice ? currentDevice.getAnalysisSummary('heartRate') : 'No device selected'}
-                        />
-                    </div>
-                )}
-                {chartsData.steps.labels.length > 0 && (
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                        <ChartComponent
-                            title="Steps Count"
-                            chartId="stepsChart"
-                            labels={chartsData.steps.labels}
-                            datasets={[
-                                {
-                                    label: 'Steps Count',
-                                    data: chartsData.steps.values,
-                                    backgroundColor: 'rgba(153, 102, 255, 0.5)',
-                                    borderColor: 'rgba(153, 102, 255, 1)',
-                                    type: 'bar',
-                                }
-                            ]}
-                            summary={currentDevice ? currentDevice.getAnalysisSummary('steps') : 'No device selected'}
-                        />
-                    </div>
-                )}
-                {chartsData.calories.labels.length > 0 && (
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                        <ChartComponent
-                            title="Calories Burned"
-                            chartId="caloriesChart"
-                            labels={chartsData.calories.labels}
-                            datasets={[
-                                {
-                                    label: 'Calories Burned',
-                                    data: chartsData.calories.values,
-                                    backgroundColor: 'rgba(255, 159, 64, 0.5)',
-                                    borderColor: 'rgba(255, 159, 64, 1)',
-                                    type: 'bar',
-                                }
-                            ]}
-                            summary={currentDevice ? currentDevice.getAnalysisSummary('caloriesBurned') : 'No device selected'}
-                        />
-                    </div>
-                )}
-                {chartsData.sleep.labels.length > 0 && (
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                        <ChartComponent
-                            title="Sleep Statistics"
-                            chartId="sleepChart"
-                            labels={chartsData.sleep.labels}
-                            datasets={[
-                                {
-                                    label: 'Sleep Duration (hours)',
-                                    data: chartsData.sleep.values,
-                                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                    borderColor: 'rgba(54, 162, 235, 1)',
-                                    type: 'bar',
-                                    yAxisID: 'y'
-                                },
-                                {
-                                    label: 'Sleep Quality',
-                                    data: chartsData.sleep.valuesY1,
-                                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                                    borderColor: 'rgba(255, 99, 132, 1)',
-                                    type: 'line',
-                                    yAxisID: 'y1'
-                                }
-                            ]}
-                            summary={currentDevice ? currentDevice.getAnalysisSummary('sleep') : 'No device selected'}
-                        />
-                    </div>
-                )}
-                {chartsData.stress.labels.length > 0 && (
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                        <ChartComponent
-                            title="Stress Management Score"
-                            chartId="stressChart"
-                            labels={chartsData.stress.labels}
-                            datasets={[
-                                {
-                                    label: 'Stress Management Score',
-                                    data: chartsData.stress.values,
-                                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                                    borderColor: 'rgba(255, 99, 132, 1)',
-                                    type: 'line',
-                                }
-                            ]}
-                            summary={currentDevice ? currentDevice.getAnalysisSummary('stressLevel') : 'No device selected'}
-                        />
-                    </div>
-                )}
-                {chartsData.oxygen.labels.length > 0 && (
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                        <ChartComponent
-                            title="Oxygen Saturation Levels"
-                            chartId="oxygenChart"
-                            labels={chartsData.oxygen.labels}
-                            datasets={[
-                                {
-                                    label: 'Oxygen Saturation Levels (%)',
-                                    data: chartsData.oxygen.values,
-                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                    borderColor: 'rgba(75, 192, 192, 1)',
-                                    type: 'line',
-                                }
-                            ]}
-                            summary={currentDevice ? currentDevice.getAnalysisSummary('oxygenSaturation') : 'No device selected'}
-                        />
-                    </div>
-                )}
-                {chartsData.bloodPressure.labels.length > 0 && (
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                        <ChartComponent
-                            title="Blood Pressure"
-                            chartId="bloodPressureChart"
-                            labels={chartsData.bloodPressure.labels}
-                            datasets={[
-                                {
-                                    label: 'Systolic Blood Pressure',
-                                    data: chartsData.bloodPressure.systolic,
-                                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                                    borderColor: 'rgba(255, 159, 64, 1)',
-                                    type: 'line',
-                                },
-                                {
-                                    label: 'Diastolic Blood Pressure',
-                                    data: chartsData.bloodPressure.diastolic,
-                                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                                    borderColor: 'rgba(153, 102, 255, 1)',
-                                    type: 'line',
-                                }
-                            ]}
-                            summary={currentDevice ? currentDevice.getAnalysisSummary('bloodPressure') : 'No device selected'}
-                        />
-                    </div>
-                )}
-                {chartsData.eeg.labels.length > 0 && (
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                        <ChartComponent
-                            title="EEG Data"
-                            chartId="eegChart"
-                            labels={chartsData.eeg.labels}
-                            datasets={[
-                                {
-                                    label: 'Alpha Waves',
-                                    data: chartsData.eeg.alpha,
-                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                    borderColor: 'rgba(75, 192, 192, 1)',
-                                    type: 'line',
-                                },
-                                {
-                                    label: 'Beta Waves',
-                                    data: chartsData.eeg.beta,
-                                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                                    borderColor: 'rgba(153, 102, 255, 1)',
-                                    type: 'line',
-                                },
-                                {
-                                    label: 'Gamma Waves',
-                                    data: chartsData.eeg.gamma,
-                                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                                    borderColor: 'rgba(255, 159, 64, 1)',
-                                    type: 'line',
-                                },
-                                {
-                                    label: 'Delta Waves',
-                                    data: chartsData.eeg.delta,
-                                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                    borderColor: 'rgba(54, 162, 235, 1)',
-                                    type: 'line',
-                                },
-                                {
-                                    label: 'Theta Waves',
-                                    data: chartsData.eeg.theta,
-                                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                                    borderColor: 'rgba(255, 206, 86, 1)',
-                                    type: 'line',
-                                }
-                            ]}
-                            summary={currentDevice ? currentDevice.getAnalysisSummary('eeg') : 'No device selected'}
-                        />
-                    </div>
-                )}
-            </Carousel>
-    </div>
+
             {healthStory && (
-                <div
-                    className="flex justify-center items-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full mb-10">
+                <div className="flex justify-center items-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full mb-10">
                     <p className="text-lg text-gray-700 dark:text-slate-400">{healthStory}</p>
                 </div>
             )}

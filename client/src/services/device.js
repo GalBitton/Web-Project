@@ -8,7 +8,7 @@ export default class Device {
     }
 
     async fetchAnalyzeData() {
-        const apiService = new APIService({action: 'getDeviceData', deviceId: this.id});
+        const apiService = new APIService({ action: 'getDeviceData', deviceId: this.id });
         const data = await apiService.execute();
         this.analytics.analyzeData(data);
     }
@@ -17,7 +17,7 @@ export default class Device {
         return this.analytics.getAnalysisData(field);
     }
 
-    getAnalysisSummary(field){
+    getAnalysisSummary(field) {
         return this.analytics.getAnalysisSummary(field);
     }
 }
