@@ -360,28 +360,33 @@ const Dashboard = () => {
                 {devicesLoading && <LoadingAnimation/>}
                 {devicesError && <p>Error: {devicesError}</p>}
                 <div className="flex-1 justify-center p-10 mb-[15rem] lg:mb-0">
-
                     <div className="linked-devices flex justify-center items-center w-full p-2">
-                        <Carousel
-                            selectedItem={linkedDevices.findIndex(device => device.brand === selectedBrand && device.type === selectedType)}
-                            showThumbs={true}
-                            showIndicators={true}
-                            showStatus={true}
-                            infiniteLoop={true} // Enable infinite loop
-                            centerMode={true} // Center the carousel
-                            centerSlidePercentage={linkedDevices.length > 0 ? 80 : 100} // Control the width of each slide
-                            swipeable={true} // Allow swiping
-                        >
-                            {linkedDevices.length > 0 ? linkedDevices.map(device => (
-                                <div key={device.name} className="flex justify-center">
-                                    <DeviceCard device={device}/>
-                                </div>
-                            )) : (
-                                <div className="flex justify-center">
-                                    <p>No devices linked yet. Please link a device.</p>
-                                </div>
-                            )}
-                        </Carousel>
+                        <div className="w-full flex flex-col items-center">
+                            <Carousel
+                                selectedItem={linkedDevices.findIndex(device => device.brand === selectedBrand && device.type === selectedType)}
+                                showThumbs={false}  // Hide the thumbs if you don't need them
+                                showIndicators={false} // Show the default indicators
+                                showStatus={true}  // Hide the status bar if not needed
+                                infiniteLoop={true}
+                                centerMode={true}
+                                centerSlidePercentage={linkedDevices.length > 0 ? 80 : 100}
+                                swipeable={true}
+                                className="flex flex-col items-center w-full"
+                            >
+                                {linkedDevices.length > 0 ? linkedDevices.map(device => (
+                                    <div key={device.name} className="flex flex-col items-center">
+                                        <div className="flex justify-center">
+                                            <DeviceCard device={device}/>
+                                        </div>
+                                        <p className="mt-4 text-lg text-center">{device.name}</p> {/* Device name below the image */}
+                                    </div>
+                                )) : (
+                                    <div className="flex justify-center">
+                                        <p>No devices linked yet. Please link a device.</p>
+                                    </div>
+                                )}
+                            </Carousel>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -396,7 +401,7 @@ const Dashboard = () => {
                     <Carousel
                         selectedItem={currentIndex}
                         showThumbs={false}
-                        showIndicators={true} // Show dots for navigation
+                        showIndicators={false} // Show dots for navigation
                         showStatus={true}
                         infiniteLoop={true} // Enable infinite loop
                         swipeable={true} // Allow swiping

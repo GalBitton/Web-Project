@@ -8,6 +8,7 @@ import Maintenance from './maintenance.jsx';
 import PrivacyPolicy from './privacy.jsx';
 import TermsOfService from './terms.jsx';
 import AboutUs from './about-us.jsx';
+import ContactUs from './contact.jsx';
 
 export {
     IndexPage,
@@ -19,5 +20,6 @@ export {
     Maintenance,
     PrivacyPolicy,
     TermsOfService,
-    AboutUs
+    AboutUs,
+    ContactUs
 }
