@@ -5,6 +5,12 @@ import User from '../database/models/User.model.js';
 import { convertExpirationDateToMilliseconds } from '../utils/expirationDateConverter.js';
 
 class AuthController {
+    /**
+     * Creates an instance of AuthController.
+     * 
+     * @param {Object} config - Configuration object.
+     * @param {Object} logger - Logger instance.
+     */
     constructor(config, logger) {
         this._config = config;
         this._logger = logger;
