@@ -30,6 +30,7 @@ const Dashboard = () => {
     const [selectedBrand, setSelectedBrand] = useState('');
     const [selectedType, setSelectedType] = useState('');
     const [selectedItem, setSelectedItem] = useState(0);
+    const [selectedItem, setSelectedItem] = useState(0);
     const [selectedDeviceToLink, setSelectedDeviceToLink] = useState('');
     const [unlinkedDevices, setUnlinkedDevices] = useState([]);
     const [currentDevice, setCurrentDevice] = useState(null);
@@ -122,6 +123,15 @@ const Dashboard = () => {
 
         initializeDevices();
     }, [linkedDevices]);
+
+    // Update selectedBrand and selectedType based on the selectedItem index in the carousel
+    useEffect(() => {
+        if (linkedDevices.length > 0) {
+            const selectedDevice = linkedDevices[selectedItem];
+            setSelectedBrand(selectedDevice.brand);
+            setSelectedType(selectedDevice.type);
+        }
+    }, [selectedItem, linkedDevices]);
 
     // Update selectedBrand and selectedType based on the selectedItem index in the carousel
     useEffect(() => {
@@ -238,7 +248,7 @@ const Dashboard = () => {
     };
 
     const [currentIndex, setCurrentIndex] = useState(0);
-
+    
     const graphs = [
         {
             title: "Average Heart Rate BPM",
@@ -406,7 +416,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            <div className="justify-center m-4 p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg flex-grow">
+            <div className="justify-center m-4 p-4 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg flex-grow">
                 <div className="flex flex-col items-center max-w-full overflow-hidden">
                     <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white">Device Data Overview</h2>
                     {avgDataLoading && <LoadingAnimation/>}
@@ -417,15 +427,16 @@ const Dashboard = () => {
                         selectedItem={currentIndex}
                         showThumbs={false}
                         showIndicators={false} // Show dots for navigation
-                        showStatus={true}
+                        showStatus={false}
                         infiniteLoop={true} // Enable infinite loop
                         swipeable={true} // Allow swiping
                         useKeyboardArrows={true} // Allow keyboard navigation
                         onChange={(index) => setCurrentIndex(index)} // Update currentIndex when the slide changes
                         className="w-full max-w-[100vw]" // Ensure the carousel does not exceed the viewport width
-                    >
+                            
+                   >
                         {graphs.map((graph, index) => (
-                            <div key={index} className="flex justify-center">
+                            <div key={index} className="flex mb-24 justify-center">
                                 <ResponsiveChartComponent
                                     title={graph.title}
                                     chartId={graph.chartId}
@@ -441,7 +452,7 @@ const Dashboard = () => {
 
             <div className="flex justify-center m-4 p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg flex-grow">
                 <p className="text-lg text-gray-700 dark:text-slate-400">Select Model: </p>
-                <div className="flex flex-col ml-10 sm:flex-row space-y-4 sm:space-y-0 sm:space-x-8 w-full sm:w-[60rem]">
+                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-8 w-full sm:w-[60rem]">
                     <button
                         className="unlink bg-red-500 hover:bg-red-700 dark:bg-red-300 dark:hover:bg-red-500 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem]"
                         onClick={handleUnlinkDevice}
@@ -458,196 +469,219 @@ const Dashboard = () => {
                     </button>
                 </div>
             </div>
-            <div className="flex flex-wrap justify-center gap-14 max-w-full">
-                {chartsData.heartRate.labels.length > 0 && (
-                    <ChartComponent
-                        title="Heartrate BPM"
-                        chartId="healthDataChart"
-                        labels={chartsData.heartRate.labels}
-                        datasets={[
-                            {
-                                label: 'Heartrate BPM',
-                                data: chartsData.heartRate.values,
-                                backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                                borderColor: 'rgba(75, 192, 192, 1)',
-                                type: 'line',
-                            }
-                        ]}
-                        summary={currentDevice ? currentDevice.getAnalysisSummary('heartRate') : 'No device selected'}
-                    />
-                )}
-                {chartsData.steps.labels.length > 0 && (
-                    <ChartComponent
-                        title="Steps Count"
-                        chartId="stepsChart"
-                        labels={chartsData.steps.labels}
-                        datasets={[
-                            {
-                                label: 'Steps Count',
-                                data: chartsData.steps.values,
-                                backgroundColor: 'rgba(153, 102, 255, 0.5)',
-                                borderColor: 'rgba(153, 102, 255, 1)',
-                                type: 'bar',
-                            }
-                        ]}
-                        summary={currentDevice ? currentDevice.getAnalysisSummary('steps') : 'No device selected'}
-                    />
-                )}
-                {chartsData.calories.labels.length > 0 && (
-                    <ChartComponent
-                        title="Calories Burned"
-                        chartId="caloriesChart"
-                        labels={chartsData.calories.labels}
-                        datasets={[
-                            {
-                                label: 'Calories Burned',
-                                data: chartsData.calories.values,
-                                backgroundColor: 'rgba(255, 159, 64, 0.5)',
-                                borderColor: 'rgba(255, 159, 64, 1)',
-                                type: 'bar',
-                            }
-                        ]}
-                        summary={currentDevice ? currentDevice.getAnalysisSummary('caloriesBurned') : 'No device selected'}
-                    />
-                )}
-                {chartsData.sleep.labels.length > 0 && (
-                    <ChartComponent
-                        title="Sleep Statistics"
-                        chartId="sleepChart"
-                        labels={chartsData.sleep.labels}
-                        datasets={[
-                            {
-                                label: 'Sleep Duration (hours)',
-                                data: chartsData.sleep.values,
-                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                borderColor: 'rgba(54, 162, 235, 1)',
-                                type: 'bar',
-                                yAxisID: 'y'
-                            },
-                            {
-                                label: 'Sleep Quality',
-                                data: chartsData.sleep.valuesY1,
-                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                                borderColor: 'rgba(255, 99, 132, 1)',
-                                type: 'line',
-                                yAxisID: 'y1'
-                            }
-                        ]}
-                        summary={currentDevice ? currentDevice.getAnalysisSummary('sleep') : 'No device selected'}
-                    />
-                )}
-                {chartsData.stress.labels.length > 0 && (
-                    <div id="stressChartContainer">
-                        <ChartComponent
-                            title="Stress Management Score"
-                            chartId="stressChart"
-                            labels={chartsData.stress.labels}
-                            datasets={[
-                                {
-                                    label: 'Stress Management Score',
-                                    data: chartsData.stress.values,
-                                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                                    borderColor: 'rgba(255, 99, 132, 1)',
-                                    type: 'line',
-                                }
-                            ]}
-                            summary={currentDevice ? currentDevice.getAnalysisSummary('stressLevel') : 'No device selected'}
-                        />
-                    </div>
-                )}
-                {chartsData.oxygen.labels.length > 0 && (
-                    <div id="oxygenChartContainer">
-                        <ChartComponent
-                            title="Oxygen Saturation Levels"
-                            chartId="oxygenChart"
-                            labels={chartsData.oxygen.labels}
-                            datasets={[
-                                {
-                                    label: 'Oxygen Saturation Levels (%)',
-                                    data: chartsData.oxygen.values,
-                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                    borderColor: 'rgba(75, 192, 192, 1)',
-                                    type: 'line',
-                                }
-                            ]}
-                            summary={currentDevice ? currentDevice.getAnalysisSummary('oxygenSaturation') : 'No device selected'}
-                        />
-                    </div>
-                )}
-                {chartsData.bloodPressure.labels.length > 0 && (
-                    <div id="bloodPressureChartContainer">
-                        <ChartComponent
-                            title="Blood Pressure"
-                            chartId="bloodPressureChart"
-                            labels={chartsData.bloodPressure.labels}
-                            datasets={[
-                                {
-                                    label: 'Systolic Blood Pressure',
-                                    data: chartsData.bloodPressure.systolic,
-                                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                                    borderColor: 'rgba(255, 159, 64, 1)',
-                                    type: 'line',
-                                },
-                                {
-                                    label: 'Diastolic Blood Pressure',
-                                    data: chartsData.bloodPressure.diastolic,
-                                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                                    borderColor: 'rgba(153, 102, 255, 1)',
-                                    type: 'line',
-                                }
-                            ]}
-                            summary={currentDevice ? currentDevice.getAnalysisSummary('bloodPressure') : 'No device selected'}
-                        />
-                    </div>
-                )}
-                {chartsData.eeg.labels.length > 0 && (
-                    <div id="eegChartContainer">
-                        <ChartComponent
-                            title="EEG Data"
-                            chartId="eegChart"
-                            labels={chartsData.eeg.labels}
-                            datasets={[
-                                {
-                                    label: 'Alpha Waves',
-                                    data: chartsData.eeg.alpha,
-                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                    borderColor: 'rgba(75, 192, 192, 1)',
-                                    type: 'line',
-                                },
-                                {
-                                    label: 'Beta Waves',
-                                    data: chartsData.eeg.beta,
-                                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                                    borderColor: 'rgba(153, 102, 255, 1)',
-                                    type: 'line',
-                                },
-                                {
-                                    label: 'Gamma Waves',
-                                    data: chartsData.eeg.gamma,
-                                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                                    borderColor: 'rgba(255, 159, 64, 1)',
-                                    type: 'line',
-                                },
-                                {
-                                    label: 'Delta Waves',
-                                    data: chartsData.eeg.delta,
-                                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                                    borderColor: 'rgba(54, 162, 235, 1)',
-                                    type: 'line',
-                                },
-                                {
-                                    label: 'Theta Waves',
-                                    data: chartsData.eeg.theta,
-                                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                                    borderColor: 'rgba(255, 206, 86, 1)',
-                                    type: 'line',
-                                }
-                            ]}
-                            summary={currentDevice ? currentDevice.getAnalysisSummary('eeg', undefined, undefined) : 'No device selected'}
-                        />
-                    </div>
-                )}
+        <div
+                className="flex-container flex-wrap justify-center bg-gray-100 dark:bg-slate-900 ml-4 mr-4 rounded-lg shadow-lg pb-5 mb-4">
+            <Carousel
+        showThumbs={false}
+        showIndicators={true}
+        showStatus={false}
+        infiniteLoop={true}
+        swipeable={true}
+        useKeyboardArrows={true}
+        className="w-full max-w-full"
+    >
+        
+        {chartsData.heartRate.labels.length > 0 && (
+            <div>
+                <ChartComponent
+                    title="Heartrate BPM"
+                    chartId="healthDataChart"
+                    labels={chartsData.heartRate.labels}
+                    datasets={[
+                        {
+                            label: 'Heartrate BPM',
+                            data: chartsData.heartRate.values,
+                            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            type: 'line',
+                        }
+                    ]}
+                    summary={currentDevice ? currentDevice.getAnalysisSummary('heartRate') : 'No device selected'}
+                />
             </div>
+        )}
+        {chartsData.steps.labels.length > 0 && (
+            <div>
+                <ChartComponent
+                    title="Steps Count"
+                    chartId="stepsChart"
+                    labels={chartsData.steps.labels}
+                    datasets={[
+                        {
+                            label: 'Steps Count',
+                            data: chartsData.steps.values,
+                            backgroundColor: 'rgba(153, 102, 255, 0.5)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            type: 'bar',
+                        }
+                    ]}
+                    summary={currentDevice ? currentDevice.getAnalysisSummary('steps') : 'No device selected'}
+                />
+            </div>
+        )}
+        {chartsData.calories.labels.length > 0 && (
+            <div>
+                <ChartComponent
+                    title="Calories Burned"
+                    chartId="caloriesChart"
+                    labels={chartsData.calories.labels}
+                    datasets={[
+                        {
+                            label: 'Calories Burned',
+                            data: chartsData.calories.values,
+                            backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                            borderColor: 'rgba(255, 159, 64, 1)',
+                            type: 'bar',
+                        }
+                    ]}
+                    summary={currentDevice ? currentDevice.getAnalysisSummary('caloriesBurned') : 'No device selected'}
+                />
+            </div>
+        )}
+        {chartsData.sleep.labels.length > 0 && (
+            <div>
+                <ChartComponent
+                    title="Sleep Statistics"
+                    chartId="sleepChart"
+                    labels={chartsData.sleep.labels}
+                    datasets={[
+                        {
+                            label: 'Sleep Duration (hours)',
+                            data: chartsData.sleep.values,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            type: 'bar',
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Sleep Quality',
+                            data: chartsData.sleep.valuesY1,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            type: 'line',
+                            yAxisID: 'y1'
+                        }
+                    ]}
+                    summary={currentDevice ? currentDevice.getAnalysisSummary('sleep') : 'No device selected'}
+                />
+            </div>
+        )}
+        
+        {chartsData.stress.labels.length > 0 && (
+            <div>
+                <ChartComponent
+                    title="Stress Management Score"
+                    chartId="stressChart"
+                    labels={chartsData.stress.labels}
+                    datasets={[
+                        {
+                            label: 'Stress Management Score',
+                            data: chartsData.stress.values,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            type: 'line',
+                        }
+                    ]}
+                    summary={currentDevice ? currentDevice.getAnalysisSummary('stressLevel') : 'No device selected'}
+                />
+            </div>
+        )}
+        {chartsData.oxygen.labels.length > 0 && (
+            <div>
+                <ChartComponent
+                    title="Oxygen Saturation Levels"
+                    chartId="oxygenChart"
+                    labels={chartsData.oxygen.labels}
+                    datasets={[
+                        {
+                            label: 'Oxygen Saturation Levels (%)',
+                            data: chartsData.oxygen.values,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            type: 'line',
+                        }
+                    ]}
+                    summary={currentDevice ? currentDevice.getAnalysisSummary('oxygenSaturation') : 'No device selected'}
+                />
+            </div>
+        )}
+        {chartsData.bloodPressure.labels.length > 0 && (
+            <div>
+                <ChartComponent
+                    title="Blood Pressure"
+                    chartId="bloodPressureChart"
+                    labels={chartsData.bloodPressure.labels}
+                    datasets={[
+                        {
+                            label: 'Systolic Blood Pressure',
+                            data: chartsData.bloodPressure.systolic,
+                            backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                            borderColor: 'rgba(255, 159, 64, 1)',
+                            type: 'line',
+                        },
+                        {
+                            label: 'Diastolic Blood Pressure',
+                            data: chartsData.bloodPressure.diastolic,
+                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            type: 'line',
+                        }
+                    ]}
+                    summary={currentDevice ? currentDevice.getAnalysisSummary('bloodPressure') : 'No device selected'}
+                />
+            </div>
+        )}
+        {chartsData.eeg.labels.length > 0 && (
+            <div>
+                <ChartComponent
+                    title="EEG Data"
+                    chartId="eegChart"
+                    labels={chartsData.eeg.labels}
+                    datasets={[
+                        {
+                            label: 'Alpha Waves',
+                            data: chartsData.eeg.alpha,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            type: 'line',
+                        },
+                        {
+                            label: 'Beta Waves',
+                            data: chartsData.eeg.beta,
+                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            type: 'line',
+                        },
+                        {
+                            label: 'Gamma Waves',
+                            data: chartsData.eeg.gamma,
+                            backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                            borderColor: 'rgba(255, 159, 64, 1)',
+                            type: 'line',
+                        },
+                        {
+                            label: 'Delta Waves',
+                            data: chartsData.eeg.delta,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            type: 'line',
+                        },
+                        {
+                            label: 'Theta Waves',
+                            data: chartsData.eeg.theta,
+                            backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                            borderColor: 'rgba(255, 206, 86, 1)',
+                            type: 'line',
+                        }
+                    ]}
+                    summary={currentDevice ? currentDevice.getAnalysisSummary('eeg') : 'No device selected'}
+                />
+            </div>
+
+        )}
+       
+    </Carousel>
+    </div>
             {healthStory && (
                 <div
                     className="flex justify-center items-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full mb-10">

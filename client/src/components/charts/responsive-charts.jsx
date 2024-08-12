@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { Chart } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
+import { FiRefreshCw } from 'react-icons/fi';
 
 Chart.register(zoomPlugin);
 
@@ -75,16 +76,17 @@ const ResponsiveChartComponent = ({ title, chartId, labels, datasets, summary })
 
     return (
         <div className="relative w-full max-w-3xl h-96 mx-auto">
-            <h3 className="text-center">{title}</h3>
-            <canvas id={chartId} ref={chartRef} className="block w-full h-full"></canvas>
-            <p className="text-center mt-4">{summary}</p>
-            <button
-                onClick={handleResetZoom}
-                className="absolute top-2 right-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
-            >
-                Reset Zoom
-            </button>
-        </div>
+        <h3 className="text-center">{title}</h3>
+        <canvas id={chartId} ref={chartRef} className="block w-full h-full"></canvas>
+        <p className="text-center mt-4">{summary}</p>
+        <button
+            onClick={handleResetZoom}
+            className="absolute top-2 right-2 p-2 bg-blue-500 text-white rounded-full hover:bg-blue-700 transition"
+            aria-label="Reset Zoom"
+        >
+            <FiRefreshCw className="h-6 w-6" />
+        </button>
+    </div>
     );
 };
 
