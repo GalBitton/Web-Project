@@ -30,7 +30,7 @@ const Dashboard = () => {
     const [selectedBrand, setSelectedBrand] = useState('');
     const [selectedType, setSelectedType] = useState('');
     const [selectedItem, setSelectedItem] = useState(0);
-    const [selectedItem, setSelectedItem] = useState(0);
+    
     const [selectedDeviceToLink, setSelectedDeviceToLink] = useState('');
     const [unlinkedDevices, setUnlinkedDevices] = useState([]);
     const [currentDevice, setCurrentDevice] = useState(null);
@@ -333,7 +333,7 @@ const Dashboard = () => {
                 className="flex-container flex-wrap bg-gray-100 dark:bg-slate-900 ml-4 mr-4 rounded-lg shadow-lg pb-5 mb-4">
 
                 <div className="relative flex justify-center items-center">
-                    <div className='flex items-center'>
+                    <div className='flex items-center mb-4'>
                         <h1 className="text-3xl text-black dark:text-white mt-8">Linked Devices</h1>
                     </div>
 
@@ -379,17 +379,16 @@ const Dashboard = () => {
                 </div>
                 {devicesLoading && <LoadingAnimation/>}
                 {devicesError && <p>Error: {devicesError}</p>}
-                <div className="flex-1 justify-center p-10 mb-[15rem] lg:mb-0">
+                <div className="flex-1 justify-center p-4 lg:mb-0">
                     <div className="linked-devices flex justify-center items-center w-full p-2">
                         <div className="w-full flex flex-col items-center">
                             <Carousel
                                 selectedItem={selectedItem}
                                 showThumbs={false}  // Hide the thumbs if you don't need them
                                 showIndicators={false} // Show the default indicators
-                                showStatus={true}  // Show the status bar
+                                showStatus={false}  // Show the status bar
                                 infiniteLoop={true}
                                 centerMode={true}
-                                centerSlidePercentage={linkedDevices.length > 0 ? 80 : 100}
                                 swipeable={true}
                                 className="flex flex-col items-center w-full"
                                 onChange={(index) => setSelectedItem(index)} // Update selectedItem when carousel changes
@@ -399,7 +398,6 @@ const Dashboard = () => {
                                         <div className="flex justify-center">
                                             <DeviceCard device={device}/>
                                         </div>
-                                        <p className="mt-4 text-lg text-center">{device.name}</p> {/* Device name below the image */}
                                     </div>
                                 )) : (
                                     <div className="flex justify-center">
