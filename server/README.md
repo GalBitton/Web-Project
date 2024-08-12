@@ -8,20 +8,32 @@ This server component is part of a full-stack web application designed to interf
 
 
 ## Table of Contents
-- [Features](#features)
-- [Getting Started](#getting-started)
+- [NeuroSync Server](#neurosync-server)
+  - [Overview](#overview)
+  - [Table of Contents](#table-of-contents)
+  - [Features](#features)
+  - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
     - [Installation](#installation)
     - [Running the Project](#running-the-project)
-- [Environment Configuration](#environment-configuration)
-- [Project Structure](#project-structure)
-- [API Endpoints](#api-endpoints)
-- [Services](#services)
-- [Utilities](#utilities)
-- [Testing](#testing)
-- [Scripts](#scripts)
-- [Dependencies](#dependencies)
-- [Development Tools](#development-tools)
+      - [Development](#development)
+      - [Testing](#testing)
+      - [Production](#production)
+  - [Environment Configuration](#environment-configuration)
+  - [Project Structure](#project-structure)
+  - [Key Functions](#key-functions)
+  - [API Endpoints](#api-endpoints)
+    - [Authentication](#authentication)
+    - [User Management](#user-management)
+  - [Services](#services)
+    - [Device Factory](#device-factory)
+    - [Device Services](#device-services)
+  - [Utilities](#utilities)
+  - [Testing](#testing-1)
+    - [Unit Tests](#unit-tests)
+  - [Scripts](#scripts)
+  - [Dependencies](#dependencies)
+  - [Development Tools](#development-tools)
 
 ## Features
 
@@ -153,6 +165,265 @@ server/
 ├── vercel-setup.js                     # Vercel deployment setup configuration
 └── vercel.json                         # Vercel deployment configuration file
 ```
+
+## Key Functions
+
+**logger.js**
+| Method                     | Description                                             |
+|:---------------------------|:--------------------------------------------------------|
+| constructor(config)        | Creates an instance of Logger.                          |
+| _createLogger()            | Initializes the logger with defined transports.         |
+
+
+
+**server.js**
+| Method                       | Description                                                 |
+|:-----------------------------|:------------------------------------------------------------|
+| constructor(config, logger)  | Creates an instance of Server.                              |
+| run()                        | Starts the server and connects to the database.             |
+| _getCorsOptions()            | Returns CORS options based on the environment.              |
+| _setupPolicies()             | Returns a list of the supported graphs.                     |
+| _setupRoutes()               | Sets up the server routes and Swagger UI.                   |
+| _setupMiddlewares()          | Sets up middlewares for rate limiting and error handling.   |
+
+
+
+**vercel-setup.js**
+| Method                     | Description                                                       |
+|:---------------------------|:------------------------------------------------------------------|
+| setupVercel()              | Sets up the configuration directory based on the environment.     |
+
+
+
+**controllers/auth.controller.js**
+| Method                            | Description                                                                           |
+|:----------------------------------|:--------------------------------------------------------------------------------------|
+| constructor(config, logger)       | Creates an instance of AuthController.                                                |
+| register(req, res)                | Registers a new user with the provided email and password.                            |
+| authenticate(req, res)            | Authenticates a user with the provided details, and returns JWT tokens.               |
+| authenticateGoogleToken(req, res) | Authenticates a user using a Google ID token and returns JWT tokens.                  |
+| refresh(req, res)                 | Refreshes the access token using a valid refresh token.                               |
+| logout(req, res)                  | Logs out the user by clearing the JWT cookie and updating the user's refresh token.   |
+
+
+
+**controllers/user.controller.js**
+| Method                                     | Description                                        |
+|:-------------------------------------------|:---------------------------------------------------|
+| constructor(config, logger, deviceFactory) | Creates an instance of UserController.             |
+| linkDevice(req, res)                       | Links a device to the user.                        |
+| unlinkDevice(req, res)                     | Unlinks a device from the user.                    |
+| getLinkedDevices(req, res)                 | Retrieves all linked devices for the user.         |
+| getDeviceData(req, res)                    | Retrieves data for a specific device.              |
+| getAverageDataAllDevices(req, res)         | Calculates average data for all linked devices.    |
+| getHealthStory(req, res)                   | Generates a health story based on device data.     |
+
+
+
+**database/migrations/database-curator.js**
+| Method              | Description                                                   |
+|---------------------|:--------------------------------------------------------------|
+| deleteCollections() | Connects to MongoDB and deletes specified collections.        |
+
+
+
+**database/migrations/migrate-demo-data-to-db.js**
+| Method           | Description                                                             |
+|------------------|:------------------------------------------------------------------------|
+| migrateData()    | Connects to MongoDB, reads JSON files, and migrates data to MongoDB.    |
+
+
+
+**database/connect.js**
+| Method                | Description                                                          |
+|:----------------------|:---------------------------------------------------------------------|
+| connect(url, logger)  | Connects to a MongoDB database and switches to a specified database. |
+
+
+
+**enums/supported-devices.js**
+| Method                          | Description                                                     |
+|:--------------------------------|:----------------------------------------------------------------|
+| getSupportedDeviceBrands()      | Returns an array of supported device brands.                    |
+| getSupportedDeviceTypes(brand)  | Returns an array of supported device types for the given brand. |
+
+
+
+**middlewares/auth.middleware.js**
+| Method                            | Description                                      |
+|:----------------------------------|:-------------------------------------------------|
+| constructor(config, logger)       | Creates an instance of AuthMiddleware.           |
+| authenticateJWT(req, res, next)   | Middleware function to authenticate JWT.         |
+
+
+
+**middlewares/errorHandler.middleware.js**
+| Method                            | Description                                  |
+|:----------------------------------|:---------------------------------------------|
+| errorHandler(err, req, res, next) | Middleware function for handling errors.     |
+
+
+
+**middlewares/rateLimiters.middleware.js**
+| Method                    | Description                                  |
+|:--------------------------|:---------------------------------------------|
+| limiter                   | Rate limiter for general API requests.       |
+| registerLimiter           | Rate limiter for registration attempts.      |
+| loginLimiter              | Rate limiter for login attempts.             |
+
+
+
+**routes/auth.routes.js**
+| Method                                      | Description                                                                   |
+|:--------------------------------------------|:------------------------------------------------------------------------------|
+| constructor(authController, authMiddleware) | Creates an instance of AuthRouter.                                            |
+| getRouter()                                 | Retrieves the configured Express router.                                      |
+| _registerRoutes()                           | Registers routes for authentication endpoints with rate limiting middleware.  |
+
+
+
+**routes/user.routes.js**
+| Method                | Description                                                                                  |
+|:----------------------|:---------------------------------------------------------------------------------------------|
+| constructor()         | Initializes the router, sets up controllers and middleware, and registers routes.            |
+| getRouter()           | Retrieves the configured Express router.                                                     |
+| _registerRoutes()     | Registers user-related routes with authentication middleware.                                |
+
+
+
+**services/devices/apple.js**
+| Method                      | Description                                                         |
+|:----------------------------|:--------------------------------------------------------------------|
+| constructor()               | Represents an Apple Watch device extending the Device class.        |
+| getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.       |
+| generateDataForField(field) | Generates random data for the specified field.                      |
+| getFields()                 | Returns an array of field names specific to the Apple Watch.        |
+
+
+
+**services/devices/device.js**
+| Method                      | Description                                                                                       |
+|:-----------------------------------------------------------------|:-------------------------------------------------------------|
+| constructor(config, logger, id, name, lastSeeded)                | Initializes the device with given details.                   |
+| convertSleepIndex(qualityIndex)                                  | Converts sleep quality index to a meaningful value.          |
+| getFieldValue(entry, field)                                      | Gets the value of a specific field from the data entry.      |
+| getFields()                                                      | Lists the field names supported by the device.               |
+| _computeRandomValue(field)                                       | Computes a random value for a field.                         |
+| generateDataForField(field)                                      | Generates data for a specified field.                        |
+| precomputeRandomValues(fields, count)                            | Precomputes and caches random values for fields.             |
+| getPrecomputedDataForField(field, index)                         | Retrieves a cached random value for a field and index.       |
+| generateDataBatch(batchStart, batchEnd, intervalMinutes, fields) | Creates a batch of data entries for a time range.            |
+| seedDatabase()                                                   | Seeds the database with data based on config and time.       |
+| extractGraphData(datapoints)                                     | Processes data for graphing, returning labels and values.    |
+
+
+
+**services/devices/dreem.js**
+| Method                      | Description                                                     |
+|:----------------------------|:----------------------------------------------------------------|
+| constructor()               | Represents a Dreem Headband extending the Device class.         |
+| getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.   |
+| generateDataForField(field) | Generates data for a specific field.                            |
+| getFields()                 | Returns an array of field names specific to the Dreem Headband. |
+
+
+
+**services/devices/fitbit.js**
+| Method                      | Description                                                        |
+|:----------------------------|:-------------------------------------------------------------------|
+| constructor()               | Represents a Fitbit Bracelet extending the Device class.           |
+| getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.      |
+| generateDataForField(field) | Generates data for a specific field.                               |
+| getFields()                 | Returns an array of field names specific to the Fitbit Bracelet.   |
+
+
+
+**services/devices/muse.js**
+| Method                      | Description                                                        |
+|:----------------------------|:-------------------------------------------------------------------|
+| constructor()               | Represents a Muse Headband extending the Device class.             |
+| getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.      |
+| generateDataForField(field) | Generates data for a specific field.                               |
+| getFields()                 | Returns an array of field names specific to the Muse Headband.     |
+
+
+
+**services/devices/samsung.js**
+SamsungWatch:
+| Method                      | Description                                                        |
+|:----------------------------|:-------------------------------------------------------------------|
+| constructor()               | Represents a Samsung Watch device extending the Device class.      |
+| getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.       |
+| generateDataForField(field) | Generates data for a specific field.                               |
+| getFields()                 | Returns an array of field names specific to the Samsung Watch.     |
+
+SamsungBracelet:
+| Method                      | Description                                                        |
+|:----------------------------|:-------------------------------------------------------------------|
+| constructor()               | Represents a Samsung Bracelet device extending the Device class.   |
+| getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.       |
+| generateDataForField(field) | Generates data for a specific field.                               |
+| getFields()                 | Returns an array of field names specific to the Samsung Bracelet.  |
+
+
+
+**services/devices/xiaomi.js**
+XiaomiWatch:
+| Method                      | Description                                                        |
+|:----------------------------|:-------------------------------------------------------------------|
+| constructor()               | Represents a Xiaomi Watch device extending the Device class.       |
+| getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.       |
+| generateDataForField(field) | Generates data for a specific field.                               |
+| getFields()                 | Returns an array of field names specific to the Xiaomi Watch.      |
+
+XiaomiBracelet:
+| Method                      | Description                                                        |
+|:----------------------------|:-------------------------------------------------------------------|
+| constructor()               | Represents a Xiaomi Bracelet device extending the Device class.    |
+| getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.       |
+| generateDataForField(field) | Generates data for a specific field.                               |
+| getFields()                 | Returns an array of field names specific to the Xiaomi Bracelet.   |
+
+
+
+**services/deviceFactory.js**
+| Method                                      | Description                                                        |
+|:--------------------------------------------|:-------------------------------------------------------------------|
+| constructor(config, logger)                 | Initializes the DeviceFactory with configuration and a logger.     |
+| createDevice(brand, device, id, lastSeeded) | Creates and returns an instance of a device.                       |
+
+
+
+**services/healthStory.js**
+| Method                      | Description                                                             |
+|:----------------------------|:------------------------------------------------------------------------|
+| constructor(healthStats)    | Initializes the HealthStory with health statistics.                     |
+| createStory()               | Generates a personalized health story based on the provided statistics. |
+| analyzeEEG()                | Analyzes EEG data and provides insights into brain activity.            |
+
+
+
+**utils/expirationDateConverter.js**
+| Method                                       | Description                                          |
+|:---------------------------------------------|:-----------------------------------------------------|
+| convertExpirationDateToMilliseconds(timeStr) | Converts a time duration string into milliseconds.   |
+
+
+
+**utils/mathUtils.js**
+| Method                            | Description                                             |
+|:----------------------------------|:--------------------------------------------------------|
+| calculateOverallAverage(averages) | Calculates the overall average of an array of numbers.  |
+
+
+
+**utils/sleepTranslation.js**
+| Method                                | Description                                                                     |
+|:--------------------------------------|:--------------------------------------------------------------------------------|
+| translateSleepQualityToIndex(quality) | Converts a sleep quality string to a corresponding numerical index.             |
+| translateSleepIndex(index)            | Converts a numerical sleep index to a corresponding sleep quality description.  |
+
+
 
 ## API Endpoints
 
