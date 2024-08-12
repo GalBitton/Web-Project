@@ -1,6 +1,5 @@
 import express from 'express';
 import { registerLimiter, loginLimiter } from '../middlewares/rateLimiters.middleware.js';
-import container from '../containerConfig.js';
 
 class AuthRouter {
     constructor(authController, authMiddleware) {
