@@ -2,7 +2,7 @@ import React from 'react';
 import { stack as Menu } from '@katasonovyp/react-burger-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import ProfileMenu from './profile-menu.jsx';
-import { ThemeProvider } from "@/hooks/ThemeProvider";
+import { UseTheme } from "@/hooks/useTheme";
 import useLocation from '@/hooks/useLocation.jsx';
 
 const menuStyles = {
@@ -92,7 +92,7 @@ const AppMenu = () => {
                 )}
             </nav>
             <div className="flex items-center">
-                <ThemeProvider></ThemeProvider>
+                <UseTheme></UseTheme>
                 {isLoggedIn && <ProfileMenu />}
             </div>
         </header>

@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import Device from '@/services/device.js';
 import { getGraphSummary } from '@/utils';
-import DeviceCard from '../../components/cards/devicecard';
-import ChartComponent from '../../components/chart';
+import DeviceCard from '@/components/cards/devicecard';
+import ChartComponent from '@/components/charts/chart';
 import { useAuth } from "@/contexts/AuthContext";
 import useAPIService from "@/hooks/useAPIService";
 import APIService from "@/services/api/APIService";
 import LoadingAnimation from '../../components/loading';
-import ResponsiveChartComponent from './responsive-charts';
+import ResponsiveChartComponent from '@/components/charts/responsive-charts';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
@@ -650,7 +650,6 @@ const Dashboard = () => {
                 )}
             </div>
             {healthStory && (
-                // Styled div to display a large text
                 <div
                     className="flex justify-center items-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full mb-10">
                     <p className="text-lg text-gray-700 dark:text-slate-400">{healthStory}</p>

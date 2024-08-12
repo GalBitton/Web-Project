@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import DarkModeToggle from "react-dark-mode-toggle";
 
-export const ThemeProvider = () => {
+export const UseTheme = () => {
     const [isDarkMode, setIsDarkMode] = useState(() => {
         const storedTheme = localStorage.getItem("theme");
         return storedTheme ? storedTheme === "dark" : false;
