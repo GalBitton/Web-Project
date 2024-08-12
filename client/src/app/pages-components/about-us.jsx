@@ -25,7 +25,7 @@ const AboutUs = () => {
             name: "Adir David",
             role: "Creative Director",
             image: "/assets/profiles/Adir.jpeg",
-            link: "https://i.imgur.com/F1IJpTO.png"
+            link: "https://www.linkedin.com/in/adir-david-82452528b/"
         },
         {
             name: "Eyal Maklada",
