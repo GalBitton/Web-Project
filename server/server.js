@@ -13,7 +13,16 @@ import connect from "./database/connect.js";
 import container from './containerConfig.js';
 import { errorHandler, limiter } from "./middlewares/index.js";
 
+/**
+ * Server class for initializing and running the Express server.
+ * @class
+ */
 export default class Server {
+    /**
+     * Creates an instance of Server.
+     * @param {Object} config - Server configuration.
+     * @param {Object} logger - Logger instance.
+     */
     constructor(config, logger) {
         this._app = express();
         this._config = config;
@@ -25,6 +34,9 @@ export default class Server {
         this._setupMiddlewares();
     }
 
+    /**
+     * Starts the server and connects to the database.
+     */
     run() {
         try {
             connect(this._config.db_uri, this._logger);
@@ -37,6 +49,11 @@ export default class Server {
         }
     }
 
+    /**
+     * Returns CORS options based on the environment.
+     * @private
+     * @returns {Object} - CORS options.
+     */
     _getCorsOptions() {
         if (process.env.NODE_ENV === 'production') {
             const allowedOrigins = container.get("vercelAllowedOrigins");
@@ -67,6 +84,10 @@ export default class Server {
         }
     }
 
+    /**
+     * Sets up security policies and static file serving.
+     * @private
+     */
     _setupPolicies() {
         const corsOptions = this._getCorsOptions();
 
@@ -85,6 +106,10 @@ export default class Server {
         }));
     }
 
+    /**
+     * Sets up the server routes and Swagger UI.
+     * @private
+     */
     _setupRoutes() {
         this._app.get(['/.env', '/config/*', '/.git/*', '/*.json'], (req, res) => {
             const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || (req.connection.socket ? req.connection.socket.remoteAddress : null) || req.ip;
@@ -110,6 +135,10 @@ export default class Server {
         this._app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
     }
 
+    /**
+     * Sets up middlewares for rate limiting and error handling.
+     * @private
+     */
     _setupMiddlewares() {
         this._app.use(limiter);
         this._app.use(errorHandler);
