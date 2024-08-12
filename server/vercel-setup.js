@@ -7,7 +7,7 @@ const newConfigPath = path.join(__dirname, 'config');
 /**
  * Sets up the configuration directory based on the environment.
  * @function
- * @exports
+ * @exports setupVercel
  */
 export default function setupVercel() {
     if (process.env.NODE_ENV === 'production') {
