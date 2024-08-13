@@ -1,5 +1,17 @@
 import { Link } from 'react-router-dom';
 
+/**
+ * NotFound component for displaying a 404 error page.
+ * 
+ * Renders a full-page message indicating that the requested page was not found.
+ * Includes a link to redirect users back to the homepage.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <NotFound />
+ * );
+ */
 const NotFound = () => {
     return (
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-white to-gray-200 dark:from-gray-900 dark:to-slate-800">
