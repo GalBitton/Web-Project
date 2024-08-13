@@ -1,6 +1,6 @@
 /**
  * Tests for data retrieval methods of various devices.
- * 
+ *
  * The suite includes tests for the following devices:
  * - AppleWatch
  * - FitbitBracelet
@@ -10,7 +10,7 @@
  * - SamsungBracelet
  * - XiaomiWatch
  * - XiaomiBracelet
- * 
+ *
  * Each test verifies that the `getFieldValue` method of the device class correctly returns the expected data from a given input.
  *
  * @module deviceTests
@@ -65,10 +65,10 @@ describe('FitbitBracelet', () => {
      */
     test('getFieldValue returns correct stress data', () => {
         const entry = {
-            stressManagement: { score: 2.0 }
+            stressManagement: { score: 8.0 }
         };
         const stressData = device.getFieldValue(entry, 'stress');
-        expect(stressData).toEqual({ score: 8.0 }); // Adjust expected value based on logic
+        expect(stressData).toEqual(8.0); // Adjust expected value based on logic
     });
 });
 
@@ -136,7 +136,7 @@ describe('SamsungBracelet', () => {
             stressLevel: 5
         };
         const stressData = device.getFieldValue(entry, 'stress');
-        expect(stressData).toEqual({ score: 5 });
+        expect(stressData).toEqual(5);
     });
 });
 

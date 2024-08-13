@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 /**
  * Connects to a MongoDB database and switches to a specified database.
- * 
+ *
  * @param {string} url - The connection URL for MongoDB.
  * @param {Object} logger - The logger object used to log connection status and errors.
  * @param {Function} logger.info - Method to log informational messages.
@@ -12,10 +12,6 @@ const connect = (url, logger) => {
     mongoose.connect(url)
     .then(() => {
         logger.info('MongoDB connected');
-
-        const dbName = 'neurosync';
-        const db = mongoose.connection.useDb(dbName);
-        logger.info(`Switched to database: ${dbName}`);
     })
     .catch((err) => logger.error(`Error connecting to MongoDB: ${err}`));
 }

@@ -11,7 +11,7 @@ import { translateSleepIndex, translateSleepQualityToIndex } from "../utils/slee
 class UserController {
     /**
      * Creates an instance of UserController.
-     * 
+     *
      * @param {Object} config - The configuration object for the controller.
      * @param {Object} logger - The logger instance for logging messages and errors.
      * @param {Object} deviceFactory - The factory used to create device instances.
@@ -32,7 +32,7 @@ class UserController {
 
     /**
      * Links a device to the user.
-     * 
+     *
      * @param {Object} req - The request object containing user ID and device details.
      * @param {Object} res - The response object to send the result or errors.
      * @returns {Promise<void>}
@@ -113,7 +113,7 @@ class UserController {
 
     /**
      * Unlinks a device from the user.
-     * 
+     *
      * @param {Object} req - The request object containing the device ID.
      * @param {Object} res - The response object to send the result or errors.
      * @returns {Promise<void>}
@@ -138,7 +138,7 @@ class UserController {
 
     /**
      * Retrieves all linked devices for the user.
-     * 
+     *
      * @param {Object} req - The request object.
      * @param {Object} res - The response object to send the result or errors.
      * @returns {Promise<void>}
@@ -156,7 +156,7 @@ class UserController {
 
     /**
      * Retrieves data for a specific device.
-     * 
+     *
      * @param {Object} req - The request object containing the device ID.
      * @param {Object} res - The response object to send the result or errors.
      * @returns {Promise<void>}
@@ -186,6 +186,8 @@ class UserController {
 
             // Perform the bulk operation
             await DeviceData.bulkWrite(bulkOps);
+
+            // For lastSeeded.
             await deviceData.save();
 
             const data = deviceInstance.extractGraphData(deviceData.datapoints);
@@ -198,7 +200,7 @@ class UserController {
 
     /**
      * Calculates average data for all linked devices.
-     * 
+     *
      * @param {Object} req - The request object.
      * @param {Object} res - The response object to send the result or errors.
      * @returns {Promise<void>}
@@ -253,7 +255,7 @@ class UserController {
 
     /**
      * Generates a health story based on device data.
-     * 
+     *
      * @param {Object} req - The request object.
      * @param {Object} res - The response object to send the result or errors.
      * @returns {Promise<void>}
@@ -316,7 +318,9 @@ class UserController {
                             if (fieldValue.beta !== undefined) metricsByTimestamp[timestamp].eegBeta.push(fieldValue.beta);
                             if (fieldValue.gamma !== undefined) metricsByTimestamp[timestamp].eegGamma.push(fieldValue.gamma);
                             if (fieldValue.delta !== undefined) metricsByTimestamp[timestamp].eegDelta.push(fieldValue.delta);
-                            if (fieldValue.theta !== undefined) metricsByTimestamp[timestamp].eegTheta.push(fieldValue.theta);
+                            if (fieldValue.theta !== undefined) metricsByTimestamp[timestamp].eegTheta.push(fieldValue.theta)
+                        } else if (field === 'stress') {
+                            if (fieldValue.score !== undefined) metricsByTimestamp[timestamp].stressScore.push(fieldValue.score);
                         } else {
                             // For other fields like heartRate, steps, etc.
                             if (Array.isArray(metricsByTimestamp[timestamp][field])) {
@@ -405,7 +409,7 @@ class UserController {
 
     /**
      * Generates data points for a device.
-     * 
+     *
      * @param {Object} deviceInstance - The instance of the device.
      * @returns {Promise<Array>} - Returns a promise that resolves with an array of data batches.
      */

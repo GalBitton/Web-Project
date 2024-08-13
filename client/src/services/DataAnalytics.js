@@ -22,6 +22,13 @@ export default class DataAnalytics {
         this.eeg = {labels: [], alpha: [], beta: [], gamma: [], delta: [], theta: []};
     }
 
+    hasData() {
+        // Check based on the common fields.
+        return Object.keys(this.heartRate.values).length > 0 ||
+            Object.keys(this.steps.values).length > 0 ||
+            Object.keys(this.caloriesBurned.values).length > 0;
+    }
+
     /**
      * Gets the analysis data for a specific field.
      * @param {string} field - The field to get data for. Possible values are 'heartRate', 'steps', 'caloriesBurned', 'sleep', 'stressLevel', 'oxygenSaturation', 'bloodPressure', 'eeg'.

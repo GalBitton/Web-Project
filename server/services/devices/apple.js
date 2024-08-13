@@ -6,6 +6,11 @@ import Device from "./device.js";
  * @description Represents an Apple Watch device extending the base `Device` class with specific data handling methods.
  */
 export default class AppleWatch extends Device {
+    constructor(config, logger, id, name, lastSeeded) {
+        super(config, logger, id, name, lastSeeded);
+        this.useTranslatedQualityIndex = true;
+    }
+
     /**
      * @method getFieldValue
      * @param {Object} entry - The data entry object containing field values.
@@ -14,10 +19,6 @@ export default class AppleWatch extends Device {
      * @description Retrieves the value for a specific field from the data entry. Handles fields like 'sleep' and 'bloodPressure' with specific structures.
      */
     getFieldValue(entry, field) {
-        if (entry[field] === undefined) {
-            return 0;
-        }
-
         switch (field) {
             case 'sleep':
                 return {
@@ -35,38 +36,6 @@ export default class AppleWatch extends Device {
             case 'caloriesBurned':
                 return entry[field];
             default:
-                return 0;
-        }
-    }
-
-    /**
-     * @method generateDataForField
-     * @param {string} field - The field name to generate data for.
-     * @returns {Object|number} - Returns generated data for the field or a default value.
-     * @description Generates random data for the specified field. Handles fields such as 'sleep', 'bloodPressure', and 'activityRings' with specific structures.
-     */
-    generateDataForField(field) {
-        switch (field) {
-            case 'sleep':
-                return {
-                    duration: this._computeRandomValue("sleepDuration"),
-                    quality: this.convertSleepIndex(this._computeRandomValue("sleepQuality"))
-                };
-            case 'bloodPressure':
-                return {
-                    systolic: this._computeRandomValue("bloodPressureSystolic"),
-                    diastolic: this._computeRandomValue("bloodPressureDiastolic")
-                };
-            case 'activityRings':
-                return {
-                    move: this._computeRandomValue("activityMove"),
-                    exercise: this._computeRandomValue("activityExercise"),
-                    stand: this._computeRandomValue("activityStand")
-                };
-            default:
-                if (super.getFields().includes(field)) {
-                    return super.generateDataForField(field);
-                }
                 return 0;
         }
     }

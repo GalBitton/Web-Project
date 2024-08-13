@@ -24,45 +24,12 @@ export default class DreemHeadband extends Device {
                     "theta": entry[field].theta
                 }
             case 'sleep':
-                if (entry[field] === undefined) {
-                    return 0;
-                }
-
                 return {
                     "duration": entry.sleepData.totalDuration,
                     "quality": super.convertSleepIndex(entry.sleepData.sleepQuality)
                 }
             case 'meditationScore':
                 return entry[field];
-            default:
-                return 0;
-        }
-    }
-
-
-    /**
-     * @method generateDataForField
-     * @param {string} field - The field name to generate data for.
-     * @returns {Object|number} - Generated data for the field.
-     * @description Generates data for a specific field, including EEG data, sleep data, and meditation score.
-     */
-    generateDataForField(field) {
-        switch (field) {
-            case 'EEG':
-                return {
-                    alpha: this._computeRandomValue("eegAlpha"),
-                    beta: this._computeRandomValue("eegBeta"),
-                    gamma: this._computeRandomValue("eegGamma"),
-                    delta: this._computeRandomValue("eegDelta"),
-                    theta: this._computeRandomValue("eegTheta")
-                };
-            case 'sleep':
-                return {
-                    totalDuration: this._computeRandomValue("sleepDuration"),
-                    sleepQuality: this._computeRandomValue("sleepQuality")
-                };
-            case 'meditationScore':
-                return this._computeRandomValue("focusScore");
             default:
                 return 0;
         }

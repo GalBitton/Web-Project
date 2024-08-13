@@ -22,62 +22,62 @@ export default class DeviceFactory {
 
     /**
      * @method createDevice
-     * @param {string} brand - The brand of the device (e.g., 'Samsung', 'Apple').
-     * @param {string} device - The type of the device (e.g., 'Smartwatch', 'Bracelet').
-     * @param {string} id - The unique identifier for the device.
+     * @param {string} brand - The brand of the type (e.g., 'Samsung', 'Apple').
+     * @param {string} type - The type of the type (e.g., 'Smartwatch', 'Bracelet').
+     * @param {string} id - The unique identifier for the type.
      * @param {Date} lastSeeded - Timestamp of the last seeding operation.
-     * @returns {Device} - An instance of the specified device.
-     * @throws {Error} - Throws an error if the brand or device type is unsupported.
-     * @description Creates and returns an instance of a device based on the specified brand and device type.
+     * @returns {Device} - An instance of the specified type.
+     * @throws {Error} - Throws an error if the brand or type is unsupported.
+     * @description Creates and returns an instance of a type based on the specified brand and type.
      */
-    createDevice(brand, device, id, lastSeeded) {
-        const name = `${brand}-${device}`.toLowerCase();
+    createDevice(brand, type, id, lastSeeded) {
+        const name = `${brand}`.toLowerCase() + type;
         switch (brand) {
             case 'Samsung':
-                switch (device) {
+                switch (type) {
                     case 'Smartwatch':
                         return new SamsungWatch(this._config, this._logger, id, name, lastSeeded);
                     case 'Bracelet':
                         return new SamsungBracelet(this._config, this._logger, id, name, lastSeeded);
                     default:
-                        throw new Error('Unsupported device type for Samsung');
+                        throw new Error('Unsupported type type for Samsung');
                 }
             case 'Apple':
-                switch (device) {
+                switch (type) {
                     case 'Smartwatch':
                         return new AppleWatch(this._config, this._logger, id, name, lastSeeded);
                     default:
-                        throw new Error('Unsupported device type for Apple');
+                        throw new Error('Unsupported type type for Apple');
                 }
             case 'Xiaomi':
-                switch (device) {
+                switch (type) {
                     case 'Smartwatch':
                         return new XiaomiWatch(this._config, this._logger, id, name, lastSeeded);
                     case 'Bracelet':
                         return new XiaomiBracelet(this._config, this._logger, id, name, lastSeeded);
                     default:
-                        throw new Error('Unsupported device type for Xiaomi');
+                        throw new Error('Unsupported type type for Xiaomi');
                 }
             case 'FitBit':
-                switch (device) {
+                switch (type) {
                     case 'Bracelet':
                         return new FitbitBracelet(this._config, this._logger, id, name, lastSeeded);
                     default:
-                        throw new Error('Unsupported device type for FitBit');
+                        throw new Error('Unsupported type type for FitBit');
                 }
             case 'Dreem':
-                switch (device) {
+                switch (type) {
                     case 'Headband':
                         return new DreemHeadband(this._config, this._logger, id, name, lastSeeded);
                     default:
-                        throw new Error('Unsupported device type for Dreem');
+                        throw new Error('Unsupported type type for Dreem');
                 }
             case 'Muse':
-                switch (device) {
+                switch (type) {
                     case 'Headband':
                         return new MuseHeadband(this._config, this._logger, id, name, lastSeeded);
                     default:
-                        throw new Error('Unsupported device type for Muse');
+                        throw new Error('Unsupported type type for Muse');
                 }
             default:
                 throw new Error('Unsupported brand');

@@ -20,6 +20,13 @@ export default class Device {
      * @returns {Promise<void>} A promise that resolves when the data has been fetched and analyzed.
      */
     async fetchAnalyzeData() {
+        // Note: We can sync the data with the new datapoints by checking if X minutes passed since the last timestamp in the data
+        // And then we can fetch the new datapoints from the server and destructure the data to the existing data.
+        // We did not do so here because of the time constraint.
+        if (this.analytics.hasData()) {
+            return;
+        }
+
         const apiService = new APIService({ action: 'getDeviceData', deviceId: this.id });
         const data = await apiService.execute();
         this.analytics.analyzeData(data);

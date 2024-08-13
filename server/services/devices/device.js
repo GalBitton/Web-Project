@@ -1,4 +1,7 @@
+import UnifiedStructureConverter from "../unifiedStructureConverter.js";
 import { translateSleepIndex } from "../../utils/sleepTranslation.js";
+import { fieldMappings } from "../../enums/mappings.js";
+import DeviceStructureConverter from "../deviceStructureConverter.js";
 
 /**
  * @class Device
@@ -21,13 +24,15 @@ export default class Device {
         this.id = id;
         this.data = [];
         this.lastSeeded = lastSeeded; // Store the timestamp of the last seeding
+        this.useTranslatedQualityIndex = false; // Whether to use a translated sleep quality index
         this.randomCache = {}; // Cache for precomputed random values
+        this.converter = new DeviceStructureConverter();
     }
 
     /**
      * @method convertSleepIndex
      * @param {number} qualityIndex - Sleep quality index to convert.
-     * @returns {number} - Translated sleep quality value.
+     * @returns {string} - Translated sleep quality value.
      * @description Converts a sleep quality index into a more meaningful value using a utility function.
      */
     convertSleepIndex(qualityIndex) {
@@ -58,144 +63,167 @@ export default class Device {
     }
 
     /**
-     * @method _computeRandomValue
-     * @param {string} field - The field name for which to compute a random value.
-     * @returns {number} - Computed random value for the field.
-     * @description Computes a random value within a specified range for a given field.
+     * @method computeValueForField
+     * @description Computes the value for a field based on the previous entry, deviation, and configured ranges.
+     * @param {string} field - The field name to compute the value for.
+     * @param {number} lastValue - The last generated value for the field.
+     * @param {boolean} accumulate - Whether the value should accumulate over time.
+     * @returns {number} - The computed value.
      */
-    _computeRandomValue(field) {
-        const ranges = this._config.valueRanges;
-        return Math.random() * (ranges[field].max - ranges[field].min) + ranges[field].min;
-    }
+    computeValueForField(field, lastValue = null, accumulate = false) {
+        const { valueRanges, commonFieldValueMaxDeviations } = this._config;
+        const range = valueRanges[field] || { min: 0, max: 1 }; // Default range if not specified
+        const deviation = commonFieldValueMaxDeviations[field] || 0;
 
-    /**
-     * @method generateDataForField
-     * @param {string} field - The field name to generate data for.
-     * @returns {Object|number} - Generated data for the field.
-     * @description Generates data for a specific field. Subclasses must implement this method.
-     */
-    generateDataForField(field) {
-        return this._computeRandomValue(field);
-    }
+        let newValue;
 
-    /**
-     * @method precomputeRandomValues
-     * @param {string[]} fields - List of fields to precompute random values for.
-     * @param {number} count - Number of values to precompute.
-     * @description Precomputes random values for specified fields and caches them for efficiency.
-     */
-    precomputeRandomValues(fields, count) {
-        const deviations = this._config.commonFieldValueMaxDeviations;
+        if (accumulate && lastValue !== null) {
+            // Accumulate value with deviation
+            const deviationAmount = Math.random() * deviation;
+            newValue = lastValue + deviationAmount;
+        } else {
+            // Independent value generation
+            newValue = Math.random() * (range.max - range.min) + range.min;
+        }
 
-        for (const field of fields) {
-            if (field === 'sleep') {
-                continue; // Skip precomputing sleep data as it's generated differently in generateDataBatch.
-            }
-
-            if (!this.randomCache[field]) {
-                this.randomCache[field] = [];
-            }
-
-            for (let i = 0; i < count; i++) {
-                let baseValue = this.generateDataForField(field);
-                if (deviations[field] !== undefined) {
-                    baseValue += Math.random() * (deviations[field] + 1) - (deviations[field] / 2);
-                }
-                this.randomCache[field].push(baseValue);
+        // Introduce occasional peaks for stress-related metrics
+        if (field === 'stress.score' || field === 'stress.breathingRate') {
+            const peakChance = Math.random();
+            if (peakChance < 0.1) { // 10% chance of a peak
+                newValue += deviation * 2; // Increase by a larger amount
             }
         }
+
+        // Ensure the new value stays within the min/max bounds
+        newValue = Math.max(range.min, Math.min(newValue, range.max));
+
+        return newValue;
     }
 
     /**
-     * @method getPrecomputedDataForField
-     * @param {string} field - The field name to retrieve precomputed data for.
-     * @param {number} index - Index of the precomputed value to retrieve.
-     * @returns {number} - Precomputed data for the specified field and index.
-     * @description Retrieves a precomputed random value from the cache for a given field and index.
+     * @method generateSleepData
+     * @description Generates sleep data for a specified night period.
+     * @returns {Object} - The generated sleep data with duration and quality.
      */
-    getPrecomputedDataForField(field, index) {
-        return this.randomCache[field][index];
+    generateSleepData() {
+        const { valueRanges } = this._config;
+        const durationRange = valueRanges['sleep.duration'];
+        const qualityRange = valueRanges['sleep.quality'];
+
+        const duration = Math.random() * (durationRange.max - durationRange.min) + durationRange.min;
+        let quality = Math.random() * (qualityRange.max - qualityRange.min) + qualityRange.min;
+
+        if (this.useTranslatedQualityIndex) {
+            quality = this.convertSleepIndex(quality);
+        }
+
+        return {
+            duration: parseFloat(duration.toFixed(2)),
+            quality: this.useTranslatedQualityIndex
+                ? quality
+                : parseFloat(quality.toFixed(2))
+        };
     }
 
+    generateRandomValueForNestedField(mappingValue, lastEntry = {}, generateSleep = false) {
+        const randomValues = {};
+
+        Object.keys(mappingValue).forEach(subField => {
+            if (generateSleep && subField === 'duration' || subField === 'quality') {
+                // If we're generating sleep, skip further processing here; it's handled in generateSleepData.
+                return;
+            }
+            const fieldPath = mappingValue[subField];
+            const lastValue = lastEntry[subField] !== undefined ? lastEntry[subField] : null;
+            const accumulate = ['caloriesBurned', 'steps'].includes(subField); // Accumulate for these fields
+
+            randomValues[subField] = this.computeValueForField(subField, lastValue, accumulate);
+        });
+
+        return randomValues;
+    }
+
+
     /**
-     * @method generateDataBatch
-     * @param {number} batchStart - Starting index of the batch.
-     * @param {number} batchEnd - Ending index of the batch.
-     * @param {number} intervalMinutes - Interval in minutes between data points.
-     * @param {string[]} fields - List of fields to generate data for.
-     * @returns {Promise<Object[]>} - Promise resolving to an array of data entries for the batch.
-     * @description Generates a batch of data entries for specified fields over a time range.
+     * @method generateRandomValue
+     * @description Generates random values for the fields based on configuration.
+     * @param {string} deviceType - The type of the device.
+     * @param {Object} fieldMappings - The field mappings for the device.
+     * @param {Object} lastEntry - The last entry generated, to use as a baseline for new values.
+     * @param {boolean} generateSleep - Whether to generate sleep data (used once per day).
+     * @returns {Object} - The object containing all generated values.
      */
-    async generateDataBatch(batchStart, batchEnd, intervalMinutes, fields) {
-        const ranges = this._config.valueRanges;
+    generateRandomValue(deviceType, fieldMappings, lastEntry = {}, generateSleep = false) {
+        const deviceFields = fieldMappings[deviceType];
+        const randomValues = {};
+
+        Object.keys(deviceFields).forEach(field => {
+            const mappingValue = deviceFields[field];
+            if (typeof mappingValue === 'object') {
+                // Handle nested fields like sleep, stress, etc.
+                if (field === 'sleep' && generateSleep) {
+                    randomValues[field] = this.generateSleepData();
+                } else {
+                    randomValues[field] = this.generateRandomValueForNestedField(mappingValue, lastEntry[field] || {}, generateSleep);
+                }
+            } else {
+                const lastValue = lastEntry[field] !== undefined ? lastEntry[field] : null;
+                const accumulate = ['caloriesBurned', 'steps'].includes(field); // Accumulate for these fields
+
+                randomValues[field] = this.computeValueForField(field, lastValue, accumulate);
+            }
+        });
+
+        return randomValues;
+    }
+
+    async generateDataBatch(batchStart, batchEnd, intervalMinutes) {
         const now = new Date();
         const data = [];
-        const batchPromises = [];
-
-        this.precomputeRandomValues(fields, batchEnd - batchStart);
+        const nightHours = [22, 23, 0, 1, 2, 3, 4, 5, 6, 7];  // 10 PM to 7 AM
+        const dayOfWeek = now.getDay();  // 0 = Sunday, 6 = Saturday
+        const isAfternoonNap = (dayOfWeek === 5 && Math.random() < 0.14);  // Approx. once a week nap on Friday
 
         let sleepDataGenerated = false;
+        const availableFields = this.getFields();
 
         for (let i = batchStart; i < batchEnd; i++) {
-            const entry = {};
             const timestamp = new Date(now.getTime() - (i + 1) * intervalMinutes * 60 * 1000);
-            const hour = timestamp.getHours();
-            const day = timestamp.getDay();
+            const currentHour = timestamp.getHours();
+            const isSleepingTime = nightHours.includes(currentHour) || isAfternoonNap;
 
-            const isNightTime = (hour >= 22 || hour < 9);
-            const isAfternoonNap = (day === 5 && hour >= 12 && hour < 15);
+            // Generate values based on the device's fields
+            const lastEntry = i === 0 ? {} : data[i - 1];
+            const entry = this.generateRandomValue(this.name, fieldMappings, lastEntry, !sleepDataGenerated && isSleepingTime);
 
-            const filteredFields = fields.filter(field => {
-                if (isNightTime || isAfternoonNap) {
-                    if (field === 'sleep') {
-                        if (!sleepDataGenerated) {
-                            sleepDataGenerated = true;
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    }
-                    return ['heartRate', 'EEG', 'oxygenSaturation', 'bloodPressure', 'breathingRate'].includes(field);
-                } else {
-                    return field !== 'sleep';
+            if (isSleepingTime && !sleepDataGenerated) {
+                // Ensure fields that shouldn’t be active during sleep are set to 0 or inactive
+                if (availableFields.includes('steps')) {
+                    entry.steps = 0;
                 }
-            });
+                if (availableFields.includes('caloriesBurned')) {
+                    entry.caloriesBurned = 0;
+                }
+                if (availableFields.includes('activityRings')) {
+                    entry.activityRings = {
+                        move: 0,
+                        exercise: 0,
+                        stand: 0
+                    };
+                }
+                if (availableFields.includes('heartRate') && !entry.heartRate) {
+                    entry.heartRate = this.computeValueForField('heartRate', 60);  // Assume a stable low heart rate during sleep
+                }
+                sleepDataGenerated = true;
+            }
 
-            const fieldPromises = filteredFields.map(field =>
-                new Promise(resolve => {
-                    if (field === 'sleep') {
-                        let maxDuration;
-                        if (hour >= 22) {
-                            maxDuration = 9 + (24 - hour);
-                        } else if (hour < 9) {
-                            maxDuration = 9 - hour;
-                        } else if (isAfternoonNap) {
-                            maxDuration = 3;
-                        } else {
-                            maxDuration = 0;
-                        }
-
-                        const duration = Math.random() * Math.min(maxDuration, ranges.sleepDuration.max - ranges.sleepDuration.min) + ranges.sleepDuration.min;
-                        entry[field] = {
-                            duration: parseFloat(duration.toFixed(2)),
-                            quality: this._computeRandomValue('sleepQuality')
-                        };
-                    } else {
-                        entry[field] = this.getPrecomputedDataForField(field, i);
-                    }
-                    resolve();
-                })
-            );
-
-            batchPromises.push(Promise.all(fieldPromises).then(() => {
-                entry["timestamp"] = timestamp.toISOString();
-                data.push(entry);
-            }));
+            const transformedEntry = this.converter.convertEntry(fieldMappings[this.name], timestamp, entry);
+            data.push(transformedEntry);
         }
 
-        await Promise.all(batchPromises);
         return data;
     }
+
 
     /**
      * @method seedDatabase
@@ -215,13 +243,12 @@ export default class Device {
 
         const timeElapsed = Math.floor((now - lastSeededTime) / (60 * 1000));
         const points = Math.floor(timeElapsed / intervalMinutes);
-        const fields = this.getFields();
 
         // Generate data batches in parallel
         const batchPromises = [];
         for (let i = 0; i < points; i += batchSize) {
             const batchEnd = Math.min(batchSize + i, points);
-            batchPromises.push(this.generateDataBatch(i, batchEnd, intervalMinutes, fields));
+            batchPromises.push(this.generateDataBatch(i, batchEnd, intervalMinutes));
         }
 
         const dataBatches = await Promise.all(batchPromises);
@@ -237,32 +264,64 @@ export default class Device {
      * @description Extracts and processes data for graphing, returning labels and values for each field.
      */
     extractGraphData(datapoints) {
-        const fields = ["heartRate", "steps", "caloriesBurned", "sleep", "bloodPressure", "activityRings", "stress", "oxygenSaturation", "EEG"];
-        const processedData = {};
+        const fields = [
+            "heartRate", "steps", "caloriesBurned",
+            "sleep", "stress", "activity",
+            "bloodPressure", "oxygenSaturation", "eeg", "vo2Max", "focusScore", "respiratoryRate"
+        ];
 
-        for (const field of fields) {
-            const dps = datapoints.map(entry => {
-                return {
-                    timestamp: entry.timestamp,
-                    data: this.getFieldValue(entry.data, field)
+        const unifiedStructureConverter = new UnifiedStructureConverter(this);
+        const processedData = {
+            heartRate: { labels: [], values: [] },
+            steps: { labels: [], values: [] },
+            caloriesBurned: { labels: [], values: [] },
+            sleep: { labels: [], values: [], valuesY1: [] },
+            stressLevel: { labels: [], values: [] },
+            oxygenSaturation: { labels: [], values: [] },
+            bloodPressure: { labels: [], systolic: [], diastolic: [] },
+            eeg: { labels: [], alpha: [], beta: [], gamma: [], delta: [], theta: [] },
+            vo2Max: { labels: [], values: [] },
+            focusScore: { labels: [], values: [] },
+            respiratoryRate: { labels: [], values: [] }
+        };
+
+        datapoints.forEach(entry => {
+            const unifiedData = unifiedStructureConverter.translateToUnifiedStructure(entry.data);
+            const timestamp = new Date(entry.timestamp).toLocaleTimeString('en-GB', { timeZone: 'Asia/Jerusalem' }) + ' ' +
+                new Date(entry.timestamp).toLocaleDateString('en-GB', { timeZone: 'Asia/Jerusalem' }).replace(/\//g, '-');
+
+            fields.forEach(field => {
+                const fieldValue = unifiedStructureConverter.getNestedField(unifiedData, field);
+                if (!fieldValue) {
+                    return;
+                }
+
+                if (field === 'stress') {
+                    processedData.stressLevel.labels.push(timestamp);
+                    processedData.stressLevel.values.push(fieldValue);
+                } else if (field === 'sleep') {
+                    processedData.sleep.labels.push(timestamp);
+                    processedData.sleep.values.push(fieldValue.duration);
+                    processedData.sleep.valuesY1.push(fieldValue.quality);
+                } else if (field === 'eeg') {
+                    processedData.eeg.labels.push(timestamp);
+                    processedData.eeg.alpha.push(fieldValue.alpha);
+                    processedData.eeg.beta.push(fieldValue.beta);
+                    processedData.eeg.gamma.push(fieldValue.gamma);
+                    processedData.eeg.delta.push(fieldValue.delta);
+                    processedData.eeg.theta.push(fieldValue.theta);
+                } else if (field === 'bloodPressure') {
+                    processedData.bloodPressure.labels.push(timestamp);
+                    processedData.bloodPressure.systolic.push(fieldValue.systolic);
+                    processedData.bloodPressure.diastolic.push(fieldValue.diastolic);
+                } else if (processedData[field]) {
+                    processedData[field].labels.push(timestamp);
+                    processedData[field].values.push(fieldValue);
                 }
             });
-
-            if (dps.every(value => value.data === 0)) {
-                processedData[field] = {labels: [], values: []};
-                continue;
-            }
-
-            const labels = dps.map(value => {
-                const date = new Date(value.timestamp);
-                return `${date.toLocaleTimeString('en-GB')} ${date.toLocaleDateString('en-GB').replace(/\//g, '-')}`;
-            });
-
-            const values = dps.map(value => value.data);
-
-            processedData[field] = { labels, values };
-        }
+        });
 
         return processedData;
     }
+
 }

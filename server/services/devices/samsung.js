@@ -6,6 +6,11 @@ import Device from "./device.js";
  * @description Represents a Samsung Watch device, extending the base Device class to handle specific data fields.
  */
 class SamsungWatch extends Device {
+    constructor(config, logger, id, name, lastSeeded) {
+        super(config, logger, id, name, lastSeeded);
+        this.useTranslatedQualityIndex = true;
+    }
+
     /**
      * @method getFieldValue
      * @param {Object} entry - Data entry containing field values.
@@ -14,10 +19,6 @@ class SamsungWatch extends Device {
      * @description Retrieves the value for a specific field from the data entry, handling fields like sleep, stress, and oxygen saturation.
      */
     getFieldValue(entry, field) {
-        if (entry[field] === undefined) {
-            return 0;
-        }
-
         switch (field) {
             case 'sleep':
                 return {
@@ -25,40 +26,13 @@ class SamsungWatch extends Device {
                     "quality": entry[field].quality
                 }
             case 'stress':
-                return {
-                    "score": entry.stressLevel,
-                }
+                return entry.stressLevel;
             case 'heartRate':
             case 'caloriesBurned':
             case 'steps':
             case 'oxygenSaturation':
                 return entry[field];
             default:
-                return 0;
-        }
-    }
-
-    /**
-     * @method generateDataForField
-     * @param {string} field - The field name to generate data for.
-     * @returns {Object|number} - Generated data for the field.
-     * @description Generates data for a specific field, including sleep, stress, and oxygen saturation.
-     */
-    generateDataForField(field) {
-        switch (field) {
-            case 'sleep':
-                return {
-                    duration: this._computeRandomValue("sleepDuration"),
-                    quality: this.convertSleepIndex(this._computeRandomValue("sleepQuality"))
-                };
-            case 'stress':
-                return this._computeRandomValue("stressScore");
-            case 'oxygenSaturation':
-                return this._computeRandomValue("oxygenSaturation");
-            default:
-                if (super.getFields().includes(field)) {
-                    return super.generateDataForField(field);
-                }
                 return 0;
         }
     }
@@ -87,10 +61,6 @@ class SamsungBracelet extends Device {
      * @description Retrieves the value for a specific field from the data entry, handling fields like sleep, stress, and breathing rate.
      */
     getFieldValue(entry, field) {
-        if (entry[field] === undefined) {
-            return 0;
-        }
-
         switch (field) {
             case 'sleep':
                 return {
@@ -98,40 +68,13 @@ class SamsungBracelet extends Device {
                     "quality": super.convertSleepIndex(entry[field].qualityRating)
                 }
             case 'stress':
-                return {
-                    "score": entry.stressLevel,
-                }
+                return entry.stressLevel;
             case 'breathingRate':
             case 'heartRate':
             case 'caloriesBurned':
             case 'steps':
                 return entry[field];
             default:
-                return 0;
-        }
-    }
-
-    /**
-     * @method generateDataForField
-     * @param {string} field - The field name to generate data for.
-     * @returns {Object|number} - Generated data for the field.
-     * @description Generates data for a specific field, including sleep, stress, and breathing rate.
-     */
-    generateDataForField(field) {
-        switch (field) {
-            case 'sleep':
-                return {
-                    durationHours: this._computeRandomValue("sleepDuration"),
-                    qualityRating: this._computeRandomValue("sleepQuality")
-                };
-            case 'stress':
-                return this._computeRandomValue("stressScore");
-            case 'breathingRate':
-                return this._computeRandomValue("breathingRate");
-            default:
-                if (super.getFields().includes(field)) {
-                    return super.generateDataForField(field);
-                }
                 return 0;
         }
     }
