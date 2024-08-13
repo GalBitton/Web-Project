@@ -9,10 +9,8 @@ const newConfigPath = path.join(__dirname, 'config');
  * @function
  * @exports setupVercel
  */
-export default function setupVercel() {
-    if (process.env.NODE_ENV === 'production') {
-        process.env.NODE_CONFIG_DIR = newConfigPath;
-    } else {
-        console.log('Not in production, NODE_CONFIG_DIR not set');
-    }
+if (process.env.NODE_ENV === 'production') {
+    process.env.NODE_CONFIG_DIR = newConfigPath;
+} else {
+    console.log('Not in production, NODE_CONFIG_DIR not set');
 };
