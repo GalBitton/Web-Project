@@ -1,3 +1,15 @@
+/**
+ * DeviceCard component displays a card for a device with an image and a hover effect to show the device's name.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {Object} props.device - The device information to display.
+ * @param {string} props.device.brand - The brand of the device.
+ * @param {string} props.device.type - The type of the device.
+ * @param {string} props.device.name - The name of the device.
+ * @param {string} props.device.imageSrc - The source URL for the device's image.
+ * @returns {JSX.Element} The rendered DeviceCard component.
+ */
 const DeviceCard = ({ device }) => (
     <div className={`relative group m-2 ${device.brand}-${device.type}-container`}>
         <div className="absolute inset-0 flex justify-center items-center">
