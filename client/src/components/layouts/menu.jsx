@@ -77,7 +77,7 @@ const AppMenu = () => {
      */
     const logoImage = () => {
         return (
-            <a href="/" className="flex items-center hidden md:flex">
+            <a href="/" className="flex items-center md:flex">
                 <img src="/assets/dashboard-logo.jpg" alt="Logo" className="h-14 w-18 mr-6" />
             </a>
         );
