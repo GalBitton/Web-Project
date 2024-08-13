@@ -1,6 +1,16 @@
+/**
+ * Class representing data analytics for various health metrics.
+ */
 export default class DataAnalytics {
+    /**
+     * Message displayed when no data is available.
+     * @type {string}
+     */
     NO_DATA_MSG = "No Data Yet...";
 
+    /**
+     * Creates an instance of DataAnalytics with initial empty data.
+     */
     constructor() {
         this.heartRate = {labels: [], values: []};
         this.steps = {labels: [], values: []};
@@ -12,6 +22,11 @@ export default class DataAnalytics {
         this.eeg = {labels: [], alpha: [], beta: [], gamma: [], delta: [], theta: []};
     }
 
+    /**
+     * Gets the analysis data for a specific field.
+     * @param {string} field - The field to get data for. Possible values are 'heartRate', 'steps', 'caloriesBurned', 'sleep', 'stressLevel', 'oxygenSaturation', 'bloodPressure', 'eeg'.
+     * @returns {Object|string} The data for the specified field or 'Unknown type' if the field is not recognized.
+     */
     getAnalysisData(field) {
         switch (field) {
             case 'heartRate':
@@ -35,6 +50,18 @@ export default class DataAnalytics {
         }
     }
 
+    /**
+     * Analyzes and updates the data with new chart data.
+     * @param {Object} chartsData - The data to analyze and update.
+     * @param {Object} chartsData.heartRate - The heart rate data.
+     * @param {Object} chartsData.steps - The steps data.
+     * @param {Object} chartsData.caloriesBurned - The calories burned data.
+     * @param {Object} chartsData.sleep - The sleep data.
+     * @param {Object} chartsData.stress - The stress level data.
+     * @param {Object} chartsData.oxygenSaturation - The oxygen saturation data.
+     * @param {Object} chartsData.bloodPressure - The blood pressure data.
+     * @param {Object} chartsData.EEG - The EEG data.
+     */
     analyzeData(chartsData) {
         this.heartRate = chartsData.heartRate;
         this.steps = chartsData.steps;
@@ -64,6 +91,13 @@ export default class DataAnalytics {
         };
     }
 
+    /**
+     * Gets a summary of the analysis data for a specific field within a time frame.
+     * @param {string} field - The field to get the summary for. Possible values are 'heartRate', 'steps', 'caloriesBurned', 'sleep', 'stressLevel', 'oxygenSaturation', 'bloodPressure', 'eeg'.
+     * @param {string|undefined} [startTime] - The start time of the time frame in ISO 8601 format.
+     * @param {string|undefined} [endTime] - The end time of the time frame in ISO 8601 format.
+     * @returns {string} The summary for the specified field or 'Unknown type' if the field is not recognized.
+     */
     getAnalysisSummary(field, startTime, endTime) {
         switch (field) {
             case 'heartRate':
@@ -89,6 +123,14 @@ export default class DataAnalytics {
         }
     }
 
+    /**
+     * Filters values by a specified time frame.
+     * @param {string|undefined} startTime - The start time of the time frame in ISO 8601 format.
+     * @param {string|undefined} endTime - The end time of the time frame in ISO 8601 format.
+     * @param {Array<string>} labels - The array of labels corresponding to the values.
+     * @param {Array<number>} values - The array of values to be filtered.
+     * @returns {Array<number>} The filtered values within the specified time frame.
+     */
     _filterDataByTimeFrame(startTime, endTime, labels, values) {
         if (startTime === undefined && endTime === undefined) {
             return values;
@@ -108,10 +150,21 @@ export default class DataAnalytics {
         }, []);
     }
 
+    /**
+     * Calculates the average of an array of values.
+     * @param {Array<number>} values - The array of values to calculate the average of.
+     * @returns {number} The average value.
+     */
     _calculateAverage(values) {
         return values.reduce((sum, value) => sum + value, 0) / values.length;
     }
 
+    /**
+     * Gets a summary of heart rate data within a time frame.
+     * @param {string|undefined} startTime - The start time of the time frame in ISO 8601 format.
+     * @param {string|undefined} endTime - The end time of the time frame in ISO 8601 format.
+     * @returns {string} The heart rate summary.
+     */
     _getHeartRateSummary(startTime, endTime) {
         const { labels, values } = this.heartRate;
 
@@ -129,6 +182,12 @@ export default class DataAnalytics {
                     : 'Your heart rate is normal. Keep maintaining a healthy lifestyle!';
     }
 
+    /**
+     * Gets a summary of steps data within a time frame.
+     * @param {string|undefined} startTime - The start time of the time frame in ISO 8601 format.
+     * @param {string|undefined} endTime - The end time of the time frame in ISO 8601 format.
+     * @returns {string} The steps summary.
+     */
     _getStepsSummary(startTime, endTime) {
         const { labels, values } = this.steps;
 
@@ -146,6 +205,12 @@ export default class DataAnalytics {
                     : 'You have a moderate activity level. Try to reach 10,000 steps daily for better health.';
     }
 
+    /**
+     * Gets a summary of calories burned data within a time frame.
+     * @param {string|undefined} startTime - The start time of the time frame in ISO 8601 format.
+     * @param {string|undefined} endTime - The end time of the time frame in ISO 8601 format.
+     * @returns {string} The calories burned summary.
+     */
     _getCaloriesSummary(startTime, endTime) {
         const { labels, values } = this.caloriesBurned;
 
@@ -163,6 +228,12 @@ export default class DataAnalytics {
                     : 'Your calorie burn is moderate. Consider adding more activity for health benefits.';
     }
 
+    /**
+     * Gets a summary of sleep data within a time frame.
+     * @param {string|undefined} startTime - The start time of the time frame in ISO 8601 format.
+     * @param {string|undefined} endTime - The end time of the time frame in ISO 8601 format.
+     * @returns {string} The sleep summary.
+     */
     _getSleepSummary(startTime, endTime) {
         if (this.sleep.values.length === 0 && this.sleep.valuesY1.length === 0)
             return this.NO_DATA_MSG;
@@ -181,6 +252,12 @@ export default class DataAnalytics {
         return `${durationSummary} ${qualitySummary}`;
     }
 
+    /**
+     * Gets a summary of stress level data within a time frame.
+     * @param {string|undefined} startTime - The start time of the time frame in ISO 8601 format.
+     * @param {string|undefined} endTime - The end time of the time frame in ISO 8601 format.
+     * @returns {string} The stress level summary.
+     */
     _getStressLevelSummary(startTime, endTime) {
         const { labels, values } = this.stressLevel;
 
@@ -198,6 +275,12 @@ export default class DataAnalytics {
                 : 'Your stress is at a moderate level. Monitor it to prevent it from rising.';
     }
 
+    /**
+     * Gets a summary of oxygen saturation data within a time frame.
+     * @param {string|undefined} startTime - The start time of the time frame in ISO 8601 format.
+     * @param {string|undefined} endTime - The end time of the time frame in ISO 8601 format.
+     * @returns {string} The oxygen saturation summary.
+     */
     _getOxygenSaturationSummary(startTime, endTime) {
         const { labels, values } = this.oxygenSaturation;
 
@@ -213,6 +296,12 @@ export default class DataAnalytics {
             : 'Your oxygen saturation is normal. Keep breathing easy!';
     }
 
+    /**
+     * Gets a summary of blood pressure data within a time frame.
+     * @param {string|undefined} startTime - The start time of the time frame in ISO 8601 format.
+     * @param {string|undefined} endTime - The end time of the time frame in ISO 8601 format.
+     * @returns {string} The blood pressure summary.
+     */
     _getBloodPressureSummary(startTime, endTime) {
         const { labels, systolic, diastolic } = this.bloodPressure;
 
@@ -230,6 +319,18 @@ export default class DataAnalytics {
             : 'Your blood pressure is in the normal range. Keep maintaining a heart-healthy lifestyle!';
     }
 
+    /**
+     * Gets a summary of EEG data within a time frame based on thresholds.
+     * @param {Object} thresholds - The threshold values for different EEG waves.
+     * @param {number} thresholds.alpha - The threshold for alpha waves.
+     * @param {number} thresholds.beta - The threshold for beta waves.
+     * @param {number} thresholds.gamma - The threshold for gamma waves.
+     * @param {number} thresholds.delta - The threshold for delta waves.
+     * @param {number} thresholds.theta - The threshold for theta waves.
+     * @param {string|undefined} startTime - The start time of the time frame in ISO 8601 format.
+     * @param {string|undefined} endTime - The end time of the time frame in ISO 8601 format.
+     * @returns {string} The EEG summary.
+     */
     _getEEGSummary(thresholds, startTime, endTime) {
         const { labels, alpha, beta, gamma, delta, theta } = this.eeg;
 
