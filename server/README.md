@@ -172,6 +172,7 @@ server/
 ## Key Functions
 
 **logger.js**
+
 | Method                     | Description                                             |
 |:---------------------------|:--------------------------------------------------------|
 | constructor(config)        | Creates an instance of Logger.                          |
@@ -180,6 +181,7 @@ server/
 
 
 **server.js**
+
 | Method                       | Description                                                 |
 |:-----------------------------|:------------------------------------------------------------|
 | constructor(config, logger)  | Creates an instance of Server.                              |
@@ -192,6 +194,7 @@ server/
 
 
 **vercel-setup.js**
+
 | Method                     | Description                                                       |
 |:---------------------------|:------------------------------------------------------------------|
 | setupVercel()              | Sets up the configuration directory based on the environment.     |
@@ -199,6 +202,7 @@ server/
 
 
 **controllers/auth.controller.js**
+
 | Method                            | Description                                                                           |
 |:----------------------------------|:--------------------------------------------------------------------------------------|
 | constructor(config, logger)       | Creates an instance of AuthController.                                                |
@@ -211,6 +215,7 @@ server/
 
 
 **controllers/user.controller.js**
+
 | Method                                     | Description                                        |
 |:-------------------------------------------|:---------------------------------------------------|
 | constructor(config, logger, deviceFactory) | Creates an instance of UserController.             |
@@ -224,6 +229,7 @@ server/
 
 
 **database/migrations/database-curator.js**
+
 | Method              | Description                                                   |
 |---------------------|:--------------------------------------------------------------|
 | deleteCollections() | Connects to MongoDB and deletes specified collections.        |
@@ -231,6 +237,7 @@ server/
 
 
 **database/migrations/migrate-demo-data-to-db.js**
+
 | Method           | Description                                                             |
 |------------------|:------------------------------------------------------------------------|
 | migrateData()    | Connects to MongoDB, reads JSON files, and migrates data to MongoDB.    |
@@ -238,6 +245,7 @@ server/
 
 
 **database/connect.js**
+
 | Method                | Description                                                          |
 |:----------------------|:---------------------------------------------------------------------|
 | connect(url, logger)  | Connects to a MongoDB database and switches to a specified database. |
@@ -245,6 +253,7 @@ server/
 
 
 **enums/supported-devices.js**
+
 | Method                          | Description                                                     |
 |:--------------------------------|:----------------------------------------------------------------|
 | getSupportedDeviceBrands()      | Returns an array of supported device brands.                    |
@@ -253,6 +262,7 @@ server/
 
 
 **middlewares/auth.middleware.js**
+
 | Method                            | Description                                      |
 |:----------------------------------|:-------------------------------------------------|
 | constructor(config, logger)       | Creates an instance of AuthMiddleware.           |
@@ -261,6 +271,7 @@ server/
 
 
 **middlewares/errorHandler.middleware.js**
+
 | Method                            | Description                                  |
 |:----------------------------------|:---------------------------------------------|
 | errorHandler(err, req, res, next) | Middleware function for handling errors.     |
@@ -268,6 +279,7 @@ server/
 
 
 **middlewares/rateLimiters.middleware.js**
+
 | Method                    | Description                                  |
 |:--------------------------|:---------------------------------------------|
 | limiter                   | Rate limiter for general API requests.       |
@@ -277,6 +289,7 @@ server/
 
 
 **routes/auth.routes.js**
+
 | Method                                      | Description                                                                   |
 |:--------------------------------------------|:------------------------------------------------------------------------------|
 | constructor(authController, authMiddleware) | Creates an instance of AuthRouter.                                            |
@@ -286,6 +299,7 @@ server/
 
 
 **routes/user.routes.js**
+
 | Method                | Description                                                                                  |
 |:----------------------|:---------------------------------------------------------------------------------------------|
 | constructor()         | Initializes the router, sets up controllers and middleware, and registers routes.            |
@@ -295,6 +309,7 @@ server/
 
 
 **services/devices/apple.js**
+
 | Method                      | Description                                                         |
 |:----------------------------|:--------------------------------------------------------------------|
 | constructor()               | Represents an Apple Watch device extending the Device class.        |
@@ -305,6 +320,7 @@ server/
 
 
 **services/devices/device.js**
+
 | Method                      | Description                                                                                       |
 |:-----------------------------------------------------------------|:-------------------------------------------------------------|
 | constructor(config, logger, id, name, lastSeeded)                | Initializes the device with given details.                   |
@@ -322,6 +338,7 @@ server/
 
 
 **services/devices/dreem.js**
+
 | Method                      | Description                                                     |
 |:----------------------------|:----------------------------------------------------------------|
 | constructor()               | Represents a Dreem Headband extending the Device class.         |
@@ -332,6 +349,7 @@ server/
 
 
 **services/devices/fitbit.js**
+
 | Method                      | Description                                                        |
 |:----------------------------|:-------------------------------------------------------------------|
 | constructor()               | Represents a Fitbit Bracelet extending the Device class.           |
@@ -342,6 +360,7 @@ server/
 
 
 **services/devices/muse.js**
+
 | Method                      | Description                                                        |
 |:----------------------------|:-------------------------------------------------------------------|
 | constructor()               | Represents a Muse Headband extending the Device class.             |
@@ -354,6 +373,7 @@ server/
 **services/devices/samsung.js**
 
 SamsungWatch:
+
 | Method                      | Description                                                        |
 |:----------------------------|:-------------------------------------------------------------------|
 | constructor()               | Represents a Samsung Watch device extending the Device class.      |
@@ -362,6 +382,7 @@ SamsungWatch:
 | getFields()                 | Returns an array of field names specific to the Samsung Watch.     |
 
 SamsungBracelet:
+
 | Method                      | Description                                                        |
 |:----------------------------|:-------------------------------------------------------------------|
 | constructor()               | Represents a Samsung Bracelet device extending the Device class.   |
@@ -374,6 +395,7 @@ SamsungBracelet:
 **services/devices/xiaomi.js**
 
 XiaomiWatch:
+
 | Method                      | Description                                                        |
 |:----------------------------|:-------------------------------------------------------------------|
 | constructor()               | Represents a Xiaomi Watch device extending the Device class.       |
@@ -382,6 +404,7 @@ XiaomiWatch:
 | getFields()                 | Returns an array of field names specific to the Xiaomi Watch.      |
 
 XiaomiBracelet:
+
 | Method                      | Description                                                        |
 |:----------------------------|:-------------------------------------------------------------------|
 | constructor()               | Represents a Xiaomi Bracelet device extending the Device class.    |
@@ -392,6 +415,7 @@ XiaomiBracelet:
 
 
 **services/deviceFactory.js**
+
 | Method                                      | Description                                                        |
 |:--------------------------------------------|:-------------------------------------------------------------------|
 | constructor(config, logger)                 | Initializes the DeviceFactory with configuration and a logger.     |
@@ -400,6 +424,7 @@ XiaomiBracelet:
 
 
 **services/deviceStructureConverter.js**
+
 | Method                                     | Description                                                                 |
 |:-------------------------------------------|:----------------------------------------------------------------------------|
 | constructor()                              | Initializes the DeviceStructureConverter.                                   |
@@ -410,6 +435,7 @@ XiaomiBracelet:
 
 
 **services/healthStory.js**
+
 | Method                      | Description                                                             |
 |:----------------------------|:------------------------------------------------------------------------|
 | constructor(healthStats)    | Initializes the HealthStory with health statistics.                     |
@@ -419,6 +445,7 @@ XiaomiBracelet:
 
 
 **services/unifiedStructureConverter.js**
+
 | Method                             | Description                                                                 |
 |:-----------------------------------|:----------------------------------------------------------------------------|
 | constructor(deviceInstance)        | Initializes the UnifiedStructureConverter with a device instance.           |
@@ -429,6 +456,7 @@ XiaomiBracelet:
 
 
 **utils/expirationDateConverter.js**
+
 | Method                                       | Description                                          |
 |:---------------------------------------------|:-----------------------------------------------------|
 | convertExpirationDateToMilliseconds(timeStr) | Converts a time duration string into milliseconds.   |
@@ -436,6 +464,7 @@ XiaomiBracelet:
 
 
 **utils/mathUtils.js**
+
 | Method                            | Description                                             |
 |:----------------------------------|:--------------------------------------------------------|
 | calculateOverallAverage(averages) | Calculates the overall average of an array of numbers.  |
@@ -443,6 +472,7 @@ XiaomiBracelet:
 
 
 **utils/sleepTranslation.js**
+
 | Method                                | Description                                                                     |
 |:--------------------------------------|:--------------------------------------------------------------------------------|
 | translateSleepQualityToIndex(quality) | Converts a sleep quality string to a corresponding numerical index.             |
