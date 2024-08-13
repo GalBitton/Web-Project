@@ -125,14 +125,14 @@ export default class Server {
 
         this._hostname = process.env.VERCEL_URL || process.env.HOSTNAME || 'localhost';
 
-        const swaggerDocument = YAML.load(path.join(__dirname, './docs/swagger.yaml'));
-        swaggerDocument.servers = [
+        const specs = YAML.load(path.join(__dirname, '..', 'server', 'docs', 'swagger.yaml'));
+        specs.servers = [
             {
                 url: `http://${this._hostname}:${this._port}`,
                 description: `${process.env.NODE_ENV} server`,
             },
         ];
-        this._app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+        this._app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
     }
 
     /**
