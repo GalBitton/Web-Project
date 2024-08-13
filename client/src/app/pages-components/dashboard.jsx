@@ -427,7 +427,7 @@ const Dashboard = () => {
 
             <div className="flex flex-col justify-center items-center p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg w-full">
                 {/* Button Section */}
-                <div className="w-full sm:w-[80rem] flex justify-center mb-8">
+                <div className="w-full flex justify-center mb-8">
                     <button
                         className="bg-green-600 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-400 text-white dark:text-black rounded w-full w-[16rem] sm:w-[8rem] sm:h-[4rem]"
                         onClick={handleHealthStory}
