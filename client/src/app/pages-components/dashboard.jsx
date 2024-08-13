@@ -376,17 +376,18 @@ const Dashboard = () => {
                 <p className="text-gray-700 dark:text-slate-500">Inspect your health charts and analytics</p>
             </div>
 
-            <div
-                className="flex-container flex-wrap bg-gray-100 dark:bg-slate-900 ml-4 mr-4 rounded-lg shadow-lg pb-5 mb-4">
+            <div>
                 <LoadingErrorComponent loading={devicesLoading} error={devicesError}/>
                 <DeviceList
+                    selectedBrand={selectedBrand}
+                    selectedType={selectedType}
                     linkedDevices={linkedDevices}
                     selectedItem={selectedItem}
                     setSelectedItem={setSelectedItem}
                     handleLinkDevice={handleLinkDevice}
                     unlinkedDevices={unlinkedDevices}
                 />
-                <DeviceSummary selectedBrand={selectedBrand} selectedType={selectedType}/>
+                
             </div>
 
             <div className="grid grid-cols-12 gap-4 p-4">
@@ -424,7 +425,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            <div className="flex justify-center m-4 p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg flex-grow">
+            <div className="flex justify-center mr-4 ml-4 p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg flex-grow">
                 <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-8 w-full sm:w-[60rem]">
                     <button
                         className="unlink bg-red-500 hover:bg-red-700 dark:bg-red-300 dark:hover:bg-red-500 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem]"

@@ -49,7 +49,7 @@ const ChartCarousel = ({ graphs, currentIndex, setCurrentIndex }) => {
             }
         >
             {graphs.map((graph, index) => (
-                <div key={index} className="flex mb-36 justify-center">
+                <div key={index} className="flex mb-32 justify-center">
                     <ResponsiveChartComponent
                         title={graph.title}
                         chartId={graph.chartId}
