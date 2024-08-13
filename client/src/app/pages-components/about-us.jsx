@@ -1,6 +1,10 @@
 import TeamMemberCard from "@/components/cards/teammembercard";
 import pkg from '../../../package.json'
 
+/**
+ * AboutUs component for displaying information about the company or organization.
+ * @component
+ */
 const AboutUs = () => {
     const teamMembers = [
         {
