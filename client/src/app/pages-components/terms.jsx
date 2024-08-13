@@ -1,3 +1,9 @@
+/**
+ * TermsOfService component that displays the terms of use for the service.
+ * 
+ * @component
+ * @returns {JSX.Element} The rendered TermsOfService component.
+ */
 const TermsOfService = () => {
     return (
         <div className="terms-of-service-container">
