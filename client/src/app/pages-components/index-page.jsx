@@ -3,7 +3,22 @@ import serviceData from "../../../package.json";
 import TextCard from "../../components/cards/textcard.jsx";
 import styled from 'styled-components';
 
+/**
+ * IndexPage component displays the landing page of the application with a background image,
+ * introductory text, a list of features in text cards, and logos of supported companies.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <IndexPage />
+ * )
+ */
 const IndexPage = () => {
+    /**
+     * A styled image component used for the background of the landing page.
+     * @constant
+     * @type {React.ComponentType<React.ImgHTMLAttributes<HTMLImageElement>>}
+     */
     const BackgroundImage = styled.img`
         position: absolute;
         width: 1445px;
@@ -20,6 +35,11 @@ const IndexPage = () => {
         }
     `;
 
+    /**
+     * An array of objects representing the content for text cards on the landing page.
+     * @constant
+     * @type {Array<{key: number, text: string}>}
+     */
     const cardContent = [
         {
             key: 1,
@@ -35,6 +55,11 @@ const IndexPage = () => {
         }
     ];
 
+    /**
+     * An array of objects representing the supported companies and their logos.
+     * @constant
+     * @type {Array<{name: string, logoLight?: string, logoDark?: string, logo?: string}>}
+     */
     const companies = [
         { name: "Apple", logoLight: "/assets/companies/apple-logo-light.svg", logoDark: "/assets/companies/apple-logo-dark.svg" },
         { name: "Fitbit", logo: "/assets/companies/fitbit-logo.svg" },
