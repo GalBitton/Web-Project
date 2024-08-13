@@ -13,6 +13,9 @@ jest.mock('jspdf', () => {
     return { jsPDF: jsPDFMock };
 });
 
+/**
+ * Tests for the Exporter class.
+ */
 describe('Exporter', () => {
     let exporter;
 
@@ -20,6 +23,9 @@ describe('Exporter', () => {
         exporter = new Exporter();
     });
 
+    /**
+     * Tests the exportToCSV method of the Exporter class.
+     */
     test('exportToCSV returns correct CSV data', () => {
         const labels = ['Label1', 'Label2'];
         const datasets = [{ label: 'Dataset1', data: [10, 20] }];
