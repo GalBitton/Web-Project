@@ -21,7 +21,7 @@ const ChartCarousel = ({ graphs, currentIndex, setCurrentIndex }) => {
             showIndicators={false}
             showStatus={false}
             infiniteLoop={true}
-            swipeable={true}
+            swipeable={false}
             useKeyboardArrows={true}
             onChange={(index) => setCurrentIndex(index)}
             className="w-full max-w-[100vw]"
