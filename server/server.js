@@ -50,39 +50,15 @@ export default class Server {
     }
 
     /**
-     * Returns CORS options based on the environment.
+     * Returns CORS options.
      * @private
      * @returns {Object} - CORS options.
      */
     _getCorsOptions() {
-        if (process.env.NODE_ENV === 'production') {
-            const allowedOrigins = container.get("vercelAllowedOrigins");
-
-            this._app.use((req, res, next) => {
-                const origin = req.get('origin');
-                if (allowedOrigins.includes(origin)) {
-                    res.header('Access-Control-Allow-Origin', origin);
-                }
-                next();
-            });
-
-            return {
-                // origin: (origin, callback) => {
-                //     if (allowedOrigins.includes(origin) || !origin) {
-                //         callback(null, true);
-                //     } else {
-                //         callback(new Error('Not allowed by CORS'));
-                //     }
-                // },
-                origin: true,
-                credentials: true,
-            };
-        } else {
-            return {
-                origin: true,
-                credentials: true,
-            };
-        }
+        return {
+            origin: true,
+            credentials: true,
+        };
     }
 
     /**
@@ -123,6 +99,7 @@ export default class Server {
 
         // Swagger
         this._hostname = process.env.VERCEL_URL || process.env.HOSTNAME || 'localhost';
+        const options = { customCssUrl: '/public/css/swagger-ui.css',};
         const specs = YAML.load(path.join(process.cwd(), 'public', 'docs', 'swagger.yaml'));
         specs.servers = [
             {
@@ -130,7 +107,7 @@ export default class Server {
                 description: `${process.env.NODE_ENV} server`,
             },
         ];
-        this._app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+        this._app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, options));
     }
 
     /**
