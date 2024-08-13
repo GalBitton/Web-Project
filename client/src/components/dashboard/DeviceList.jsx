@@ -3,7 +3,7 @@ import DeviceCard from '@/components/cards/devicecard';
 import { Carousel } from 'react-responsive-carousel';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-
+import DeviceSummary from './DeviceSummary';
 /**
  * Displays a list of linked devices in a carousel format and provides functionality to link new devices.
  * 
@@ -17,7 +17,7 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
  * @param {Array<Object>} [props.unlinkedDevices=[]] - The list of unlinked devices available for linking.
  * @returns {React.ReactElement} The rendered component.
  */
-const DeviceList = ({ linkedDevices = [], selectedItem, setSelectedItem, handleLinkDevice, unlinkedDevices = [] }) => {
+const DeviceList = ({ linkedDevices = [], selectedItem, selectedBrand, selectedType, setSelectedItem, handleLinkDevice, unlinkedDevices = [] }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [selectedDeviceToLink, setSelectedDeviceToLink] = useState('');
 
@@ -39,7 +39,7 @@ const DeviceList = ({ linkedDevices = [], selectedItem, setSelectedItem, handleL
     };
 
     return (
-        <div className="flex-container flex-wrap bg-gray-100 dark:bg-slate-900 ml-4 mr-4 rounded-lg shadow-lg pb-5 mb-4">
+        <div className="flex-container flex-wrap bg-gray-100 dark:bg-slate-900 ml-4 mr-4 rounded-lg shadow-lg pb-5">
             <div className="relative flex justify-center items-center">
                 <div className='flex items-center mb-4'>
                     <h1 className="text-3xl text-black dark:text-white mt-8">Linked Devices</h1>
@@ -129,6 +129,9 @@ const DeviceList = ({ linkedDevices = [], selectedItem, setSelectedItem, handleL
                         </Carousel>
                     </div>
                 </div>
+            </div>
+            <div>
+            <DeviceSummary selectedBrand={selectedBrand} selectedType={selectedType}/>
             </div>
         </div>
     );

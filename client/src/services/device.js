@@ -44,11 +44,14 @@ export default class Device {
     /**
      * Gets a summary of the analysis data for a specific field within a time frame.
      * @param {string} field - The field to get the summary for. Possible values are 'heartRate', 'steps', 'caloriesBurned', 'sleep', 'stressLevel', 'oxygenSaturation', 'bloodPressure', 'eeg'.
-     * @param {string|undefined} [startTime] - The start time of the time frame in ISO 8601 format.
-     * @param {string|undefined} [endTime] - The end time of the time frame in ISO 8601 format.
      * @returns {string} The summary for the specified field or 'Unknown type' if the field is not recognized.
      */
     getAnalysisSummary(field) {
         return this.analytics.getAnalysisSummary(field);
+    }
+
+    getHealthStory(){
+        const apiService = new APIService({ action: 'getHealthStory' });
+        return apiService.execute();
     }
 }
