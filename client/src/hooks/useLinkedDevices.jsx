@@ -2,6 +2,25 @@ import { useState, useEffect } from 'react';
 import APIService from '@/services/api/APIService';
 import Device from '@/services/device.js'; // Import the Device class
 
+/**
+ * Custom hook to manage linked devices, including linking and unlinking devices.
+ *
+ * @param {Object} params - Parameters for the hook.
+ * @param {Array} params.devicesData - Array of device data to initialize linked devices.
+ * @param {Array} params.supportedDevices - Array of supported devices to determine unlinked devices.
+ * @param {Function} params.setLinkedDevices - Function to update the state of linked devices.
+ * @param {Function} params.setUnlinkedDevices - Function to update the state of unlinked devices.
+ * @param {Function} params.setSelectedItem - Function to update the selected item index.
+ * @param {Function} params.setSelectedBrand - Function to update the selected brand.
+ * @param {Function} params.setSelectedType - Function to update the selected type.
+ * @param {Function} params.setCurrentDevice - Function to update the current device.
+ * @param {Function} params.updateCharts - Function to update charts with the new device.
+ * @param {number} params.selectedItem - Index of the selected item.
+ *
+ * @returns {Object} - Contains methods to link and unlink devices.
+ * @returns {Function} handleLinkDevice - Function to link a device by brand and type.
+ * @returns {Function} handleUnlinkDevice - Function to unlink a device by its ID.
+ */
 const useLinkedDevices = ({
                               devicesData,
                               supportedDevices,
