@@ -1,5 +1,16 @@
 import { FaLinkedin } from 'react-icons/fa';
 
+/**
+ * TeamMemberCard component displays a card for a team member with an image, name, role, and a LinkedIn link.
+ *
+ * @component
+ * @param {Object} props - The properties for the TeamMemberCard.
+ * @param {string} props.name - The name of the team member.
+ * @param {string} props.role - The role of the team member.
+ * @param {string} props.image - The source URL for the team member's image.
+ * @param {string} props.link - The URL to the team member's LinkedIn profile.
+ * @returns {JSX.Element} The rendered TeamMemberCard component.
+ */
 const TeamMemberCard = ({ name, role, image, link }) => (
     <div className="relative block rounded-lg shadow-lg overflow-hidden group pt-[100%]">
         <div></div>
