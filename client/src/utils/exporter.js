@@ -1,7 +1,17 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
+/**
+ * Class representing an Exporter for generating CSV and PDF files.
+ */
 export default class Exporter {
+    /**
+     * Exports data to a CSV file and triggers a download.
+     *
+     * @param {string[]} labels - An array of labels to be used as the first column in the CSV.
+     * @param {Object[]} datasets - An array of dataset objects, each with a label and data.
+     * @param {string} fileName - The name of the CSV file to be downloaded.
+     */
     exportToCSV(labels, datasets, fileName) {
         let csvContent = "data:text/csv;charset=utf-8,";
 
@@ -30,6 +40,13 @@ export default class Exporter {
         document.body.removeChild(link);
     }
 
+    /**
+     * Exports data to a PDF file and triggers a download.
+     *
+     * @param {string[]} labels - An array of labels to be used as the first column in the PDF table.
+     * @param {Object[]} datasets - An array of dataset objects, each with a label and data.
+     * @param {string} fileName - The name of the PDF file to be downloaded.
+     */
     exportToPDF(labels, datasets, fileName) {
         const doc = new jsPDF();
 
