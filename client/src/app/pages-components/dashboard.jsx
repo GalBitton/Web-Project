@@ -429,7 +429,7 @@ const Dashboard = () => {
                 {/* Button Section */}
                 <div className="w-full flex justify-center mb-8">
                     <button
-                        className="bg-green-600 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-400 text-white dark:text-black rounded w-full w-[16rem] sm:w-[8rem] sm:h-[4rem]"
+                        className="bg-green-600 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-400 text-white dark:text-black rounded w-full sm:w-[8rem] sm:h-[4rem]"
                         onClick={handleHealthStory}
                     >
                         View Analysis
