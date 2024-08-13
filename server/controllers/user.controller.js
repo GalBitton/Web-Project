@@ -424,13 +424,18 @@ class UserController {
             }
 
             // Validate and structure each data point within the batch
-            return batch.map(dataPoint => {
+            const structuredBatch = batch.map(dataPoint => {
                 const { timestamp, ...dataStats } = dataPoint;
                 return {
                     timestamp,
                     data: { ...dataStats }
                 };
             });
+
+            // Sort each batch by timestamp from oldest to most recent
+            structuredBatch.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            return structuredBatch;
         });
 
         return validBatches;

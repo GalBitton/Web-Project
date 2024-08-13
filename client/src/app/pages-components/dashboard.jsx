@@ -163,9 +163,9 @@ const Dashboard = () => {
                 {
                     label: 'Sleep Duration (hours)',
                     data: chartsData.sleep?.values || [],
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    backgroundColor: 'rgba(54, 162, 235, 1)',
                     borderColor: 'rgba(54, 162, 235, 1)',
-                    type: 'bar',
+                    type: 'line',
                     yAxisID: 'y'
                 },
                 {

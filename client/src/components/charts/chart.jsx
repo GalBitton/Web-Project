@@ -86,7 +86,7 @@ const ChartComponent = ({ title, chartId, labels, datasets, summary = "" }) => {
                         callbacks: {
                             afterLabel: function (tooltipItem) {
                                 if (tooltipItem.datasetIndex === 1) {
-                                    const qualityLabels = ['', 'Excellent', 'Good', 'Fair', 'Poor', 'Very Poor'];
+                                    const qualityLabels = ['Unknown', 'Excellent', 'Good', 'Fair', 'Poor', 'Very Poor'];
                                     return 'Quality: ' + qualityLabels[tooltipItem.raw];
                                 }
                             }
@@ -145,13 +145,13 @@ const ChartComponent = ({ title, chartId, labels, datasets, summary = "" }) => {
                     className="bg-indigo-400 dark:bg-slate-600 hover:bg-indigo-700 dark:hover:bg-slate-700 text-white font-bold py-2 px-4 rounded transition duration-300"
                     onClick={() => exporter.exportToCSV(labels, datasets, title)}
                 >
-                    <img src="assets/export-csv.svg" alt="Export to CSV" />
+                    <img src="/assets/export-csv.svg" alt="Export to CSV" />
                 </button>
                 <button
                     className="bg-indigo-400 dark:bg-slate-600 hover:bg-indigo-700 dark:hover:bg-slate-700 text-white font-bold py-2 px-4 rounded transition duration-300"
                     onClick={() => exporter.exportToPDF(labels, datasets, title)}
                 >
-                    <img src="assets/export-pdf.svg" alt="Export to PDF" />
+                    <img src="/assets/export-pdf.svg" alt="Export to PDF" />
                 </button>
             </div>
         </div>

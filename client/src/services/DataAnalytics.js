@@ -73,29 +73,22 @@ export default class DataAnalytics {
         this.heartRate = chartsData.heartRate;
         this.steps = chartsData.steps;
         this.caloriesBurned = chartsData.caloriesBurned;
-        this.sleep = {
-            labels: chartsData.sleep.labels,
-            values: chartsData.sleep.values.map(sp => sp.duration),
-            valuesY1: chartsData.sleep.values.map(sp => sp.quality)
-        }
-        this.stressLevel = {
-            labels: chartsData.stressLevel.labels,
-            values: chartsData.stressLevel.values.map(stress => stress.score)
-        };
+        chartsData.sleep.labels.forEach((label, index) => {
+            const value = chartsData.sleep.values[index];
+            const valueY1 = chartsData.sleep.valuesY1[index];
+
+            // Check if both values and valuesY1 are non-zero
+            if (value !== 0 && valueY1 !== 0) {
+                this.sleep.labels.push(label);
+                this.sleep.values.push(value);
+                this.sleep.valuesY1.push(valueY1);
+            }
+        });
+
+        this.stressLevel = chartsData.stressLevel;
         this.oxygenSaturation = chartsData.oxygenSaturation;
-        this.bloodPressure = {
-            labels: chartsData.bloodPressure.labels,
-            systolic: chartsData.bloodPressure.systolic,
-            diastolic: chartsData.bloodPressure.diastolic
-        };
-        this.eeg = {
-            labels: chartsData.eeg.labels,
-            alpha: chartsData.eeg.alpha,
-            beta: chartsData.eeg.beta,
-            gamma: chartsData.eeg.gamma,
-            delta: chartsData.eeg.delta,
-            theta: chartsData.eeg.theta
-        };
+        this.bloodPressure = chartsData.bloodPressure
+        this.eeg = chartsData.eeg;
     }
 
     /**

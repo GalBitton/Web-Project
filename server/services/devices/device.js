@@ -68,9 +68,10 @@ export default class Device {
      * @param {string} field - The field name to compute the value for.
      * @param {number} lastValue - The last generated value for the field.
      * @param {boolean} accumulate - Whether the value should accumulate over time.
+     * @param timestamp - The timestamp for the current data point.
      * @returns {number} - The computed value.
      */
-    computeValueForField(field, lastValue = null, accumulate = false) {
+    computeValueForField(field, lastValue = null, accumulate = false, timestamp) {
         const { valueRanges, commonFieldValueMaxDeviations } = this._config;
         const range = valueRanges[field] || { min: 0, max: 1 }; // Default range if not specified
         const deviation = commonFieldValueMaxDeviations[field] || 0;
@@ -78,11 +79,13 @@ export default class Device {
         let newValue;
 
         if (accumulate && lastValue !== null) {
-            // Accumulate value with deviation
+            const totalMinutesInDay = 24 * 60;
+            const currentMinutes = timestamp.getHours() * 60 + timestamp.getMinutes();
+            const progress = currentMinutes / totalMinutesInDay;
+            const maxAllowedValue = range.min + progress * (range.max - range.min);
             const deviationAmount = Math.random() * deviation;
-            newValue = lastValue + deviationAmount;
+            newValue = Math.min(lastValue + deviationAmount, maxAllowedValue);
         } else {
-            // Independent value generation
             newValue = Math.random() * (range.max - range.min) + range.min;
         }
 
@@ -125,19 +128,28 @@ export default class Device {
         };
     }
 
-    generateRandomValueForNestedField(mappingValue, lastEntry = {}, generateSleep = false) {
+    /**
+     * @method generateRandomValueForNestedField
+     * @description Generates random values for nested fields like 'sleep' or 'stress'.
+     * @param {Object} mappingValue - The mapping value object.
+     * @param {Object} lastEntry - The last entry for reference.
+     * @param {boolean} generateSleep - Whether to generate sleep data.
+     * @param timestamp - The timestamp for the current data point.
+     * @returns {Object} - The object containing generated values for nested fields.
+     */
+    generateRandomValueForNestedField(mappingValue, lastEntry = {}, generateSleep = false, timestamp) {
         const randomValues = {};
 
         Object.keys(mappingValue).forEach(subField => {
-            if (generateSleep && subField === 'duration' || subField === 'quality') {
-                // If we're generating sleep, skip further processing here; it's handled in generateSleepData.
+            if (generateSleep && (subField === 'duration' || subField === 'quality')) {
+                // Skip generating individual sleep fields here; it's handled by generateSleepData.
                 return;
             }
-            const fieldPath = mappingValue[subField];
+
             const lastValue = lastEntry[subField] !== undefined ? lastEntry[subField] : null;
             const accumulate = ['caloriesBurned', 'steps'].includes(subField); // Accumulate for these fields
 
-            randomValues[subField] = this.computeValueForField(subField, lastValue, accumulate);
+            randomValues[subField] = this.computeValueForField(mappingValue[subField], lastValue, accumulate, timestamp);
         });
 
         return randomValues;
@@ -147,14 +159,14 @@ export default class Device {
     /**
      * @method generateRandomValue
      * @description Generates random values for the fields based on configuration.
-     * @param {string} deviceType - The type of the device.
      * @param {Object} fieldMappings - The field mappings for the device.
      * @param {Object} lastEntry - The last entry generated, to use as a baseline for new values.
      * @param {boolean} generateSleep - Whether to generate sleep data (used once per day).
+     * @param timestamp - The timestamp for the current data point.
      * @returns {Object} - The object containing all generated values.
      */
-    generateRandomValue(deviceType, fieldMappings, lastEntry = {}, generateSleep = false) {
-        const deviceFields = fieldMappings[deviceType];
+    generateRandomValue(fieldMappings, lastEntry = {}, generateSleep = false, timestamp) {
+        const deviceFields = fieldMappings[this.name];
         const randomValues = {};
 
         Object.keys(deviceFields).forEach(field => {
@@ -163,38 +175,62 @@ export default class Device {
                 // Handle nested fields like sleep, stress, etc.
                 if (field === 'sleep' && generateSleep) {
                     randomValues[field] = this.generateSleepData();
-                } else {
-                    randomValues[field] = this.generateRandomValueForNestedField(mappingValue, lastEntry[field] || {}, generateSleep);
+                    return;
+                } else if (field === 'sleep' && !generateSleep) {
+                    // Skip sleep generation completely if it's not sleep time.
+                    return;
                 }
+                randomValues[field] = this.generateRandomValueForNestedField(mappingValue, lastEntry[field] || {}, generateSleep, timestamp);
             } else {
                 const lastValue = lastEntry[field] !== undefined ? lastEntry[field] : null;
                 const accumulate = ['caloriesBurned', 'steps'].includes(field); // Accumulate for these fields
 
-                randomValues[field] = this.computeValueForField(field, lastValue, accumulate);
+                randomValues[field] = this.computeValueForField(field, lastValue, accumulate, timestamp);
             }
         });
 
         return randomValues;
     }
 
+    /**
+     * @method generateDataBatch
+     * @description Generates a batch of data points.
+     * @param {number} batchStart - The start index for the batch.
+     * @param {number} batchEnd - The end index for the batch.
+     * @param {number} intervalMinutes - The interval in minutes between data points.
+     * @returns {Array} - The array of generated data points.
+     */
     async generateDataBatch(batchStart, batchEnd, intervalMinutes) {
         const now = new Date();
         const data = [];
-        const nightHours = [22, 23, 0, 1, 2, 3, 4, 5, 6, 7];  // 10 PM to 7 AM
+        const nightHours = [22, 23, 0, 1, 2, 3, 4, 5, 6, 7, 8];  // 10 PM to 8 AM
         const dayOfWeek = now.getDay();  // 0 = Sunday, 6 = Saturday
-        const isAfternoonNap = (dayOfWeek === 5 && Math.random() < 0.14);  // Approx. once a week nap on Friday
+        const isAfternoonNap = (dayOfWeek === 5 && Math.random() < 0.33);  // Approx. once a week nap on Friday
 
         let sleepDataGenerated = false;
+        let lastSleepDate = null;
         const availableFields = this.getFields();
 
         for (let i = batchStart; i < batchEnd; i++) {
             const timestamp = new Date(now.getTime() - (i + 1) * intervalMinutes * 60 * 1000);
             const currentHour = timestamp.getHours();
+            const currentDate = timestamp.getDate();
             const isSleepingTime = nightHours.includes(currentHour) || isAfternoonNap;
+
+            // Reset sleepDataGenerated for each new day
+            if (lastSleepDate !== currentDate) {
+                sleepDataGenerated = false;
+                lastSleepDate = currentDate;
+            }
+
+            // Reset sleepDataGenerated for each night period
+            if (isSleepingTime && !sleepDataGenerated) {
+                sleepDataGenerated = false;
+            }
 
             // Generate values based on the device's fields
             const lastEntry = i === 0 ? {} : data[i - 1];
-            const entry = this.generateRandomValue(this.name, fieldMappings, lastEntry, !sleepDataGenerated && isSleepingTime);
+            const entry = this.generateRandomValue(fieldMappings, lastEntry, !sleepDataGenerated && isSleepingTime, timestamp);
 
             if (isSleepingTime && !sleepDataGenerated) {
                 // Ensure fields that shouldn’t be active during sleep are set to 0 or inactive
@@ -212,7 +248,7 @@ export default class Device {
                     };
                 }
                 if (availableFields.includes('heartRate') && !entry.heartRate) {
-                    entry.heartRate = this.computeValueForField('heartRate', 60);  // Assume a stable low heart rate during sleep
+                    entry.heartRate = this.computeValueForField('heartRate', 60, false, timestamp);  // Assume a stable low heart rate during sleep
                 }
                 sleepDataGenerated = true;
             }
@@ -223,7 +259,6 @@ export default class Device {
 
         return data;
     }
-
 
     /**
      * @method seedDatabase

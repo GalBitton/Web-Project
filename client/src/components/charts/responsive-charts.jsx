@@ -24,27 +24,83 @@ const ResponsiveChartComponent = ({ title, chartId, labels, datasets, summary })
     const chartRef = useRef(null);
     const exporter = new Exporter(); // Instantiate the Exporter
 
+    // Quality Mapping
+    const qualityMapping = {
+        "Unknown": 0,
+        "Very Poor": 1,
+        "Poor": 2,
+        "Fair": 3,
+        "Good": 4,
+        "Very Good": 5,
+        "Excellent": 6
+    };
+
     useEffect(() => {
         const ctx = chartRef.current.getContext('2d');
+
+        const reversedLabels = [...labels].reverse();
+        const reversedDatasets = datasets.map(dataset => {
+            // If the dataset uses y1 axis, map the qualitative values to numeric equivalents
+            if (dataset.yAxisID === 'y1') {
+                return {
+                    ...dataset,
+                    data: dataset.data.map(value => qualityMapping[value] || 0).reverse()
+                };
+            }
+            return {
+                ...dataset,
+                data: [...dataset.data].reverse()
+            };
+        });
+
+        const scalesConfig = {
+            x: {
+                type: 'category',
+            },
+            y: {
+                beginAtZero: true,
+                    min: 0, // Prevent Y-axis from going below zero
+                    position: 'left',
+                    title: {
+                    display: true,
+                        text: 'Primary Y axis',
+                },
+            }
+        };
+
+        if (datasets.length > 1) {
+            scalesConfig.y1 = {
+                beginAtZero: true,
+                    min: 0,
+                    max: 6,
+                    position: 'right',
+                    grid: {
+                    drawOnChartArea: false, // prevent y1 grid lines from appearing on the chart
+                },
+                title: {
+                    display: true,
+                        text: 'Secondary Y axis',
+                },
+                ticks: {
+                    // Display the original string labels instead of the numeric values
+                    callback: function(value) {
+                        return Object.keys(qualityMapping).find(key => qualityMapping[key] === value);
+                    }
+                }
+            }
+        }
+
 
         const chartInstance = new Chart(ctx, {
             type: datasets[0].type,
             data: {
-                labels: labels,
-                datasets: datasets
+                labels: reversedLabels,
+                datasets: reversedDatasets
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        type: 'category',
-                    },
-                    y: {
-                        beginAtZero: true,
-                        min: 0, // Prevent Y-axis from going below zero
-                    }
-                },
+                scales: scalesConfig,
                 plugins: {
                     zoom: {
                         pan: {
@@ -60,7 +116,8 @@ const ResponsiveChartComponent = ({ title, chartId, labels, datasets, summary })
                             },
                             mode: 'x',
                             limits: {
-                                y: { min: 0 } // Prevent Y-axis from going below 0 even when zooming out
+                                y: { min: 0 }, // Prevent Y-axis from going below 0 even when zooming out
+                                y1: { min: 0, max: 6 }
                             }
                         }
                     },
@@ -85,7 +142,7 @@ const ResponsiveChartComponent = ({ title, chartId, labels, datasets, summary })
 
     /**
      * Resets the zoom level of the chart.
-     * 
+     *
      * @function
      * @name handleResetZoom
      * @returns {void}
