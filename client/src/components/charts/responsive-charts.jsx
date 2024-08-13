@@ -7,6 +7,19 @@ import Exporter from '@/utils/exporter.js'; // Import the Exporter utility
 // Register necessary Chart.js components
 Chart.register(CategoryScale, LinearScale, LineController, BarController, LineElement, BarElement, PointElement, Title, Tooltip, Legend, zoomPlugin);
 
+/**
+ * ResponsiveChartComponent renders a responsive chart with zoom and pan functionality,
+ * along with options to export the chart data to CSV or PDF.
+ *
+ * @component
+ * @param {Object} props - The properties for the ResponsiveChartComponent.
+ * @param {string} props.title - The title of the chart.
+ * @param {string} props.chartId - The ID for the chart's canvas element.
+ * @param {Array<string>} props.labels - The labels for the chart data.
+ * @param {Array<Object>} props.datasets - The datasets to display on the chart.
+ * @param {string} [props.summary=""] - A summary or description to display below the chart.
+ * @returns {JSX.Element} The rendered ResponsiveChartComponent.
+ */
 const ResponsiveChartComponent = ({ title, chartId, labels, datasets, summary }) => {
     const chartRef = useRef(null);
     const exporter = new Exporter(); // Instantiate the Exporter
@@ -70,6 +83,13 @@ const ResponsiveChartComponent = ({ title, chartId, labels, datasets, summary })
         };
     }, [labels, datasets]);
 
+    /**
+     * Resets the zoom level of the chart.
+     * 
+     * @function
+     * @name handleResetZoom
+     * @returns {void}
+     */
     const handleResetZoom = () => {
         const chartInstance = chartRef.current.chartInstance;
         if (chartInstance) {
