@@ -5,6 +5,16 @@ import { AppProvider } from "@/hooks/AppProvider";
 import AuthProvider from "../contexts/AuthContext.jsx";
 import { Maintenance } from "./pages-components/index.jsx";
 
+/**
+ * App component that sets up the main structure of the application.
+ * 
+ * It provides Google OAuth context, authentication context, and application context. 
+ * Displays a maintenance page if the application is in maintenance mode; otherwise, 
+ * it renders the application menu, main content area, and footer.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered App component.
+ */
 function App() {
     const isMaintenance = import.meta.env.VITE_MAINTENANCE === 'true';
     const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
