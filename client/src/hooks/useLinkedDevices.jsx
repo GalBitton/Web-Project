@@ -15,7 +15,6 @@ import Device from '@/services/device.js'; // Import the Device class
  * @param {Function} params.setSelectedType - Function to update the selected type.
  * @param {Function} params.setCurrentDevice - Function to update the current device.
  * @param {Function} params.updateCharts - Function to update charts with the new device.
- * @param {number} params.selectedItem - Index of the selected item.
  *
  * @returns {Object} - Contains methods to link and unlink devices.
  * @returns {Function} handleLinkDevice - Function to link a device by brand and type.
@@ -31,7 +30,6 @@ const useLinkedDevices = ({
                               setSelectedType,
                               setCurrentDevice,
                               updateCharts,
-                              selectedItem
                           }) => {
     const [internalLinkedDevices, setInternalLinkedDevices] = useState([]);
 
@@ -67,6 +65,7 @@ const useLinkedDevices = ({
     const handleLinkDevice = async (brand, type) => {
         const apiService = new APIService({ action: 'linkDevice', brand, type });
         const newDevice = await apiService.execute();
+
         if (newDevice) {
             const updatedLinkedDevices = [...internalLinkedDevices, {
                 brand: newDevice.brand,
