@@ -1,3 +1,15 @@
+/**
+ * Renders a styled button with customizable text and click handler.
+ * 
+ * @component
+ * @name FormButton
+ * @param {Object} props - The component props.
+ * @param {string} props.text - The text to display on the button.
+ * @param {Function} props.onClick - Function to handle the button click event.
+ * @param {string} [props.type='button'] - The type of the button (e.g., 'button', 'submit', 'reset').
+ * @param {string} [props.className=''] - Additional CSS classes to apply to the button.
+ * @returns {React.ReactElement} The rendered component.
+ */
 const FormButton = ({ text, onClick, type = "button", className = "" }) => (
     <button
         type={type}
