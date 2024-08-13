@@ -1,6 +1,17 @@
 import serviceData from '../../../package.json';
 import useLocation from "../../hooks/useLocation";
 
+/**
+ * Footer component for displaying the footer content of the application.
+ *
+ * @component
+ * @example
+ * return (
+ *   <Footer />
+ * );
+ * 
+ * @returns {JSX.Element} The rendered footer component.
+ */
 const Footer = () => {
     const { location } = useLocation();
     return (
