@@ -1,3 +1,15 @@
+/**
+ * PrivacyPolicy component displays the privacy policy page.
+ * 
+ * This component provides information about how user data is collected, used, and protected.
+ * It includes sections on information collection, usage, sharing, data security, user choices, policy changes, and contact information.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <PrivacyPolicy />
+ * )
+ */
 const PrivacyPolicy = () => {
     return (
         <div className="privacy-policy-container">
