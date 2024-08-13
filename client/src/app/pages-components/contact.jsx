@@ -2,6 +2,10 @@ import React, {useState} from "react";
 import { FaEnvelope, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
 import InputField from "@/components/form/inputfield";
 
+/**
+ * ContactUs component for displaying contact information and a contact form.
+ * @component
+ */
 const ContactUs = () => {
     const [formData, setFormData] = useState({
         name: '',
@@ -9,15 +13,21 @@ const ContactUs = () => {
         message: ''
     });
 
+    /**
+     * Handles input changes for the form fields.
+     * @param {React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>} e - The input change event.
+     */
     const handleInputChange = (e) => {
         const { id, value } = e.target;
         setFormData({ ...formData, [id]: value });
     };
 
+    /**
+     * Handles form submission.
+     * @param {React.FormEvent<HTMLFormElement>} e - The form submit event.
+     */
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Add your form submission logic here
-        alert(`Thank you for your message, ${formData.name}! We will get back to you soon.`);
         // Clear form after submission
         setFormData({
             name: '',
