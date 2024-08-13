@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
 
+/**
+ * A generic slider component for displaying items.
+ * 
+ * @param {Object[]} items - The list of items to display in the slider.
+ * @param {Function} renderItem - Function to render each item.
+ * 
+ * @returns {JSX.Element} The rendered slider component.
+ */
 const GenericSlider = ({ items, renderItem }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
