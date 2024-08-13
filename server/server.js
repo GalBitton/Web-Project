@@ -67,13 +67,14 @@ export default class Server {
             });
 
             return {
-                origin: (origin, callback) => {
-                    if (allowedOrigins.includes(origin) || !origin) {
-                        callback(null, true);
-                    } else {
-                        callback(new Error('Not allowed by CORS'));
-                    }
-                },
+                // origin: (origin, callback) => {
+                //     if (allowedOrigins.includes(origin) || !origin) {
+                //         callback(null, true);
+                //     } else {
+                //         callback(new Error('Not allowed by CORS'));
+                //     }
+                // },
+                origin: true,
                 credentials: true,
             };
         } else {
@@ -121,8 +122,6 @@ export default class Server {
         this._app.use('/user', container.get('userRouter').getRouter());
 
         // Swagger
-        const __dirname = dirname(fileURLToPath(import.meta.url));
-
         this._hostname = process.env.VERCEL_URL || process.env.HOSTNAME || 'localhost';
         const specs = YAML.load(path.join(process.cwd(), 'public', 'docs', 'swagger.yaml'));
         specs.servers = [
