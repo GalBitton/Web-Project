@@ -54,8 +54,19 @@ const mockFitbit = deviceFactory.createDevice("FitBit", "Bracelet", 1,null);
 const mockSamsungBracelet = deviceFactory.createDevice("Samsung", "Bracelet", 1,null);
 const mockUnifiedConverter = new UnifiedStructureConverter();
 
+/**
+ * @module Device Test Suite
+ * @description Tests for device data extraction and transformation.
+ */
 describe('Device Class', () => {
+    /**
+     * @section translateToUnifiedStructure Tests
+     */
     describe('translateToUnifiedStructure', () => {
+        /**
+         * @test should translate Apple Watch data to unified structure correctly
+         * @description Tests if Apple Watch data is correctly transformed into the unified structure.
+         */
         test('should translate Apple Watch data to unified structure correctly', () => {
             const result = mockApple.extractGraphData(sampleAppleWatchData, 'appleSmartwatch');
             expect(result).toEqual({
@@ -93,6 +104,10 @@ describe('Device Class', () => {
             });
         });
 
+        /**
+         * @test should translate Fitbit data to unified structure correctly
+         * @description Tests if Fitbit data is correctly transformed into the unified structure.
+         */
         test('should translate Fitbit data to unified structure correctly', () => {
             const result = mockApple.extractGraphData(sampleFitbitData, 'fitbitBracelet');
             expect(result).toEqual({
@@ -130,6 +145,10 @@ describe('Device Class', () => {
             });
         });
 
+        /**
+         * @test should translate Samsung Bracelet data to unified structure correctly
+         * @description Tests if Samsung Bracelet data is correctly transformed into the unified structure.
+         */
         test('should translate Samsung Bracelet data to unified structure correctly', () => {
             const result = mockApple.extractGraphData(sampleSamsungData, 'samsungBracelet');
             expect(result).toEqual({
@@ -168,19 +187,34 @@ describe('Device Class', () => {
         });
     });
 
+    /**
+     * @section getNestedField and setNestedField Tests
+     */
     describe('getNestedField and setNestedField', () => {
+        /**
+         * @test should retrieve a nested field correctly
+         * @description Tests if a nested field can be correctly retrieved from an object.
+         */
         test('should retrieve a nested field correctly', () => {
             const data = { a: { b: { c: 10 } } };
             const result = mockUnifiedConverter.getNestedField(data, 'a.b.c');
             expect(result).toBe(10);
         });
 
+        /**
+         * @test should return 0 if a nested field does not exist
+         * @description Tests if a default value of 0 is returned when a nested field does not exist.
+         */
         test('should return 0 if a nested field does not exist', () => {
             const data = { a: { b: { c: 10 } } };
             const result = mockUnifiedConverter.getNestedField(data, 'a.b.d');
             expect(result).toBe(0);
         });
 
+        /**
+         * @test should set a nested field correctly
+         * @description Tests if a nested field can be correctly set in an object.
+         */
         test('should set a nested field correctly', () => {
             const data = {};
             mockUnifiedConverter.setNestedField(data, 'a.b.c', 10);
@@ -188,6 +222,9 @@ describe('Device Class', () => {
         });
     });
 
+    /**
+     * @section extractGraphData Tests
+     */
     describe('extractGraphData', () => {
         const sampleDatapoints = [
             {
@@ -204,21 +241,37 @@ describe('Device Class', () => {
             }
         ];
 
+        /**
+         * @test should correctly process heartRate data
+         * @description Tests if heartRate data is processed correctly from sample datapoints.
+         */
         test('should correctly process heartRate data', () => {
             const processedData = mockApple.extractGraphData(sampleDatapoints);
             expect(processedData.heartRate.values[0]).toEqual(72);
         });
 
+        /**
+         * @test should correctly process steps data
+         * @description Tests if steps data is processed correctly from sample datapoints.
+         */
         test('should correctly process steps data', () => {
             const processedData = mockFitbit.extractGraphData(sampleDatapoints);
             expect(processedData.steps.values[0]).toEqual(10000);
         });
 
+        /**
+         * @test should correctly process sleep duration data
+         * @description Tests if sleep duration data is processed correctly from sample datapoints.
+         */
         test('should correctly process sleep duration data', () => {
             const processedData = mockSamsungBracelet.extractGraphData(sampleDatapoints);
             expect(processedData['sleep.duration'].values[0]).toEqual(8);
         });
 
+        /**
+         * @test should handle missing data gracefully
+         * @description Tests if missing data is handled gracefully without errors.
+         */
         test('should handle missing data gracefully', () => {
             const processedData = mockApple.extractGraphData(sampleDatapoints);
             expect(processedData.vo2Max.labels).toEqual([]);
