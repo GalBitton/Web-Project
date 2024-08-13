@@ -19,7 +19,6 @@ class UnifiedStructureConverter {
                 unifiedData[field] = fieldValue;
             }
         });
-        console.log('Unified Data:', unifiedData);
         return unifiedData;
     }
 
