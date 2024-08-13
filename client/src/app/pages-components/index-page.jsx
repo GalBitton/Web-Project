@@ -3,43 +3,19 @@ import serviceData from "../../../package.json";
 import TextCard from "../../components/cards/textcard.jsx";
 import styled from 'styled-components';
 
-/**
- * IndexPage component displays the landing page of the application with a background image,
- * introductory text, a list of features in text cards, and logos of supported companies.
- * 
- * @component
- * @example
- * return (
- *   <IndexPage />
- * )
- */
 const IndexPage = () => {
-    /**
-     * A styled image component used for the background of the landing page.
-     * @constant
-     * @type {React.ComponentType<React.ImgHTMLAttributes<HTMLImageElement>>}
-     */
     const BackgroundImage = styled.img`
-        position: absolute;
-        width: 1445px;
-        height: 830px;
-        top: 0;
-        left: 0;
-    
-        @media (max-width: 1445px) {
-            left: calc(50% - 400px);
-        }
-        @media (min-height: 830px) {
-            height: calc(100vh - 100px);
-            left: calc(50% - 550px);
-        }
-    `;
+    position: fixed;
+    top: 2; /* Anchor the image to the top of the viewport */
+    left: 55%; /* Keep the horizontal position as you specified */
+    height: 100vh;
+    width: 100vw;
+    object-fit: cover; /* Crop the image to fill the container */
+    object-position: 70% top; /* Anchor the image to the top, crop from the bottom */
+    transform: translate(-55%, 0); /* Adjust the transform to prevent vertical shifting */
+`;
 
-    /**
-     * An array of objects representing the content for text cards on the landing page.
-     * @constant
-     * @type {Array<{key: number, text: string}>}
-     */
+
     const cardContent = [
         {
             key: 1,
@@ -55,11 +31,6 @@ const IndexPage = () => {
         }
     ];
 
-    /**
-     * An array of objects representing the supported companies and their logos.
-     * @constant
-     * @type {Array<{name: string, logoLight?: string, logoDark?: string, logo?: string}>}
-     */
     const companies = [
         { name: "Apple", logoLight: "/assets/companies/apple-logo-light.svg", logoDark: "/assets/companies/apple-logo-dark.svg" },
         { name: "Fitbit", logo: "/assets/companies/fitbit-logo.svg" },
@@ -72,13 +43,13 @@ const IndexPage = () => {
             <BackgroundImage
                 src="/assets/backgrounds/logo2.png"
                 alt="Landing Page Image"
-                className="opacity-60 h-auto w-auto"
+                className="opacity-80"
             />
-            <div className="relative z-10 flex flex-col items-start p-8 max-w-xl mt-24 mb-10 ml-4 md:ml-16 bg-white dark:bg-slate-900 bg-opacity-80 dark:bg-opacity-90 rounded-lg shadow-lg animate-fadeIn">
-                <h1 className="text-5xl md:text-7xl font-bold mb-4 text-black dark:text-white">
+            <div className="relative z-10 flex flex-col items-start p-8 max-w-xl mt-24 mb-10 ml-4 mr-4 md:ml-16 bg-white dark:bg-slate-900 bg-opacity-80 dark:bg-opacity-90 rounded-lg shadow-lg animate-fadeIn">
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 text-black dark:text-white">
                     {serviceData.name}
                 </h1>
-                <p className="text-sm md:text-lg mb-8 text-black dark:text-white">
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-8 text-black dark:text-white">
                     Transform the Way You Connect and Monitor Your Devices. Our application seamlessly integrates with your smartwatches, smart bands, and other wearable devices, allowing you to track and manage all your smart devices from a single platform.
                 </p>
                 <a
@@ -94,7 +65,6 @@ const IndexPage = () => {
                 ))}
             </div>
 
-            {/* Supported Companies Section */}
             <div className="relative z-10 mt-16 p-8 bg-transparent w-full flex flex-col items-center">
                 <h2 className="text-3xl font-semibold mb-6 text-black dark:text-white">Trusted by Leading Companies</h2>
                 <div className="flex flex-wrap justify-center gap-8">
