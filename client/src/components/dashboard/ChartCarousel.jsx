@@ -2,6 +2,17 @@ import { Carousel } from 'react-responsive-carousel';
 import ResponsiveChartComponent from '@/components/charts/responsive-charts';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
+/**
+ * Displays a carousel of charts where each chart can be navigated using arrows or swiped.
+ * 
+ * @component
+ * @name ChartCarousel
+ * @param {Object} props - The component props.
+ * @param {Array<Object>} props.graphs - The array of graph objects to display in the carousel.
+ * @param {number} props.currentIndex - The index of the currently selected chart.
+ * @param {Function} props.setCurrentIndex - Function to set the index of the currently selected chart.
+ * @returns {React.ReactElement} The rendered component.
+ */
 const ChartCarousel = ({ graphs, currentIndex, setCurrentIndex }) => {
     return (
         <Carousel
