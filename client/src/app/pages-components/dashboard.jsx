@@ -370,15 +370,17 @@ const Dashboard = () => {
 
 
     return (
-        <div className="dashboard-full-container max-w-full">
+        <div className="w-full">
             <div className="mt-24 mb-2 p-4 items-center">
                 <h1 className="text-4xl">Welcome back, {getIdentity('emailPrefix')}</h1>
                 <p className="text-gray-700 dark:text-slate-500">Inspect your health charts and analytics</p>
             </div>
 
             <div>
-                <LoadingErrorComponent loading={devicesLoading} error={devicesError}/>
+                <LoadingErrorComponent loading={devicesLoading} error={devicesError} />
                 <DeviceList
+                    currentDevice={currentDevice}
+                    handleUnlinkDevice={handleUnlinkDevice}
                     selectedBrand={selectedBrand}
                     selectedType={selectedType}
                     linkedDevices={linkedDevices}
@@ -387,17 +389,15 @@ const Dashboard = () => {
                     handleLinkDevice={handleLinkDevice}
                     unlinkedDevices={unlinkedDevices}
                 />
-                
             </div>
 
             <div className="grid grid-cols-12 gap-4 p-4">
                 {/* All Devices Graphs Carousel */}
                 <div
-                    className="col-span-12 lg:col-span-6 flex flex-col justify-center p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg flex-grow">
+                    className="col-span-12 lg:col-span-6 flex flex-col justify-center p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg w-full">
                     <div className="flex flex-col items-center max-w-full overflow-hidden">
-                        <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white">All Devices Data
-                            Overview</h2>
-                        <LoadingErrorComponent loading={avgDataLoading} error={avgDataError}/>
+                        <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white">All Devices Data Overview</h2>
+                        <LoadingErrorComponent loading={avgDataLoading} error={avgDataError} />
                         {filteredAllDevicesGraphs.length > 0 ? (
                             <ChartCarousel
                                 graphs={filteredAllDevicesGraphs}
@@ -412,10 +412,10 @@ const Dashboard = () => {
 
                 {/* Specific Device Graphs Carousel */}
                 <div
-                    className="col-span-12 lg:col-span-6 flex flex-col justify-center p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg flex-grow">
+                    className="col-span-12 lg:col-span-6 flex flex-col justify-center p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg w-full">
                     <div className="flex flex-col items-center max-w-full overflow-hidden">
                         <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white">Device Data Overview</h2>
-                        <LoadingErrorComponent loading={avgDataLoading} error={avgDataError}/>
+                        <LoadingErrorComponent loading={avgDataLoading} error={avgDataError} />
                         <ChartCarousel
                             graphs={filteredSpecificDeviceGraphs}
                             currentIndex={specificDeviceCurrentIndex}
@@ -425,46 +425,32 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            <div className="flex justify-center mr-4 ml-4 p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg flex-grow">
-                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-8 w-full sm:w-[60rem]">
+            <div className="flex flex-col justify-center items-center p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg w-full">
+                {/* Button Section */}
+                <div className="w-full sm:w-[80rem] flex justify-center mb-8">
                     <button
-                        className="unlink bg-red-500 hover:bg-red-700 dark:bg-red-300 dark:hover:bg-red-500 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem]"
-                        onClick={() => {
-                            if (currentDevice?.id) {
-                                handleUnlinkDevice(currentDevice.id);
-                            } else {
-                                console.warn('No valid device object found');
-                            }
-                        }}
-                    >
-                        <div className="flex items-center gap-2">
-                            <img src="/assets/unlink.svg" className="w-[2rem] h-[2rem]" alt="Unlink"
-                                 style={{maxWidth: '100%', maxHeight: '100%'}}/>
-                            Unlink
-                        </div>
-                    </button>
-                    <button
-                        className="bg-green-600 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-400 text-white dark:text-black px-4 py-2 rounded w-full sm:w-[8rem] sm:h-[4rem]"
+                        className="bg-green-600 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-400 text-white dark:text-black rounded w-full w-[16rem] sm:w-[8rem] sm:h-[4rem]"
                         onClick={handleHealthStory}
                     >
                         View Analysis
                     </button>
                 </div>
-                {healthStory && (
-                    <div
-                        className="flex flex-col space-y-4 justify-center items-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full mb-10">
-                        <ul className="list-disc list-inside text-lg text-gray-700 dark:text-slate-400 w-full">
-                            {healthStory.map((paragraph, index) => (
-                                <li key={index} className="mb-2">
-                                    {paragraph}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
+
+                {/* Health Story Section */}
+                <div className="w-full">
+                    {healthStory && (
+                        <div className="flex flex-col space-y-4 justify-center items-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full">
+                            <ul className="list-disc list-inside text-lg text-gray-700 dark:text-slate-400 w-full">
+                                {healthStory.map((paragraph, index) => (
+                                    <li key={index} className="mb-2">
+                                        {paragraph}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                </div>
             </div>
-
-
         </div>
     );
 };
