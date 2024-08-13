@@ -2,6 +2,11 @@ import { cardio } from 'ldrs';
 // Register the cardio component
 cardio.register();
 
+/**
+ * Displays a loading animation centered on the screen.
+ * 
+ * @returns {JSX.Element} The rendered loading animation component.
+ */
 const LoadingAnimation = () => (
     <div
         id="loading-animation"
