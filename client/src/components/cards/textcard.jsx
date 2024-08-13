@@ -1,5 +1,14 @@
 import React from "react";
 
+/**
+ * TextCard component displays a card with a title and text content.
+ *
+ * @component
+ * @param {Object} props - The properties for the TextCard.
+ * @param {string} props.text - The text content to display in the card.
+ * @param {number} props.index - The index or title to display at the top of the card.
+ * @returns {JSX.Element} The rendered TextCard component.
+ */
 const TextCard = ({ text, index }) => {
     return (
         
