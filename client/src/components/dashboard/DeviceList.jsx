@@ -4,14 +4,35 @@ import { Carousel } from 'react-responsive-carousel';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
+/**
+ * Displays a list of linked devices in a carousel format and provides functionality to link new devices.
+ * 
+ * @component
+ * @name DeviceList
+ * @param {Object} props - The component props.
+ * @param {Array<Object>} [props.linkedDevices=[]] - The list of linked devices to display.
+ * @param {number} props.selectedItem - The index of the currently selected item in the carousel.
+ * @param {Function} props.setSelectedItem - Function to set the selected item index in the carousel.
+ * @param {Function} props.handleLinkDevice - Function to handle linking a new device.
+ * @param {Array<Object>} [props.unlinkedDevices=[]] - The list of unlinked devices available for linking.
+ * @returns {React.ReactElement} The rendered component.
+ */
 const DeviceList = ({ linkedDevices = [], selectedItem, setSelectedItem, handleLinkDevice, unlinkedDevices = [] }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [selectedDeviceToLink, setSelectedDeviceToLink] = useState('');
 
+    /**
+     * Toggles the visibility of the device linking options.
+     */
     const handlePlusClick = () => {
         setIsVisible(!isVisible);
     };
 
+    /**
+     * Updates the selected device to link based on the user's selection.
+     * 
+     * @param {Event} event - The change event from the select element.
+     */
     const handleDeviceLinkChange = (event) => {
         const selectedDevice = event.target.value;
         setSelectedDeviceToLink(selectedDevice);
