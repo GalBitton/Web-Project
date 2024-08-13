@@ -1,3 +1,9 @@
+/**
+ * UnderConstruction component that displays a message indicating the page is under construction.
+ * 
+ * @component
+ * @returns {JSX.Element} The rendered UnderConstruction component.
+ */
 const UnderConstruction = () => {
     return (
         <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-white to-gray-200 dark:from-gray-900 dark:to-slate-800">
