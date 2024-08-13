@@ -22,7 +22,14 @@ const supportedDevices = [
 
 const Dashboard = () => {
     const { getIdentity } = useAuth();
+    const [linkedDevices, setLinkedDevices] = useState([]);
+    const { data: devicesData, error: devicesError, loading: devicesLoading } = useAPIService({ action: 'getLinkedDevices' });
 
+    // Refetch avgData when linkedDevices change
+    const { data: avgData, error: avgDataError, loading: avgDataLoading, refetch } = useAPIService({
+        action: 'getAverageDataAllDevices',
+        key: linkedDevices // Using linkedDevices as a key to trigger refetch
+    });
     const [selectedItem, setSelectedItem] = useState(0);
     const [selectedBrand, setSelectedBrand] = useState('');
     const [selectedType, setSelectedType] = useState('');
@@ -31,16 +38,10 @@ const Dashboard = () => {
     const [specificDeviceCurrentIndex, setSpecificDeviceCurrentIndex] = useState(0);
     const [overallAverages, setOverallAverages] = useState({});
     const [healthStory, setHealthStory] = useState("");
-    const [linkedDevices, setLinkedDevices] = useState([]);
+
     const [unlinkedDevices, setUnlinkedDevices] = useState([]);
 
-    const { data: devicesData, error: devicesError, loading: devicesLoading } = useAPIService({ action: 'getLinkedDevices' });
-    // Refetch avgData when linkedDevices change
-    // Refetch avgData when linkedDevices change
-    const { data: avgData, error: avgDataError, loading: avgDataLoading, refetch } = useAPIService({
-        action: 'getAverageDataAllDevices',
-        key: linkedDevices // Using linkedDevices as a key to trigger refetch
-    });
+
     // Pass `linkedDevices` to `useChartData` hook
 
     const { chartsData, averageChartsData, updateCharts } = useChartData(currentDevice, avgData, linkedDevices);
@@ -66,10 +67,6 @@ const Dashboard = () => {
             setCurrentDevice(selectedDevice.device);
             updateCharts(selectedDevice.device);
             refetch();
-        } else {
-            setSelectedBrand('');
-            setSelectedType('');
-            setCurrentDevice(null);
         }
     }, [selectedItem, linkedDevices]);
 
@@ -79,7 +76,6 @@ const Dashboard = () => {
             if (availableDevices.length > 0) {
                 setSelectedType(availableDevices[0].type);
                 setCurrentDevice(availableDevices[0].device);
-                updateCharts(availableDevices[0].device);
             }
         }
     }, [selectedBrand, linkedDevices]);

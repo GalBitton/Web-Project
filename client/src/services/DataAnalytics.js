@@ -79,22 +79,22 @@ export default class DataAnalytics {
             valuesY1: chartsData.sleep.values.map(sp => sp.quality)
         }
         this.stressLevel = {
-            labels: chartsData.stress.labels,
-            values: chartsData.stress.values.map(stress => stress.score)
+            labels: chartsData.stressLevel.labels,
+            values: chartsData.stressLevel.values.map(stress => stress.score)
         };
         this.oxygenSaturation = chartsData.oxygenSaturation;
         this.bloodPressure = {
             labels: chartsData.bloodPressure.labels,
-            systolic: chartsData.bloodPressure.values.map(value => value.systolic),
-            diastolic: chartsData.bloodPressure.values.map(value => value.diastolic)
+            systolic: chartsData.bloodPressure.systolic,
+            diastolic: chartsData.bloodPressure.diastolic
         };
         this.eeg = {
-            labels: chartsData.EEG.labels,
-            alpha: chartsData.EEG.values.map(data => data.alpha),
-            beta: chartsData.EEG.values.map(data => data.beta),
-            gamma: chartsData.EEG.values.map(data => data.gamma),
-            delta: chartsData.EEG.values.map(data => data.delta),
-            theta: chartsData.EEG.values.map(data => data.theta)
+            labels: chartsData.eeg.labels,
+            alpha: chartsData.eeg.alpha,
+            beta: chartsData.eeg.beta,
+            gamma: chartsData.eeg.gamma,
+            delta: chartsData.eeg.delta,
+            theta: chartsData.eeg.theta
         };
     }
 
@@ -237,11 +237,9 @@ export default class DataAnalytics {
 
     /**
      * Gets a summary of sleep data within a time frame.
-     * @param {string|undefined} startTime - The start time of the time frame in ISO 8601 format.
-     * @param {string|undefined} endTime - The end time of the time frame in ISO 8601 format.
      * @returns {string} The sleep summary.
      */
-    _getSleepSummary(startTime, endTime) {
+    _getSleepSummary() {
         if (this.sleep.values.length === 0 && this.sleep.valuesY1.length === 0)
             return this.NO_DATA_MSG;
 

@@ -19,13 +19,14 @@ const useChartData = (currentDevice, avgData, linkedDevices) => {
         sleep: { labels: [], values: [], valuesY1: [] }
     });
 
-    useEffect(() => {
-        if (currentDevice) {
-            updateCharts(currentDevice);
-        } else {
-            resetCharts();
-        }
-    }, [currentDevice]);
+    // useEffect(() => {
+    //     if (currentDevice) {
+    //         console.log("useChartData - updateCharts: currentDevice", currentDevice);
+    //         updateCharts(currentDevice);
+    //     } else {
+    //         resetCharts();
+    //     }
+    // }, [currentDevice]);
 
     useEffect(() => {
         if (avgData && linkedDevices.length > 0) {
