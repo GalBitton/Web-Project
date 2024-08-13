@@ -124,8 +124,9 @@ export default class Server {
         const __dirname = dirname(fileURLToPath(import.meta.url));
 
         this._hostname = process.env.VERCEL_URL || process.env.HOSTNAME || 'localhost';
+        console.log("Current working directory: ", process.cwd());
 
-        const specs = YAML.load(path.join(__dirname, '..', 'server', 'docs', 'swagger.yaml'));
+        const specs = YAML.load(path.join(process.cwd(), 'docs/swagger.yaml'));
         specs.servers = [
             {
                 url: `http://${this._hostname}:${this._port}`,
