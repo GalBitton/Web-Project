@@ -50,7 +50,7 @@ const useLinkedDevices = ({
         return Promise.all(devices.map(async (device) => ({
             ...device,
             name: `${device.brand} ${device.type}`,
-            imageSrc: '/assets/watches/' + device.brand.toLowerCase() + '-' + device.type.toLowerCase() + '.png',
+            imageSrc: '/assets/devices/' + device.brand.toLowerCase() + '-' + device.type.toLowerCase() + '.png',
             device: new Device(device._id),
         })));
     };
@@ -71,7 +71,7 @@ const useLinkedDevices = ({
                 brand: newDevice.brand,
                 type: newDevice.type,
                 name: `${newDevice.brand} ${newDevice.type}`,
-                imageSrc: '/assets/watches/' + newDevice.brand.toLowerCase() + '-' + newDevice.type.toLowerCase() + '.png',
+                imageSrc: '/assets/devices/' + newDevice.brand.toLowerCase() + '-' + newDevice.type.toLowerCase() + '.png',
                 device: new Device(newDevice._id),
                 status: 'linked'
             }];

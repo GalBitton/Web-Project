@@ -1,3 +1,7 @@
+/**
+ * @class DeviceStructureConverter
+ * @description A class to convert device structures based on provided field mappings and values.
+ */
 class DeviceStructureConverter {
     constructor() {
     }
@@ -29,6 +33,12 @@ class DeviceStructureConverter {
         return transformedObject;
     }
 
+    /**
+     * Sets a value in an object based on a given path.
+     * @param {Object} obj - The object to set the value in.
+     * @param {string[]} pathArray - The array of keys representing the path.
+     * @param {*} value - The value to set.
+     */
     setValueByPath(obj, pathArray, value) {
         let current = obj;
         pathArray.forEach((key, index) => {

@@ -99,71 +99,74 @@ To switch between environments, set the NODE_ENV environment variable accordingl
 ```
 server/
 ├── api/
-│   └── index.js                        # Entry point
-├── config/                             # Configuration
-│   ├── development.json                # Development environment 
-│   ├── production.json                 # Production environment 
-│   └── test.json                       # Testing environment
-├── controllers/                        # Controllers
-│   ├── auth.controller.js              # Controller for authentication
-│   └── user.controller.js              # Controller for user operations
-├── database/                           # Database
-│   ├── demo-data/                      # Used for seeding the database with demo data using the migration scripts
-│   ├── migrations/                     # Database migrations scripts
-│   │   ├── database-curator.js         # Script for deleting collections
-│   │   └── migrate-demo-data-to-db.js  # Migrates device data to MongoDB
-│   ├── models/                         # Mongoose models
-│   │   ├── Device.model.js             # Device model
-│   │   ├── DeviceData.model.js         # DeviceData model
-│   │   └── User.model.js               # User model
-│   └── connect.js                      # Database connection setup
+│   └── index.js                                # Entry point
+├── config/                                     # Configuration
+│   ├── development.json                        # Development environment 
+│   ├── production.json                         # Production environment 
+│   └── test.json                               # Testing environment
+├── controllers/                                # Controllers
+│   ├── auth.controller.js                      # Controller for authentication
+│   └── user.controller.js                      # Controller for user operations
+├── database/                                   # Database
+│   ├── demo-data/                              # Used for seeding the database with demo data using the migration scripts
+│   ├── migrations/                             # Database migrations scripts
+│   │   ├── database-curator.js                 # Script for deleting collections
+│   │   └── migrate-demo-data-to-db.js          # Migrates device data to MongoDB
+│   ├── models/                                 # Mongoose models
+│   │   ├── Device.model.js                     # Device model
+│   │   ├── DeviceData.model.js                 # DeviceData model
+│   │   └── User.model.js                       # User model
+│   └── connect.js                              # Database connection setup
 ├── docs/
-│   └── swagger.yaml                    # API for user authentication and device management
+│   └── swagger.yaml                            # API for user authentication and device management
 ├── enums/
-│   ├── device-statuses.js              # Device Statuses
-│   └── supported-devices.js            # Utility for supported devices
-├── logs/                               # Log files directory (if log2File is enabled in config)
+│   ├── device-statuses.js                      # Device Statuses
+│   └── supported-devices.js                    # Utility for supported devices
+├── logs/                                       # Log files directory (if log2File is enabled in config)
 ├── middlewares/
-│   ├── auth.middleware.js              # Middleware for authentication
-│   ├── errorHandler.middleware.js      # Middleware for error handling
-│   ├── index.js                        # Exports error handler and rate limiter
-│   └── rateLimiters.middleware.js      # Middleware for rate limiting
+│   ├── auth.middleware.js                      # Middleware for authentication
+│   ├── errorHandler.middleware.js              # Middleware for error handling
+│   ├── index.js                                # Exports error handler and rate limiter
+│   └── rateLimiters.middleware.js              # Middleware for rate limiting
 ├── public/
 │   └── robots.txt
 ├── routes/
-│   ├── auth.routes.js                  # Routes for authentication
-│   └── user.routes.js                  # Routes for user operations
+│   ├── auth.routes.js                          # Routes for authentication
+│   └── user.routes.js                          # Routes for user operations
 ├── services/
-│   ├── devices/                        # Devices using Template Method design pattern
-│   │   ├── apple.js                    # Apple devices
-│   │   ├── device.js                   # Device abstract class
-│   │   ├── dreem.js                    # Dreem devices
-│   │   ├── fitbit.js                   # Fitbit devices
-│   │   ├── muse.js                     # Muse devices
-│   │   ├── samsung.js                  # Samsung devices
-│   │   └── xiaomi.js                   # Xiaomi devices
-│   ├── deviceFactory.js                # Factory design pattern for devices
-│   └── healthStory.js                  # Generates health-related narratives
+│   ├── devices/                                # Devices using Template Method design pattern
+│   │   ├── apple.js                            # Apple devices
+│   │   ├── device.js                           # Device abstract class
+│   │   ├── dreem.js                            # Dreem devices
+│   │   ├── fitbit.js                           # Fitbit devices
+│   │   ├── muse.js                             # Muse devices
+│   │   ├── samsung.js                          # Samsung devices
+│   │   └── xiaomi.js                           # Xiaomi devices
+│   ├── deviceFactory.js                        # Factory design pattern for devices
+│   ├── deviceStructureConverter.js             # Transforms and timestamps device data
+│   ├── healthStory.js                          # Generates health-related narratives
+│   └── unifiedStructureConverter.js            # Converts and accesses nested device data
 ├── tests/
-│   └── unit-tests                      # Unit tests
-│       ├── dataSeeding.test.js         # Tests data generation & validation.
-│       ├── deviceFactory.test.js       # Tests devices getFieldValue method functionality
-│       ├── devices.test.js             # Tests for device data retrieval
-│       ├── healthstory.test.js         # Tests health story generation & analysis
-│       └── mathUtils.test.js           # Tests average calculation accuracy
+│   └── unit-tests                              # Unit tests
+│       ├── dataSeeding.test.js                 # Tests data generation & validation.
+│       ├── deviceFactory.test.js               # Tests devices getFieldValue method functionality
+│       ├── devices.test.js                     # Tests for device data retrieval
+│       ├── healthstory.test.js                 # Tests health story generation & analysis
+│       ├── mathUtils.test.js                   # Tests average calculation accuracy
+│       └── translateUnifiedStructure.test.js   # Tests device data transformation and access
 ├── utils/
-│   ├── expirationDateConverter.js      # Utility for converting expiration dates
-│   ├── mathUtils.js                    # Utility for math operations
-│   └── sleepTranslation.js             # Utility for translating sleep quality/index
-├── .babelrc                            # Babel configuration file
-├── containerConfig.js                  # Dependency injection container configuration
-├── logger.js                           # Logger class
-├── package-lock.json                   # Lock file for npm package versions
-├── package.json                        # Project metadata and dependencies
-├── README.md                           # Project overview and instructions
-├── server.js                           # Server class
-├── vercel-setup.js                     # Vercel deployment setup configuration
-└── vercel.json                         # Vercel deployment configuration file
+│   ├── expirationDateConverter.js              # Utility for converting expiration dates
+│   ├── mathUtils.js                            # Utility for math operations
+│   └── sleepTranslation.js                     # Utility for translating sleep quality/index
+├── .babelrc                                    # Babel configuration file
+├── containerConfig.js                          # Dependency injection container configuration
+├── logger.js                                   # Logger class
+├── package-lock.json                           # Lock file for npm package versions
+├── package.json                                # Project metadata and dependencies
+├── README.md                                   # Project overview and instructions
+├── server.js                                   # Server class
+├── vercel-setup.js                             # Vercel deployment setup configuration
+└── vercel.json                                 # Vercel deployment configuration file
 ```
 
 ## Key Functions
@@ -349,6 +352,7 @@ server/
 
 
 **services/devices/samsung.js**
+
 SamsungWatch:
 | Method                      | Description                                                        |
 |:----------------------------|:-------------------------------------------------------------------|
@@ -368,6 +372,7 @@ SamsungBracelet:
 
 
 **services/devices/xiaomi.js**
+
 XiaomiWatch:
 | Method                      | Description                                                        |
 |:----------------------------|:-------------------------------------------------------------------|
@@ -394,12 +399,32 @@ XiaomiBracelet:
 
 
 
+**services/deviceStructureConverter.js**
+| Method                                     | Description                                                                 |
+|:-------------------------------------------|:----------------------------------------------------------------------------|
+| constructor()                              | Initializes the DeviceStructureConverter.                                   |
+| transformObjectWithValues(mapping, values) | Transforms an object based on the provided field mappings and values.       |
+| setValueByPath(obj, pathArray, value)      | Sets a value in an object based on a given path.                            |
+| convertEntry(mapping, timestamp, values)   | Transforms an object and adds a timestamp at the top level.                 |
+
+
+
 **services/healthStory.js**
 | Method                      | Description                                                             |
 |:----------------------------|:------------------------------------------------------------------------|
 | constructor(healthStats)    | Initializes the HealthStory with health statistics.                     |
 | createStory()               | Generates a personalized health story based on the provided statistics. |
 | analyzeEEG()                | Analyzes EEG data and provides insights into brain activity.            |
+
+
+
+**services/unifiedStructureConverter.js**
+| Method                             | Description                                                                 |
+|:-----------------------------------|:----------------------------------------------------------------------------|
+| constructor(deviceInstance)        | Initializes the UnifiedStructureConverter with a device instance.           |
+| translateToUnifiedStructure(entry) | Converts an entry from device-specific to unified structure.                |
+| getNestedField(entry, field)       | Retrieves a specific nested field from the unified data entry.              |
+| getValueByPath(obj, pathArray)     | Retrieves the value from an object based on the specified path.             |
 
 
 
