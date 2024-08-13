@@ -1,6 +1,22 @@
 import { GoogleLogin } from '@react-oauth/google';
 
-
+/**
+ * Renders a form with optional Google Login integration and custom handlers.
+ * 
+ * @component
+ * @name Form
+ * @param {Object} props - The component props.
+ * @param {string} props.title - The title to display at the top of the form.
+ * @param {Function} props.submitHandler - Function to handle form submission.
+ * @param {React.ReactNode} props.children - The content to display inside the form.
+ * @param {Function} [props.googleSuccessHandler] - Function to handle Google login success.
+ * @param {Function} [props.googleFailureHandler] - Function to handle Google login failure.
+ * @param {string} [props.error] - Optional error message to display.
+ * @param {string} [props.success] - Optional success message to display.
+ * @param {string} [props.secondaryTitle=""] - Optional title for a secondary action link.
+ * @param {string} [props.secondaryPath="/"] - Optional path for the secondary action link.
+ * @returns {React.ReactElement} The rendered component.
+ */
 const Form = ({ title, submitHandler, children, googleSuccessHandler, googleFailureHandler, error, success, secondaryTitle = "", secondaryPath = "/" }) => (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-white to-gray-200 dark:from-gray-900 dark:to-slate-800">
         <div className="w-full max-w-md p-8 space-y-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
