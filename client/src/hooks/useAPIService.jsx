@@ -13,27 +13,29 @@ import APIService from '../services/api/APIService.js';
  * @returns {Error|null} error - Any error that occurred during the API request.
  * @returns {boolean} loading - Whether the API request is in progress.
  */
-const useAPIService = (request) => {
+const useAPIService = (request, dependencies = []) => {
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const apiService = new APIService(request);
-                const response = await apiService.execute();
-                setData(response);
-            } catch (error) {
-                setError(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchData();
-    }, []);
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const apiService = new APIService(request);
+            const response = await apiService.execute();
+            setData(response);
+        } catch (error) {
+            setError(error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    return { data, error, loading };
+    useEffect(() => {
+        fetchData();
+    }, [...dependencies]);
+
+    return { data, error, loading, refetch: fetchData };
 };
 
 export default useAPIService;

@@ -31,45 +31,44 @@ const useLinkedDevices = ({
                               setSelectedType,
                               setCurrentDevice,
                               updateCharts,
-                              selectedItem // Pass selectedItem as a prop
+                              selectedItem
                           }) => {
-    const [linkedDevices, setInternalLinkedDevices] = useState([]);
+    const [internalLinkedDevices, setInternalLinkedDevices] = useState([]);
 
     useEffect(() => {
         const getDevicesData = async () => {
             if (devicesData) {
-                const linkedDevices = await createAllDevices();
+                const linkedDevices = await createAllDevices(devicesData);
                 setInternalLinkedDevices(linkedDevices);
-                setLinkedDevices(linkedDevices); // Update the external linkedDevices state as well
-                const availableDevices = supportedDevices.filter(device =>
-                    !linkedDevices.some(linked => linked.brand === device.brand && linked.type === device.type)
-                );
-                setUnlinkedDevices(availableDevices);
+                setLinkedDevices(linkedDevices);
+                updateAvailableDevices(linkedDevices);
             }
         };
 
         getDevicesData();
     }, [devicesData]);
 
-    const createAllDevices = async () => {
-        if (devicesData) {
-            return Promise.all(devicesData.map(async (device) => ({
-                ...device,
-                name: `${device.brand} ${device.type}`,
-                imageSrc: '/assets/watches/' + device.brand.toLowerCase() + '-' + device.type.toLowerCase() + '.png',
-                device: new Device(device._id),
-            })));
-        }
-        return [];
+    const createAllDevices = async (devices) => {
+        return Promise.all(devices.map(async (device) => ({
+            ...device,
+            name: `${device.brand} ${device.type}`,
+            imageSrc: '/assets/watches/' + device.brand.toLowerCase() + '-' + device.type.toLowerCase() + '.png',
+            device: new Device(device._id),
+        })));
+    };
+
+    const updateAvailableDevices = (linkedDevices) => {
+        const availableDevices = supportedDevices.filter(device =>
+            !linkedDevices.some(linked => linked.brand === device.brand && linked.type === device.type)
+        );
+        setUnlinkedDevices(availableDevices);
     };
 
     const handleLinkDevice = async (brand, type) => {
         const apiService = new APIService({ action: 'linkDevice', brand, type });
-        console.log('Linking device:', brand, type);
         const newDevice = await apiService.execute();
-        console.log('New device:', newDevice);
         if (newDevice) {
-            const updatedLinkedDevices = [...linkedDevices, {
+            const updatedLinkedDevices = [...internalLinkedDevices, {
                 brand: newDevice.brand,
                 type: newDevice.type,
                 name: `${newDevice.brand} ${newDevice.type}`,
@@ -77,19 +76,16 @@ const useLinkedDevices = ({
                 device: new Device(newDevice._id),
                 status: 'linked'
             }];
+            setInternalLinkedDevices(updatedLinkedDevices);
             setLinkedDevices(updatedLinkedDevices);
+            updateAvailableDevices(updatedLinkedDevices);
 
-            const availableDevices = supportedDevices.filter(device =>
-                !updatedLinkedDevices.some(linked => linked.brand === device.brand && linked.type === device.type)
-            );
-            setUnlinkedDevices(availableDevices);
-
-            // Update selected item and brand/type for UI consistency
+            // Update UI elements
             setSelectedItem(updatedLinkedDevices.length - 1);
             setSelectedBrand(newDevice.brand);
             setSelectedType(newDevice.type);
             setCurrentDevice(updatedLinkedDevices[updatedLinkedDevices.length - 1].device);
-            updateCharts(updatedLinkedDevices[updatedLinkedDevices.length - 1].device); // Update charts with new device
+            updateCharts(updatedLinkedDevices[updatedLinkedDevices.length - 1].device);
         }
     };
 
@@ -98,9 +94,10 @@ const useLinkedDevices = ({
             const apiService = new APIService({ action: 'unlinkDevice', deviceId });
             await apiService.execute();
 
-            const updatedLinkedDevices = linkedDevices.filter(device => device.device.id !== deviceId);
+            const updatedLinkedDevices = internalLinkedDevices.filter(device => device.device.id !== deviceId);
             setInternalLinkedDevices(updatedLinkedDevices);
             setLinkedDevices(updatedLinkedDevices);
+            updateAvailableDevices(updatedLinkedDevices);
 
             if (updatedLinkedDevices.length > 0) {
                 const selectedDevice = updatedLinkedDevices[0];
@@ -108,13 +105,13 @@ const useLinkedDevices = ({
                 setSelectedBrand(selectedDevice.brand);
                 setSelectedType(selectedDevice.type);
                 setCurrentDevice(selectedDevice.device);
-                updateCharts(selectedDevice.device); // Update charts with the new current device
+                updateCharts(selectedDevice.device);
             } else {
                 setSelectedItem(0);
                 setSelectedBrand('');
                 setSelectedType('');
                 setCurrentDevice(null);
-                updateCharts(null); // Clear the charts as no device is selected
+                updateCharts(null);
             }
         } catch (error) {
             console.error('Error unlinking device:', error);

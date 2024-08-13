@@ -46,7 +46,7 @@ const DeviceList = ({ linkedDevices = [], selectedItem, setSelectedItem, handleL
                 </div>
 
                 <div className={`flex absolute right-0 transition-opacity duration-250 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                    <div className="flex mr-24 absolute right-0 ">
+                    <div className="flex mr-24 absolute right-0">
                         <div>
                             <button
                                 className="unlink mr-1 bg-green-600 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-400 text-white dark:text-black px-4 py-2 rounded-lg w-full sm:w-[8rem]"

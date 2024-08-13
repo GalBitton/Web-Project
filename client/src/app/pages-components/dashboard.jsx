@@ -20,18 +20,7 @@ const supportedDevices = [
     { brand: 'Muse', type: 'Headband' }
 ];
 
-/**
- * Dashboard component that displays health data from linked devices.
- *
- * @component
- * @example
- * return (
- *   <Dashboard />
- * )
- */
 const Dashboard = () => {
-    const { data: devicesData, error: devicesError, loading: devicesLoading } = useAPIService({ action: 'getLinkedDevices' });
-    const { data: avgData, error: avgDataError, loading: avgDataLoading } = useAPIService({ action: 'getAverageDataAllDevices' });
     const { getIdentity } = useAuth();
 
     const [selectedItem, setSelectedItem] = useState(0);
@@ -42,15 +31,22 @@ const Dashboard = () => {
     const [specificDeviceCurrentIndex, setSpecificDeviceCurrentIndex] = useState(0);
     const [overallAverages, setOverallAverages] = useState({});
     const [healthStory, setHealthStory] = useState("");
-
     const [linkedDevices, setLinkedDevices] = useState([]);
     const [unlinkedDevices, setUnlinkedDevices] = useState([]);
 
-    const { chartsData, averageChartsData, updateCharts } = useChartData(currentDevice, avgData);
+    const { data: devicesData, error: devicesError, loading: devicesLoading } = useAPIService({ action: 'getLinkedDevices' });
+    // Refetch avgData when linkedDevices change
+    // Refetch avgData when linkedDevices change
+    const { data: avgData, error: avgDataError, loading: avgDataLoading, refetch } = useAPIService({
+        action: 'getAverageDataAllDevices',
+        key: linkedDevices // Using linkedDevices as a key to trigger refetch
+    });
+    // Pass `linkedDevices` to `useChartData` hook
 
+    const { chartsData, averageChartsData, updateCharts } = useChartData(currentDevice, avgData, linkedDevices);
     const { handleLinkDevice, handleUnlinkDevice } = useLinkedDevices({
         devicesData,
-        supportedDevices,
+        supportedDevices: supportedDevices,
         setLinkedDevices,
         setUnlinkedDevices,
         setSelectedItem,
@@ -61,7 +57,6 @@ const Dashboard = () => {
     });
 
     useEffect(() => {
-        // Sync selected item with linked devices
         if (linkedDevices.length > 0) {
             const adjustedSelectedItem = Math.min(selectedItem, linkedDevices.length - 1);
             const selectedDevice = linkedDevices[adjustedSelectedItem];
@@ -70,6 +65,7 @@ const Dashboard = () => {
             setSelectedType(selectedDevice.type);
             setCurrentDevice(selectedDevice.device);
             updateCharts(selectedDevice.device);
+            refetch();
         } else {
             setSelectedBrand('');
             setSelectedType('');
@@ -78,7 +74,6 @@ const Dashboard = () => {
     }, [selectedItem, linkedDevices]);
 
     useEffect(() => {
-        // Update selected type and current device based on selected brand
         if (selectedBrand !== '') {
             const availableDevices = linkedDevices.filter(device => device.brand === selectedBrand && device.status === 'linked');
             if (availableDevices.length > 0) {
@@ -90,18 +85,11 @@ const Dashboard = () => {
     }, [selectedBrand, linkedDevices]);
 
     useEffect(() => {
-        // Update overall averages when average data changes
         if (avgData) {
             setOverallAverages(avgData.overallAverages || {});
         }
     }, [avgData]);
 
-    /**
-     * Handles fetching and setting the health story for the current device.
-     *
-     * @async
-     * @function handleHealthStory
-     */
     const handleHealthStory = async () => {
         if (currentDevice) {
             const story = await currentDevice.getHealthStory();
@@ -110,16 +98,6 @@ const Dashboard = () => {
     };
 
     // Specific device graphs
-    /**
-     * Array of graph configurations for the specific device.
-     *
-     * @type {Array}
-     * @property {string} title - The title of the graph.
-     * @property {string} chartId - The ID of the chart.
-     * @property {Object} labels - The labels for the graph.
-     * @property {Array} datasets - The data sets for the graph.
-     * @property {string} summary - The analysis summary for the graph.
-     */
     const specificDeviceGraphs = [
         {
             title: `Heartrate BPM${selectedBrand && selectedType ? ` - (${selectedBrand} ${selectedType})` : ''}`,
@@ -292,11 +270,11 @@ const Dashboard = () => {
         {
             title: "Average Heart Rate BPM - All Devices",
             chartId: "avghealthDataChart",
-            labels: averageChartsData.heartRate?.labels || [],
+            labels: averageChartsData.heartRate.labels || [],
             datasets: [
                 {
                     label: 'Heart Rate BPM',
-                    data: averageChartsData.heartRate?.values || [],
+                    data: averageChartsData.heartRate.values || [],
                     backgroundColor: 'rgba(75, 192, 192, 0.5)',
                     borderColor: 'rgba(75, 192, 192, 1)',
                     type: 'line',
@@ -307,11 +285,11 @@ const Dashboard = () => {
         {
             title: "Average Steps Count - All Devices",
             chartId: "avgstepsChart",
-            labels: averageChartsData.steps?.labels || [],
+            labels: averageChartsData.steps.labels || [],
             datasets: [
                 {
                     label: 'Steps Count',
-                    data: averageChartsData.steps?.values || [],
+                    data: averageChartsData.steps.values || [],
                     backgroundColor: 'rgba(153, 102, 255, 0.5)',
                     borderColor: 'rgba(153, 102, 255, 1)',
                     type: 'bar',
@@ -322,11 +300,11 @@ const Dashboard = () => {
         {
             title: "Average Calories Burned - All Devices",
             chartId: "avgcaloriesChart",
-            labels: averageChartsData.calories?.labels || [],
+            labels: averageChartsData.calories.labels || [],
             datasets: [
                 {
                     label: 'Calories Burned',
-                    data: averageChartsData.calories?.values || [],
+                    data: averageChartsData.calories.values || [],
                     backgroundColor: 'rgba(255, 159, 64, 0.5)',
                     borderColor: 'rgba(255, 159, 64, 1)',
                     type: 'bar',
@@ -337,11 +315,11 @@ const Dashboard = () => {
         {
             title: "Average Sleep Duration - All Devices",
             chartId: "avgsleepChart",
-            labels: averageChartsData.sleep?.labels || [],
+            labels: averageChartsData.sleep.labels || [],
             datasets: [
                 {
                     label: 'Sleep Duration (hours)',
-                    data: averageChartsData.sleep?.values || [],
+                    data: averageChartsData.sleep.values || [],
                     backgroundColor: 'rgba(54, 162, 235, 0.5)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     type: 'bar',
@@ -349,7 +327,7 @@ const Dashboard = () => {
                 },
                 {
                     label: 'Sleep Quality',
-                    data: averageChartsData.sleep?.valuesY1 || [],
+                    data: averageChartsData.sleep.valuesY1 || [],
                     backgroundColor: 'rgba(255, 99, 132, 0.5)',
                     borderColor: 'rgba(255, 99, 132, 1)',
                     type: 'line',
@@ -366,7 +344,7 @@ const Dashboard = () => {
 
     const filteredAllDevicesGraphs = linkedDevices.length > 0 ? allDevicesGraphs.filter(graph => {
         return graph.datasets?.some(dataset => dataset?.data?.length > 0);
-    }):[];
+    }) : [];
 
 
     return (
@@ -394,11 +372,15 @@ const Dashboard = () => {
                     <div className="flex flex-col items-center max-w-full overflow-hidden">
                         <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white">All Devices Data Overview</h2>
                         <LoadingErrorComponent loading={avgDataLoading} error={avgDataError} />
-                        <ChartCarousel
-                            graphs={filteredAllDevicesGraphs}
-                            currentIndex={allDevicesCurrentIndex}
-                            setCurrentIndex={setAllDevicesCurrentIndex}
-                        />
+                        {filteredAllDevicesGraphs.length > 0 ? (
+                            <ChartCarousel
+                                graphs={filteredAllDevicesGraphs}
+                                currentIndex={allDevicesCurrentIndex}
+                                setCurrentIndex={setAllDevicesCurrentIndex}
+                            />
+                        ) : (
+                            <p className="text-gray-700 dark:text-slate-400">No data available for linked devices.</p>
+                        )}
                     </div>
                 </div>
 
