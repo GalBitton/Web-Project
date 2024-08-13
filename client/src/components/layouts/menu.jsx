@@ -11,44 +11,48 @@ const menuStyles = {
         height: '30px',
     },
     bmBurgerBars: {
-        background: '#373a47'
+        background: '#4f46e5'
     },
     bmBurgerBarsHover: {
-        background: '#a90000'
+        background: '#7c3aed'
     },
     bmCrossButton: {
         height: '24px',
         width: '24px'
     },
     bmCross: {
-        background: '#bdc3c7'
+        background: '#f87171'
     },
     bmMenuWrap: {
         position: 'fixed',
         top: '0',
-        alignItems: 'center',
-        height: '100%'
+        left: '0',
+        width: '200px',
+        height: '100%',
     },
     bmMenu: {
-        background: '#373a47',
-        padding: '2.5em 1.5em 0',
-        fontSize: '1.15em'
+        background: '#1f2937',
+        padding: '2em 1em 0',
+        fontSize: '1em',
     },
     bmMorphShape: {
-        fill: '#373a47'
+        fill: '#1f2937'
     },
     bmItemList: {
-        color: '#b8b7ad',
-        padding: '0.8em',
+        color: '#e5e7eb',
+        padding: '0.5em',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        gap: '1em'
+        gap: '1em',
     },
     bmOverlay: {
-        background: 'rgba(0, 0, 0, 0.3)'
+        background: 'rgba(0, 0, 0, 0.5)',
+        top: '0', // Ensure the overlay starts at the top of the screen
+        height: '100vh', // Ensure the overlay covers the entire viewport
     }
-}
+};
+
 
 /**
  * AppMenu component renders a responsive navigation menu with support for a burger menu on smaller screens.

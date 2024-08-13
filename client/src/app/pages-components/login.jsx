@@ -75,6 +75,7 @@ const Login = () => {
     };
 
     return (
+        <div className="mr-4 ml-4">
         <Form
             title="Sign in to your account"
             submitHandler={handleSubmit}
@@ -102,6 +103,7 @@ const Login = () => {
             />
             <FormButton type="submit" text="Sign in" />
         </Form>
+        </div>
     );
 };
 
