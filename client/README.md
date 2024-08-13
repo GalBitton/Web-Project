@@ -188,6 +188,7 @@ client/
 ## Key Functions
 
 **src/app/App.js**
+
 | Method | Description |
 |:-------|:------------|
 | App()  | App component that sets up the main structure of the application. |
@@ -195,6 +196,7 @@ client/
 
 
 **src/app/pages-components/about-us.jsx**
+
 | Method    | Description                                                                                 |
 |:----------|:--------------------------------------------------------------------------------------------|
 | AboutUs() | AboutUs component for displaying information about the company or organization.             |
@@ -202,6 +204,7 @@ client/
 
 
 **src/app/pages-components/contact.jsx**
+
 | Method               | Description                                                                    |
 |:---------------------|:-------------------------------------------------------------------------------|
 | ContactUs()          | ContactUs component for displaying contact information and a contact form.     |
@@ -211,6 +214,7 @@ client/
 
 
 **src/app/pages-components/dashboard.jsx**
+
 | Method                       | Description                                                   |
 |:-----------------------------|:--------------------------------------------------------------|
 | Dashboard()                  | Renders the Dashboard component with device data and charts.  |
@@ -221,6 +225,7 @@ client/
 
 
 **src/app/pages-components/index-page.jsx**
+
 | Method                  | Description                                                                   |
 |:------------------------|:------------------------------------------------------------------------------|
 | IndexPage()             | Renders the landing page with a background image, text, cards, and logos.     |
@@ -231,6 +236,7 @@ client/
 
 
 **src/app/pages-components/login.jsx**
+
 | Method                        | Description                                        |
 |:------------------------------|:---------------------------------------------------|
 | handleSubmit(e)               | Handles form submission for email/password login.  |
@@ -240,6 +246,7 @@ client/
 
 
 **src/app/pages-components/maintenance.jsx**
+
 | Method        | Description                                                    |
 |:--------------|:---------------------------------------------------------------|
 | Maintenance   | Renders a full-page maintenance message with a theme switcher. |
@@ -247,6 +254,7 @@ client/
 
 
 **src/app/pages-components/not-found.jsx**
+
 | Method   | Description                                                             |
 |----------|-------------------------------------------------------------------------|
 | NotFound | Renders a full-page 404 error message with a link to the homepage.      |
@@ -254,6 +262,7 @@ client/
 
 
 **src/app/pages-components/privacy.jsx**
+
 | Method          | Description                                                                               |
 |-----------------|-------------------------------------------------------------------------------------------|
 | PrivacyPolicy   | Displays the privacy policy page with sections on data handling, usage, and user choices. |
@@ -261,6 +270,7 @@ client/
 
 
 **src/app/pages-components/register.jsx**
+
 | Method                | Description                                                      |
 |-----------------------|------------------------------------------------------------------|
 | Register              | Renders the registration form for new users.                     |
@@ -271,6 +281,7 @@ client/
 
 
 **src/app/pages-components/terms.jsx**
+
 | Method         | Description                               |
 |----------------|-------------------------------------------|
 | TermsOfService | Renders the terms of use page.            |
@@ -278,6 +289,7 @@ client/
 
 
 **src/app/pages-components/under-construction.jsx**
+
 | Method               | Description                                             |
 |----------------------|---------------------------------------------------------|
 | UnderConstruction    | Displays a message that the page is under construction. |
@@ -285,6 +297,7 @@ client/
 
 
 **src/components/loading.jsx**
+
 | Method               | Description                                               |
 |----------------------|-----------------------------------------------------------|
 | LoadingAnimation     | Displays a loading animation centered on the screen.      |
@@ -292,6 +305,7 @@ client/
 
 
 **src/components/slider.jsx**
+
 | Method                | Description                                           |
 |-----------------------|-------------------------------------------------------|
 | GenericSlider         | A generic slider component for displaying items.      |
@@ -299,6 +313,7 @@ client/
 
 
 **src/components/cards/devicecard.jsx**
+
 | Method      | Description                                             |
 |-------------|---------------------------------------------------------|
 | DeviceCard  | Displays a card with a device image and hover effect.   |
@@ -306,6 +321,7 @@ client/
 
 
 **src/components/cards/teammemercard.jsx**
+
 | Method           | Description                                                                |
 |------------------|----------------------------------------------------------------------------|
 | TeamMemberCard   | Displays a card with a team member's image, name, role, and LinkedIn link. |
@@ -313,6 +329,7 @@ client/
 
 
 **src/components/cards/textcard.jsx**
+
 | Method       | Description                                    |
 |--------------|------------------------------------------------|
 | TextCard     | Displays a card with a title and text content. |
@@ -320,6 +337,7 @@ client/
 
 
 **src/charts/chart.jsx**
+
 | Method         | Description                                                                    |
 |----------------|--------------------------------------------------------------------------------|
 | ChartComponent | Renders a chart with date range filtering and export options.                  |
@@ -327,6 +345,7 @@ client/
 
 
 **src/charts/responsive-charts.jsx**
+
 | Method                   | Description                                    |
 |--------------------------|------------------------------------------------|
 | ResponsiveChartComponent | Renders a responsive, zoomable chart.          |
@@ -335,6 +354,7 @@ client/
 
 
 **src/dashbocard/ChartCarousel.jsx**
+
 | Method              | Description                                      |
 |---------------------|--------------------------------------------------|
 | ChartCarousel       | Displays a carousel of charts with navigation.   |
@@ -342,6 +362,7 @@ client/
 
 
 **src/dashboard/DeviceList.jsx**
+
 | Method         | Description                                                             |
 |----------------|-------------------------------------------------------------------------|
 | DeviceList     | Displays linked devices in a carousel with options to link new devices. |
@@ -349,6 +370,7 @@ client/
 
 
 **src/dashboard/DeviceSummary.jsx**
+
 | Method          | Description                                |
 |-----------------|--------------------------------------------|
 | DeviceSummary   | Displays the selected brand and type.      |
@@ -356,6 +378,7 @@ client/
 
 
 **src/dashboard/LoadingErrorComponent.jsx**
+
 | Method                | Description                                            |
 |-----------------------|--------------------------------------------------------|
 | LoadingErrorComponent | Renders a loading animation or an error message.       |
@@ -363,6 +386,7 @@ client/
 
 
 **src/form/form.jsx**
+
 | Method   | Description                                                                |
 |----------|----------------------------------------------------------------------------|
 | Form     | Renders a form with optional Google Login integration and custom handlers. |
@@ -370,6 +394,7 @@ client/
 
 
 **src/form/formbutton.jsx**
+
 | Method      | Description                                                       |
 |-------------|-------------------------------------------------------------------|
 | FormButton  | Renders a styled button with customizable text and click handler. |
@@ -377,6 +402,7 @@ client/
 
 
 **src/form/forminput.jsx**
+
 | Method    | Description                                              |
 |-----------|----------------------------------------------------------|
 | FormInput | Renders a styled input field with label and placeholder. |
@@ -384,6 +410,7 @@ client/
 
 
 **src/form/inputfield.jsx**
+
 | Method     | Description                                        |
 |------------|----------------------------------------------------|
 | InputField | Renders an input field or textarea with a label.   |
@@ -391,6 +418,7 @@ client/
 
 
 **src/layouts/footer.jsx**
+
 | Method  | Description                                                            |
 |---------|------------------------------------------------------------------------|
 | Footer  | Footer component for displaying the footer content of the application. |
@@ -398,6 +426,7 @@ client/
 
 
 **src/layouts/menu.jsx**
+
 | Method  | Description                                                                |
 |---------|----------------------------------------------------------------------------|
 | AppMenu | Renders a responsive navigation menu with a burger menu on smaller screens |
@@ -405,6 +434,7 @@ client/
 
 
 **src/layouts/profile-menu.jsx**
+
 | Method             | Description                                                                  |
 |--------------------|------------------------------------------------------------------------------|
 | ProfileMenu        | Displays a user profile menu with a logout option.                           |
@@ -415,6 +445,7 @@ client/
 
 
 **src/routes/protectedroute.jsx**
+
 | Method          | Description                                                               |
 |-----------------|---------------------------------------------------------------------------|
 | ProtectedRoute  | A route component that renders its children if the user is logged in.     |
@@ -422,6 +453,7 @@ client/
 
 
 **src/routes/publicroute.jsx**
+
 | Method        | Description                                                                   |
 |---------------|-------------------------------------------------------------------------------|
 | PublicRoute   | A route component that renders its children if the user is not logged in.     |
@@ -429,6 +461,7 @@ client/
 
 
 **src/contexts/AuthContext.jsx**
+
 | Method                  | Description                                                                      |
 |-------------------------|----------------------------------------------------------------------------------|
 | AuthProvider            | Provides authentication status and identity information to the component tree.   |
@@ -438,6 +471,7 @@ client/
 
 
 **src/hooks/AppProvider.jsx**
+
 | Method      | Description                                                                         |
 |-------------|-------------------------------------------------------------------------------------|
 | AppProvider | Provides global styles and sets the document title based on the application's name. |
@@ -445,6 +479,7 @@ client/
 
 
 **src/hooks/useAPIService.jsx**
+
 | Method          | Description                                               |
 |-----------------|-----------------------------------------------------------|
 | useAPIService   | Custom hook for managing API service requests.            |
@@ -452,6 +487,7 @@ client/
 
 
 **src/hooks/useChartData.jsx**
+
 | Method                 | Description                                                        |
 |------------------------|--------------------------------------------------------------------|
 | useChartData           | Custom hook for managing chart data.                               |
@@ -462,6 +498,7 @@ client/
 
 
 **src/hooks/useLinkedDevices.jsx**
+
 | Method              | Description                                                               |
 |---------------------|---------------------------------------------------------------------------|
 | useLinkedDevices    | Custom hook to manage linked devices, including linking and unlinking.    |
@@ -471,6 +508,7 @@ client/
 
 
 **src/hooks/useLocation.jsx**
+
 | Method       | Description                                                                   |
 |--------------|-------------------------------------------------------------------------------|
 | useLocation  | Custom hook providing the current location and whether it is the dashboard.   |
@@ -478,6 +516,7 @@ client/
 
 
 **src/hooks/useNavigate.jsx**
+
 | Method         | Description                                                                                |
 |----------------|--------------------------------------------------------------------------------------------|
 | useNavigate    | Custom hook for navigating programmatically with optional delay.                           |
@@ -486,6 +525,7 @@ client/
 
 
 **src/hooks/useTheme.jsx**
+
 | Method    | Description                                                            |
 |-----------|------------------------------------------------------------------------|
 | UseTheme  | Component for toggling between light and dark themes.                  |
@@ -493,6 +533,7 @@ client/
 
 
 **src/services/DataAnalytics.js**
+
 | Method                                                     | Description                                      |
 |:-----------------------------------------------------------|:-------------------------------------------------|
 | constructor(data)                                          | Initializes with data.                           |
@@ -505,6 +546,7 @@ client/
 
 
 **src/services/device.js**
+
 | Method                        | Description                                        |
 |:------------------------------|:---------------------------------------------------|
 | constructor(id)               | Initializes with a unique device ID.               |
@@ -515,6 +557,7 @@ client/
 
 
 **src/services/api/APIService.jsx**
+
 | Method                        | Description                                           |
 |:------------------------------|:------------------------------------------------------|
 | constructor(request)          | Initializes with request details.                     |
@@ -523,6 +566,7 @@ client/
 
 
 **src/services/api/AxiosHandler.jsx**
+
 | Method                                  | Description                                            |
 |:----------------------------------------|:-------------------------------------------------------|
 | processQueue(error, token)              | Handles request queue with error or new token.         |
@@ -534,6 +578,7 @@ client/
 
 
 **src/services/api/ControllerService.jsx**
+
 | Method                        | Description                                        |
 |:------------------------------|:---------------------------------------------------|
 | login(email, password)        | Logs in a user with email and password.           |
@@ -551,6 +596,7 @@ client/
 
 
 **src/utils/exporter.js**
+
 | Method                                  | Description                                         |
 |:----------------------------------------|:----------------------------------------------------|
 | exportToCSV(labels, datasets, fileName) | Exports data to a CSV file and triggers a download. |
@@ -559,6 +605,7 @@ client/
 
 
 **src/utils/graphUtils.js**
+
 | Method                         | Description                                                              |
 |:-------------------------------|:-------------------------------------------------------------------------|
 | getGraphSummary(average, type) | Generates a summary message based on the average value and type of data. |
