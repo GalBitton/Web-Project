@@ -156,7 +156,7 @@ const ResponsiveChartComponent = ({ title, chartId, labels, datasets, summary })
 
     return (
         <div className="relative m-12 w-full max-w-3xl h-96 mx-auto">
-            <h3 className="text-center">{title}</h3>
+            <h3 className="text-center mb-4">{title}</h3>
             <canvas id={chartId} ref={chartRef} className="block w-full h-full"></canvas>
             <p className="text-center mt-4">{summary}</p>
 

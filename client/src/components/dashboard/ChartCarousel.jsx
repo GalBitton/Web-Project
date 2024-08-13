@@ -30,7 +30,7 @@ const ChartCarousel = ({ graphs, currentIndex, setCurrentIndex }) => {
                     <button
                         type="button"
                         onClick={clickHandler}
-                        className="absolute left-0 z-10 p-2 transform -translate-y-1/2 top-1/2 text-black dark:text-white"
+                        className="absolute left-0 z-10 transform -translate-y-1/2 top-24 text-black dark:text-white"
                     >
                         <FaArrowLeft size={30} />
                     </button>
@@ -39,9 +39,9 @@ const ChartCarousel = ({ graphs, currentIndex, setCurrentIndex }) => {
             renderArrowNext={(clickHandler, hasNext) =>
                 hasNext && (
                     <button
-                        type="button"
+                        type="button"   
                         onClick={clickHandler}
-                        className="absolute right-0 z-10 p-2 transform -translate-y-1/2 top-1/2 text-black dark:text-white"
+                        className="absolute right-0 z-10 transform -translate-y-1/2 top-24 text-black dark:text-white"
                     >
                         <FaArrowRight size={30} />
                     </button>
