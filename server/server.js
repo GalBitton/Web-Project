@@ -124,8 +124,8 @@ export default class Server {
         const __dirname = dirname(fileURLToPath(import.meta.url));
 
         this._hostname = process.env.VERCEL_URL || process.env.HOSTNAME || 'localhost';
-
-        const specs = YAML.load(path.join(process.cwd(), 'public', 'docs', 'swagger.yaml'));
+        const joinClause = process.env.NODE_ENV === 'production' ? 'server' : '';
+        const specs = YAML.load(path.join(process.cwd(), joinClause, 'public', 'docs', 'swagger.yaml'));
         specs.servers = [
             {
                 url: `http://${this._hostname}:${this._port}`,
