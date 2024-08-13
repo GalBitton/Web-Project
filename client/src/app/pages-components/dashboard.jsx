@@ -20,6 +20,11 @@ const supportedDevices = [
     { brand: 'Muse', type: 'Headband' }
 ];
 
+/**
+ * Dashboard component for displaying device data and charts.
+ * Fetches device data, manages state, and renders charts.
+ * @returns {JSX.Element} The Dashboard component.
+ */
 const Dashboard = () => {
     const { getIdentity } = useAuth();
     const [linkedDevices, setLinkedDevices] = useState([]);
@@ -86,6 +91,13 @@ const Dashboard = () => {
         }
     }, [avgData]);
 
+    /**
+     * Fetches the health story of the current device.
+     * Updates the state with the fetched health story.
+     * @async
+     * @function
+     * @returns {Promise<void>} Promise representing the completion of the operation.
+     */
     const handleHealthStory = async () => {
         if (currentDevice) {
             const story = await currentDevice.getHealthStory();
@@ -93,7 +105,10 @@ const Dashboard = () => {
         }
     };
 
-    // Specific device graphs
+    /**
+     * Array of chart configurations for specific devices.
+     * @type {Array<Object>}
+     */
     const specificDeviceGraphs = [
         {
             title: `Heartrate BPM${selectedBrand && selectedType ? ` - (${selectedBrand} ${selectedType})` : ''}`,
@@ -261,7 +276,10 @@ const Dashboard = () => {
         }
     ];
 
-    // All devices graphs
+    /**
+     * Array of chart configurations for all devices.
+     * @type {Array<Object>}
+     */
     const allDevicesGraphs = [
         {
             title: "Average Heart Rate BPM - All Devices",
@@ -334,10 +352,18 @@ const Dashboard = () => {
         }
     ];
 
+    /**
+     * Filters out specific device graphs with data.
+     * @type {Array<Object>}
+     */
     const filteredSpecificDeviceGraphs = linkedDevices.length > 0 ? specificDeviceGraphs.filter(graph => {
         return graph.datasets?.some(dataset => dataset?.data?.length > 0);
     }) : [];
 
+    /**
+     * Filters out all devices graphs with data.
+     * @type {Array<Object>}
+     */
     const filteredAllDevicesGraphs = linkedDevices.length > 0 ? allDevicesGraphs.filter(graph => {
         return graph.datasets?.some(dataset => dataset?.data?.length > 0);
     }) : [];
