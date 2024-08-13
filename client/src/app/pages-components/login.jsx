@@ -5,12 +5,30 @@ import FormInput from "@/components/form/forminput";
 import FormButton from "@/components/form/formbutton";
 import APIService from "@/services/api/APIService";
 
+/**
+ * Login component for user authentication.
+ * 
+ * Provides a form for users to log in with their email and password, or using Google authentication.
+ * Handles form submission and Google authentication success/failure.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <Login />
+ * );
+ */
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
     const { navigate } = useNavigate();
 
+    /**
+     * Handles form submission for email/password login.
+     * 
+     * @param {React.FormEvent<HTMLFormElement>} e - The form submission event.
+     * @returns {Promise<void>}
+     */
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
@@ -28,6 +46,13 @@ const Login = () => {
         }
     };
 
+    /**
+     * Handles successful Google authentication.
+     * 
+     * @param {Object} response - The Google authentication response.
+     * @param {string} response.credential - The Google ID token.
+     * @returns {Promise<void>}
+     */
     const handleGoogleSuccess = async (response) => {
         const apiService = new APIService({ action: 'login-google', idToken: response.credential });
         const res = await apiService.execute();
@@ -39,6 +64,11 @@ const Login = () => {
         }
     };
 
+    /**
+     * Handles failure of Google authentication.
+     * 
+     * @param {string} error - The error message from the Google authentication failure.
+     */
     const handleGoogleFailure = (error) => {
         console.error('Google Login Failed:', error);
         setError('Google login failed');
