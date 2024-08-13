@@ -2,6 +2,14 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
+/**
+ * Provides authentication status and identity information to the component tree.
+ * 
+ * @param {Object} props - Component props.
+ * @param {React.ReactNode} props.children - Child components to render within the provider.
+ * 
+ * @returns {JSX.Element} The `AuthContext.Provider` component.
+ */
 export const AuthProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(null);
 
@@ -30,6 +38,12 @@ export const AuthProvider = ({ children }) => {
         };
     }, []);
 
+    /**
+     * Retrieves user identity information from local storage.
+     * 
+     * @param {string} identifier - The type of identity information to retrieve ('email', 'emailPrefix', 'userId').
+     * @returns {string|null} The requested identity information or `null` if not found.
+     */
     function getIdentity(identifier) {
         const identity = JSON.parse(localStorage.getItem('identity'));
         if (!identity) {
@@ -57,6 +71,11 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
+/**
+ * Custom hook to access authentication context.
+ * 
+ * @returns {Object} The authentication context value.
+ */
 export const useAuth = () => {
     return useContext(AuthContext);
 };
