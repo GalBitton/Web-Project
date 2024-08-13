@@ -74,7 +74,7 @@ const IndexPage = () => {
                 alt="Landing Page Image"
                 className="opacity-60 h-auto w-auto"
             />
-            <div className="relative z-10 flex flex-col items-start p-8 max-w-xl mt-24 ml-4 md:ml-16 bg-white dark:bg-slate-900 bg-opacity-80 dark:bg-opacity-90 rounded-lg shadow-lg animate-fadeIn">
+            <div className="relative z-10 flex flex-col items-start p-8 max-w-xl mt-24 mb-10 ml-4 md:ml-16 bg-white dark:bg-slate-900 bg-opacity-80 dark:bg-opacity-90 rounded-lg shadow-lg animate-fadeIn">
                 <h1 className="text-5xl md:text-7xl font-bold mb-4 text-black dark:text-white">
                     {serviceData.name}
                 </h1>

@@ -425,7 +425,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            <div className="flex flex-col justify-center items-center p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg w-full">
+            <div className="flex flex-col ml-4 mr-4 justify-center items-center p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg ">
                 {/* Button Section */}
                 <div className="w-full flex justify-center mb-8">
                     <button
