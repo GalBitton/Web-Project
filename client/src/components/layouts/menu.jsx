@@ -50,6 +50,15 @@ const menuStyles = {
     }
 }
 
+/**
+ * AppMenu component renders a responsive navigation menu with support for a burger menu on smaller screens.
+ * It includes links for dashboard, sign-in, sign-up, about us, and contact us based on user authentication state.
+ * It also displays a logo and profile menu for authenticated users.
+ * 
+ * @component
+ * @name AppMenu
+ * @returns {React.ReactElement} The rendered component.
+ */
 const AppMenu = () => {
     const { isLoggedIn } = useAuth();
     const { location } = useLocation();
@@ -62,6 +71,10 @@ const AppMenu = () => {
         { name: 'Contact', alias: 'contact', href: '/contact-us', visible: true }
     ];
 
+    /**
+     * Renders the logo image.
+     * @returns {React.ReactElement} The logo image element.
+     */
     const logoImage = () => {
         return (
             <a href="/" className="flex items-center hidden md:flex">

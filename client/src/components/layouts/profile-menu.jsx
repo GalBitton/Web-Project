@@ -2,16 +2,30 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import APIService from "@/services/api/APIService";
 
+/**
+ * ProfileMenu component for displaying a user profile menu with a logout option.
+ * 
+ * @component
+ * @name ProfileMenu
+ * @returns {React.ReactElement} The rendered component.
+ */
 function ProfileMenu() {
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef(null);
     const buttonRef = useRef(null);
     const navigate = useNavigate();
 
+    /**
+     * Toggles the menu open/close state.
+     */
     const handleToggleMenu = () => {
         setMenuOpen(!menuOpen);
     };
 
+    /**
+     * Closes the menu if a click is detected outside of the menu or the button.
+     * @param {MouseEvent} event - The mouse click event.
+     */
     const handleClickOutside = (event) => {
         if (menuRef.current && !menuRef.current.contains(event.target) && !buttonRef.current.contains(event.target)) {
             setMenuOpen(false);
@@ -25,6 +39,10 @@ function ProfileMenu() {
         };
     }, []);
 
+    /**
+     * Handles logout action, calls API to log out, and navigates to the home page.
+     * @async
+     */
     const handleLogoutClick = async () => {
         const apiService = new APIService( { action: 'logout' });
         const response = await apiService.execute();
