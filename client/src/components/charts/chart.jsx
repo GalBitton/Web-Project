@@ -5,6 +5,18 @@ import Exporter from '@/utils/exporter.js';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 
+/**
+ * ChartComponent renders a chart with date range filtering and export options.
+ *
+ * @component
+ * @param {Object} props - The properties for the ChartComponent.
+ * @param {string} props.title - The title of the chart.
+ * @param {string} props.chartId - The ID for the chart's canvas element.
+ * @param {Array<string>} props.labels - The labels for the chart data.
+ * @param {Array<Object>} props.datasets - The datasets to display on the chart.
+ * @param {string} [props.summary=""] - A summary or description to display below the chart.
+ * @returns {JSX.Element} The rendered ChartComponent.
+ */
 const ChartComponent = ({ title, chartId, labels, datasets, summary = "" }) => {
     const chartRef = useRef(null);
     const exporter = new Exporter();
