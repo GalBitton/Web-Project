@@ -65,12 +65,12 @@ function ProfileMenu() {
             />
             {menuOpen && (
                 <div
-                    ref={menuRef}
-                    className="absolute mt-2 w-44 bg-gray-200 dark:bg-gray-700 text-black dark:text-white rounded-lg shadow-lg divide-y flex flex-col z-50"
-                    style={{ top: '100%', left: '50%', transform: 'translateX(-50%)' }}
-                >
-                    <a href="#" className="block px-4 py-2 hover:bg-gray-300 dark:hover:bg-gray-600 w-full text-center" onClick={handleLogoutClick}>Logout</a>
-                </div>
+                ref={menuRef}
+                className="absolute mt-2 w-44 bg-gray-200 dark:bg-gray-700 text-black dark:text-white rounded-lg shadow-lg divide-y flex flex-col z-50"
+                style={{ top: '100%', right: '8px', transform: 'translateX(0)' }} // Position 16px from the right edge
+            >
+                <a href="#" className="block px-4 py-2 hover:bg-gray-300 dark:hover:bg-gray-600 w-full text-center" onClick={handleLogoutClick}>Logout</a>
+            </div>
             )}
         </div>
     );
