@@ -99,7 +99,12 @@ export default class Server {
 
         // Swagger
         this._hostname = process.env.VERCEL_URL || process.env.HOSTNAME || 'localhost';
-        const options = { customCssUrl: '/public/css/swagger-ui.css',};
+        const cssUrl = "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css";
+        const options = {
+            customCss:
+                '.swagger-ui .opblock .opblock-summary-path-description-wrapper { align-items: center; display: flex; flex-wrap: wrap; gap: 0 10px; padding: 0 10px; width: 100%; }',
+            customCssUrl: cssUrl,
+        };
         const specs = YAML.load(path.join(process.cwd(), 'public', 'docs', 'swagger.yaml'));
         specs.servers = [
             {
