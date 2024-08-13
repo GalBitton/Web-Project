@@ -20,6 +20,15 @@ const supportedDevices = [
     { brand: 'Muse', type: 'Headband' }
 ];
 
+/**
+ * Dashboard component that displays health data from linked devices.
+ *
+ * @component
+ * @example
+ * return (
+ *   <Dashboard />
+ * )
+ */
 const Dashboard = () => {
     const { data: devicesData, error: devicesError, loading: devicesLoading } = useAPIService({ action: 'getLinkedDevices' });
     const { data: avgData, error: avgDataError, loading: avgDataLoading } = useAPIService({ action: 'getAverageDataAllDevices' });
@@ -52,6 +61,7 @@ const Dashboard = () => {
     });
 
     useEffect(() => {
+        // Sync selected item with linked devices
         if (linkedDevices.length > 0) {
             const adjustedSelectedItem = Math.min(selectedItem, linkedDevices.length - 1);
             const selectedDevice = linkedDevices[adjustedSelectedItem];
@@ -68,6 +78,7 @@ const Dashboard = () => {
     }, [selectedItem, linkedDevices]);
 
     useEffect(() => {
+        // Update selected type and current device based on selected brand
         if (selectedBrand !== '') {
             const availableDevices = linkedDevices.filter(device => device.brand === selectedBrand && device.status === 'linked');
             if (availableDevices.length > 0) {
@@ -79,11 +90,18 @@ const Dashboard = () => {
     }, [selectedBrand, linkedDevices]);
 
     useEffect(() => {
+        // Update overall averages when average data changes
         if (avgData) {
             setOverallAverages(avgData.overallAverages || {});
         }
     }, [avgData]);
 
+    /**
+     * Handles fetching and setting the health story for the current device.
+     *
+     * @async
+     * @function handleHealthStory
+     */
     const handleHealthStory = async () => {
         if (currentDevice) {
             const story = await currentDevice.getHealthStory();
@@ -92,6 +110,16 @@ const Dashboard = () => {
     };
 
     // Specific device graphs
+    /**
+     * Array of graph configurations for the specific device.
+     *
+     * @type {Array}
+     * @property {string} title - The title of the graph.
+     * @property {string} chartId - The ID of the chart.
+     * @property {Object} labels - The labels for the graph.
+     * @property {Array} datasets - The data sets for the graph.
+     * @property {string} summary - The analysis summary for the graph.
+     */
     const specificDeviceGraphs = [
         {
             title: `Heartrate BPM${selectedBrand && selectedType ? ` - (${selectedBrand} ${selectedType})` : ''}`,
