@@ -1,3 +1,10 @@
+/**
+ * Generates a summary message based on the average value and type of data.
+ *
+ * @param {number} average - The average value of the data to be summarized.
+ * @param {'heartRate' | 'steps' | 'calories' | 'sleep'} type - The type of data being summarized. Can be one of 'heartRate', 'steps', 'calories', or 'sleep'.
+ * @returns {string} A string summarizing the average value and its context based on the type provided.
+ */
 const getGraphSummary = (average, type) => {
     switch (type) {
         case 'heartRate':
