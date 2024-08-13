@@ -1,5 +1,17 @@
 import {UseTheme} from "@/hooks/useTheme.jsx";
 
+/**
+ * Maintenance component for displaying a maintenance message.
+ * 
+ * Renders a full-page message indicating that the application is currently under maintenance.
+ * Includes a theme switcher in the top right corner.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <Maintenance />
+ * );
+ */
 const Maintenance = () => {
     return (
         <div className="maintenance-container">
