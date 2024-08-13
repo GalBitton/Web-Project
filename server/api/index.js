@@ -12,8 +12,8 @@
  * @module
  */
 
-import './vercel-setup.js';
-import container from './containerConfig.js';
+import '../vercel-setup.js';
+import container from '../containerConfig.js';
 
 // Retrieve the server and logger instances from the container
 const server = container.get('server');
