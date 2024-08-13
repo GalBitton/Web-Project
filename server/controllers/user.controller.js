@@ -265,65 +265,83 @@ class UserController {
             const userId = req.user;
             const linkedDevices = await Device.find({ user: userId, status: Status.LINKED }).exec();
 
+            if (!linkedDevices || linkedDevices.length === 0) {
+                return res.status(404).json({ error: 'No linked devices found' });
+            }
+
             const metricsByTimestamp = {};
+
+            const oneDayAgo = new Date();
+            oneDayAgo.setDate(oneDayAgo.getDate() - 1); // Calculate the timestamp for 24 hours ago
 
             for (const device of linkedDevices) {
                 const deviceData = await DeviceData.findOne({ device: device._id }).exec();
                 if (!deviceData) {
-                    return res.status(404).json({ error: 'Device data not found' });
+                    continue; // Skip if no data found for this device
                 }
 
-                const oneDayAgo = new Date();
-                oneDayAgo.setDate(oneDayAgo.getDate() - 1); // Calculate the timestamp for 24 hours ago
-
-                // Filter the datapoints based on the timestamp
                 const latestPoints = deviceData.datapoints.filter(point => {
                     return new Date(point.timestamp) >= oneDayAgo;
                 });
+
+                if (latestPoints.length === 0) {
+                    continue; // Skip if no recent data points
+                }
 
                 const deviceInstance = this._deviceFactory.createDevice(device.brand, device.type, device._id, deviceData.lastSeeded);
 
                 latestPoints.forEach(point => {
                     const timestamp = point.timestamp.toISOString();
+                    // Initialize the metrics object for this timestamp if it doesn't exist
                     if (!metricsByTimestamp[timestamp]) {
-                        metricsByTimestamp[timestamp] = {
-                            heartRate: [],
-                            steps: [],
-                            caloriesBurned: [],
-                            sleepDuration: [],
-                            sleepQuality: [],
-                            stressScore: [],
-                            breathingRate: [],
-                            systolicBloodPressure: [],
-                            diastolicBloodPressure: [],
-                            eegAlpha: [],
-                            eegBeta: [],
-                            eegGamma: [],
-                            eegDelta: [],
-                            eegTheta: []
-                        };
+                        metricsByTimestamp[timestamp] = {};
                     }
 
-                    // Iterate over each field in point.data
+                    // Initialize each metric array if it doesn't exist
+                    const metrics = [
+                        'heartRate', 'steps', 'caloriesBurned', 'sleepDuration', 'sleepQuality',
+                        'stressScore', 'breathingRate', 'systolicBloodPressure', 'diastolicBloodPressure',
+                        'eegAlpha', 'eegBeta', 'eegGamma', 'eegDelta', 'eegTheta'
+                    ];
+
+                    metrics.forEach(metric => {
+                        if (!metricsByTimestamp[timestamp][metric]) {
+                            metricsByTimestamp[timestamp][metric] = [];
+                        }
+                    });
+
                     Object.keys(point.data).forEach(field => {
                         const fieldValue = deviceInstance.getFieldValue(point.data, field);
-                        if (field === 'sleep') {
-                            if (fieldValue.duration !== undefined) metricsByTimestamp[timestamp].sleepDuration.push(fieldValue.duration);
-                            if (fieldValue.quality !== undefined) translateSleepQualityToIndex(metricsByTimestamp[timestamp].sleepQuality.push(fieldValue.quality));
-                        } else if (field === 'bloodPressure') {
-                            if (fieldValue.systolic !== undefined) metricsByTimestamp[timestamp].systolicBloodPressure.push(fieldValue.systolic);
-                            if (fieldValue.diastolic !== undefined) metricsByTimestamp[timestamp].diastolicBloodPressure.push(fieldValue.diastolic);
-                        } else if (field === 'EEG') {
-                            if (fieldValue.alpha !== undefined) metricsByTimestamp[timestamp].eegAlpha.push(fieldValue.alpha);
-                            if (fieldValue.beta !== undefined) metricsByTimestamp[timestamp].eegBeta.push(fieldValue.beta);
-                            if (fieldValue.gamma !== undefined) metricsByTimestamp[timestamp].eegGamma.push(fieldValue.gamma);
-                            if (fieldValue.delta !== undefined) metricsByTimestamp[timestamp].eegDelta.push(fieldValue.delta);
-                            if (fieldValue.theta !== undefined) metricsByTimestamp[timestamp].eegTheta.push(fieldValue.theta)
-                        } else if (field === 'stress') {
-                            if (fieldValue.score !== undefined) metricsByTimestamp[timestamp].stressScore.push(fieldValue.score);
-                        } else {
-                            // For other fields like heartRate, steps, etc.
-                            if (Array.isArray(metricsByTimestamp[timestamp][field])) {
+
+                        if (fieldValue !== undefined) {
+                            // Initialize the array for the metric if it doesn't exist
+                            if (!metricsByTimestamp[timestamp][field]) {
+                                metricsByTimestamp[timestamp][field] = [];
+                            }
+
+                            // Special handling for nested data like sleep and bloodPressure
+                            if (field === 'sleep') {
+                                if (fieldValue.duration !== undefined) metricsByTimestamp[timestamp]['sleepDuration'].push(fieldValue.duration);
+                                if (fieldValue.quality !== undefined) {
+                                    // Check if the quality value is NaN
+                                    const qualityValue = isNaN(fieldValue.quality) ? translateSleepQualityToIndex(fieldValue.quality) : fieldValue.quality;
+
+                                    // Push the translated or original quality value to the array
+                                    metricsByTimestamp[timestamp]['sleepQuality'].push(qualityValue);
+                                }
+                            } else if (field === 'bloodPressure') {
+                                if (fieldValue.systolic !== undefined) metricsByTimestamp[timestamp]['systolicBloodPressure'].push(fieldValue.systolic);
+                                if (fieldValue.diastolic !== undefined) metricsByTimestamp[timestamp]['diastolicBloodPressure'].push(fieldValue.diastolic);
+                            } else if (field === 'EEG') {
+                                if (fieldValue.alpha !== undefined) metricsByTimestamp[timestamp]['eegAlpha'].push(fieldValue.alpha);
+                                if (fieldValue.beta !== undefined) metricsByTimestamp[timestamp]['eegBeta'].push(fieldValue.beta);
+                                if (fieldValue.gamma !== undefined) metricsByTimestamp[timestamp]['eegGamma'].push(fieldValue.gamma);
+                                if (fieldValue.delta !== undefined) metricsByTimestamp[timestamp]['eegDelta'].push(fieldValue.delta);
+                                if (fieldValue.theta !== undefined) metricsByTimestamp[timestamp]['eegTheta'].push(fieldValue.theta);
+                            } else if (field === 'stress') {
+                                if (fieldValue.score !== undefined) metricsByTimestamp[timestamp]['stressScore'].push(fieldValue.score);
+                            } else {
+                                // For other fields like heartRate, steps, etc.
                                 metricsByTimestamp[timestamp][field].push(fieldValue);
                             }
                         }
@@ -332,37 +350,34 @@ class UserController {
             }
 
             // Calculate the average for each metric at each timestamp
-            const calculateAverage = (arr) => arr.length ? arr.reduce((acc, value) => acc + value, 0) / arr.length : null;
+            const calculateAverage = (arr) => {
+                // Filter out NaN, undefined, null, and zero values
+                const validValues = arr.filter(value => !isNaN(value) && value !== null && value !== undefined && value !== 0);
 
-            const aggregatedAverages = {
-                heartRate: [],
-                steps: [],
-                caloriesBurned: [],
-                sleepDuration: [],
-                sleepQuality: [],
-                stressScore: [],
-                breathingRate: [],
-                systolicBloodPressure: [],
-                diastolicBloodPressure: [],
-                eegAlpha: [],
-                eegBeta: [],
-                eegGamma: [],
-                eegDelta: [],
-                eegTheta: []
+                return validValues.length ? validValues.reduce((acc, value) => acc + value, 0) / validValues.length : null;
             };
+
+
+            const aggregatedAverages = {};
 
             Object.keys(metricsByTimestamp).forEach(timestamp => {
                 const metrics = metricsByTimestamp[timestamp];
                 Object.keys(metrics).forEach(metricKey => {
                     const averageValue = calculateAverage(metrics[metricKey]);
                     if (averageValue !== null) {
+                        if (!aggregatedAverages[metricKey]) {
+                            aggregatedAverages[metricKey] = [];
+                        }
                         aggregatedAverages[metricKey].push(averageValue);
                     }
                 });
             });
 
             // Calculate overall average for each metric
-            const calculateFinalAverage = (key) => calculateAverage(aggregatedAverages[key]);
+            const calculateFinalAverage = (key) => {
+                const arr = aggregatedAverages[key] || [];
+                return calculateAverage(arr);
+            };
 
             const stats = {
                 heartRate: calculateFinalAverage('heartRate'),
@@ -380,7 +395,6 @@ class UserController {
                 },
                 eeg: null
             };
-
 
             // Check if any EEG metric is not null
             const eeg = {
@@ -402,7 +416,7 @@ class UserController {
             this._logger.error('Error retrieving health status:', err);
             res.status(500).json({ error: 'Internal Server Error' });
         }
-    };
+    }
 
 
     /* ================================  Helper Functions ========================== */

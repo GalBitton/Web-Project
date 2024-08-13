@@ -115,43 +115,43 @@ export default class HealthStory {
     analyzeEEG() {
         let eegStory = "";
         if (this.eeg !== null) {
-            if (this.eeg.alpha > 0.6) {
-                eegStory += "Your brain is showing strong alpha waves, which suggest a relaxed state, possibly meditative.";
+            if (this.eeg.alpha > 0.5) {
+                eegStory += "Your brain is showing strong alpha waves, which suggest a relaxed state, possibly meditative.\n";
             } else {
-                eegStory += "Your alpha wave activity is low, which might indicate a lack of relaxation or focus.";
+                eegStory += "Your alpha wave activity is low, which might indicate a lack of relaxation or focus.\n";
             }
 
-            if (this.eeg.beta > 0.7) {
-                eegStory += "Elevated beta waves indicate active thinking or stress, possibly related to anxiety or concentration.";
+            if (this.eeg.beta > 0.6) {
+                eegStory += "Elevated beta waves indicate active thinking or stress, possibly related to anxiety or concentration.\n";
             } else {
-                eegStory += "Your beta wave activity is low, suggesting a calm mental state with less cognitive activity or stress.";
+                eegStory += "Your beta wave activity is low, suggesting a calm mental state with less cognitive activity or stress.\n";
             }
 
             if (this.eeg.gamma !== null) {
-                if (this.eeg.gamma > 0.8) {
-                    eegStory += "High gamma wave activity suggests heightened focus and cognitive function, possibly during intense concentration.";
+                if (this.eeg.gamma > 0.7) {
+                    eegStory += "High gamma wave activity suggests heightened focus and cognitive function, possibly during intense concentration.\n";
                 } else {
-                    eegStory += "Your gamma wave activity is low, which might indicate a lower level of focus and cognitive function.";
+                    eegStory += "Your gamma wave activity is low, which might indicate a lower level of focus and cognitive function.\n";
                 }
             }
 
             if (this.eeg.delta !== null) {
                 if (this.eeg.delta > 0.4) {
-                    eegStory += "Delta wave activity suggests you are in deep sleep or a state of restorative rest.";
+                    eegStory += "Delta wave activity suggests you are in deep sleep or a state of restorative rest.\n";
                 } else {
-                    eegStory += "Your delta wave activity is low, indicating that you might not be experiencing deep restorative sleep.";
+                    eegStory += "Your delta wave activity is low, indicating that you might not be experiencing deep restorative sleep.\n";
                 }
             }
 
             if (this.eeg.theta !== null) {
-                if (this.eeg.theta > 0.5) {
-                    eegStory += "Strong theta waves might indicate a state of drowsiness or deep meditation.";
+                if (this.eeg.theta > 0.4) {
+                    eegStory += "Strong theta waves might indicate a state of drowsiness or deep meditation.\n";
                 } else {
-                    eegStory += "Your theta wave activity is low, suggesting you are likely alert and not in a meditative state.";
+                    eegStory += "Your theta wave activity is low, suggesting you are likely alert and not in a meditative state.\n";
                 }
             }
         }
 
-        return eegStory ? `EEG Analysis: ${eegStory.trim()}` : null;
+        return eegStory ? `EEG Analysis:\n ${eegStory.trim()}` : null;
     }
 }

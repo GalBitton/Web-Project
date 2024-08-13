@@ -302,7 +302,7 @@ export default class Device {
         const fields = [
             "heartRate", "steps", "caloriesBurned",
             "sleep", "stress", "activity",
-            "bloodPressure", "oxygenSaturation", "eeg", "vo2Max", "focusScore", "respiratoryRate"
+            "bloodPressure", "oxygenSaturation", "EEG", "vo2Max", "focusScore", "respiratoryRate"
         ];
 
         const unifiedStructureConverter = new UnifiedStructureConverter(this);
@@ -338,7 +338,7 @@ export default class Device {
                     processedData.sleep.labels.push(timestamp);
                     processedData.sleep.values.push(fieldValue.duration);
                     processedData.sleep.valuesY1.push(fieldValue.quality);
-                } else if (field === 'eeg') {
+                } else if (field === 'EEG') {
                     processedData.eeg.labels.push(timestamp);
                     processedData.eeg.alpha.push(fieldValue.alpha);
                     processedData.eeg.beta.push(fieldValue.beta);
