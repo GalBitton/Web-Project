@@ -1,3 +1,12 @@
+/**
+ * Main entry point for the React application.
+ * 
+ * This file sets up the React application with routing using React Router.
+ * It renders the main application component and defines the application's routes.
+ * 
+ * @module
+ */
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -7,7 +16,12 @@ import { IndexPage, Dashboard, Login, Register, NotFound, Maintenance, UnderCons
 import App from './app/App.jsx'
 import './index.css'
 
-
+/**
+ * Renders the React application and sets up routing.
+ * 
+ * @function
+ * @name renderApp
+ */
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
       <Router>
