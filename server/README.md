@@ -117,10 +117,9 @@ server/
 │   │   ├── DeviceData.model.js                 # DeviceData model
 │   │   └── User.model.js                       # User model
 │   └── connect.js                              # Database connection setup
-├── docs/
-│   └── swagger.yaml                            # API for user authentication and device management
 ├── enums/
 │   ├── device-statuses.js                      # Device Statuses
+│   ├── mappings.js                             # Field mappings for device data datapoints
 │   └── supported-devices.js                    # Utility for supported devices
 ├── logs/                                       # Log files directory (if log2File is enabled in config)
 ├── middlewares/
@@ -129,6 +128,8 @@ server/
 │   ├── index.js                                # Exports error handler and rate limiter
 │   └── rateLimiters.middleware.js              # Middleware for rate limiting
 ├── public/
+│   ├── docs/
+│       └── swagger.yaml                        # API for user authentication and device management
 │   └── robots.txt
 ├── routes/
 │   ├── auth.routes.js                          # Routes for authentication
@@ -143,9 +144,9 @@ server/
 │   │   ├── samsung.js                          # Samsung devices
 │   │   └── xiaomi.js                           # Xiaomi devices
 │   ├── deviceFactory.js                        # Factory design pattern for devices
-│   ├── deviceStructureConverter.js             # Transforms and timestamps device data
+│   ├── deviceStructureConverter.js             # Transforms unified data fields structure to device-specific structure
 │   ├── healthStory.js                          # Generates health-related narratives
-│   └── unifiedStructureConverter.js            # Converts and accesses nested device data
+│   └── unifiedStructureConverter.js            # Transforms device-specific data fields to the unified structure
 ├── tests/
 │   └── unit-tests                              # Unit tests
 │       ├── dataSeeding.test.js                 # Tests data generation & validation.
@@ -190,15 +191,6 @@ server/
 | _setupPolicies()             | Returns a list of the supported graphs.                     |
 | _setupRoutes()               | Sets up the server routes and Swagger UI.                   |
 | _setupMiddlewares()          | Sets up middlewares for rate limiting and error handling.   |
-
-
-
-**vercel-setup.js**
-
-| Method                     | Description                                                       |
-|:---------------------------|:------------------------------------------------------------------|
-| setupVercel()              | Sets up the configuration directory based on the environment.     |
-
 
 
 **controllers/auth.controller.js**
@@ -246,9 +238,9 @@ server/
 
 **database/connect.js**
 
-| Method                | Description                                                          |
-|:----------------------|:---------------------------------------------------------------------|
-| connect(url, logger)  | Connects to a MongoDB database and switches to a specified database. |
+| Method               | Description                     |
+|:---------------------|:--------------------------------|
+| connect(url, logger) | Connects to a MongoDB database. |
 
 
 
@@ -314,26 +306,25 @@ server/
 |:----------------------------|:--------------------------------------------------------------------|
 | constructor()               | Represents an Apple Watch device extending the Device class.        |
 | getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.       |
-| generateDataForField(field) | Generates random data for the specified field.                      |
 | getFields()                 | Returns an array of field names specific to the Apple Watch.        |
 
 
 
 **services/devices/device.js**
 
-| Method                      | Description                                                                                       |
-|:-----------------------------------------------------------------|:-------------------------------------------------------------|
-| constructor(config, logger, id, name, lastSeeded)                | Initializes the device with given details.                   |
-| convertSleepIndex(qualityIndex)                                  | Converts sleep quality index to a meaningful value.          |
-| getFieldValue(entry, field)                                      | Gets the value of a specific field from the data entry.      |
-| getFields()                                                      | Lists the field names supported by the device.               |
-| _computeRandomValue(field)                                       | Computes a random value for a field.                         |
-| generateDataForField(field)                                      | Generates data for a specified field.                        |
-| precomputeRandomValues(fields, count)                            | Precomputes and caches random values for fields.             |
-| getPrecomputedDataForField(field, index)                         | Retrieves a cached random value for a field and index.       |
-| generateDataBatch(batchStart, batchEnd, intervalMinutes, fields) | Creates a batch of data entries for a time range.            |
-| seedDatabase()                                                   | Seeds the database with data based on config and time.       |
-| extractGraphData(datapoints)                                     | Processes data for graphing, returning labels and values.    |
+| Method                                                                                    | Description                                                                                                       |
+|:------------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------|
+| constructor(config, logger, id, name, lastSeeded)                                         | Initializes the device with given details.                                                                        |
+| convertSleepIndex(qualityIndex)                                                           | Converts sleep quality index to a meaningful value.                                                               |
+| getFieldValue(entry, field)                                                               | Gets the value of a specific field from the data entry.                                                           |
+| getFields()                                                                               | Lists the field names supported by the device.                                                                    |
+| computeValueForField(field, lastValue = null, accumulate, timestamp)                      | Handles the computation of a random value for a field.                                                            |
+| generateSleepData()                                                                       | Generates sleep data and handles the conversion of the quality index.                                             |
+| generateRandomValueForNestedField(mappingValue, lastEntry = {}, generateSleep, timestamp) | Handles nested object keys for random value generation.                                                           |
+| generateRandomValue(fieldMappings, lastEntry = {}, generateSleep, timestamp)              | Handles the cases for various data generation paths.                                                              |
+| generateDataBatch(batchStart, batchEnd, intervalMinutes)                                  | Creates a batch of data entries for a time range.                                                                 |
+| seedDatabase()                                                                            | Seeds the database with data based on config and time, utilizing batching and asynchronous operations.            |
+| extractGraphData(datapoints)                                                              | Processes data for graphing, by converting the device data to the unified structure, returning labels and values. |
 
 
 
@@ -343,7 +334,6 @@ server/
 |:----------------------------|:----------------------------------------------------------------|
 | constructor()               | Represents a Dreem Headband extending the Device class.         |
 | getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.   |
-| generateDataForField(field) | Generates data for a specific field.                            |
 | getFields()                 | Returns an array of field names specific to the Dreem Headband. |
 
 
@@ -354,7 +344,6 @@ server/
 |:----------------------------|:-------------------------------------------------------------------|
 | constructor()               | Represents a Fitbit Bracelet extending the Device class.           |
 | getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.      |
-| generateDataForField(field) | Generates data for a specific field.                               |
 | getFields()                 | Returns an array of field names specific to the Fitbit Bracelet.   |
 
 
@@ -365,7 +354,6 @@ server/
 |:----------------------------|:-------------------------------------------------------------------|
 | constructor()               | Represents a Muse Headband extending the Device class.             |
 | getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.      |
-| generateDataForField(field) | Generates data for a specific field.                               |
 | getFields()                 | Returns an array of field names specific to the Muse Headband.     |
 
 
@@ -377,8 +365,7 @@ SamsungWatch:
 | Method                      | Description                                                        |
 |:----------------------------|:-------------------------------------------------------------------|
 | constructor()               | Represents a Samsung Watch device extending the Device class.      |
-| getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.       |
-| generateDataForField(field) | Generates data for a specific field.                               |
+| getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.      |
 | getFields()                 | Returns an array of field names specific to the Samsung Watch.     |
 
 SamsungBracelet:
@@ -386,8 +373,7 @@ SamsungBracelet:
 | Method                      | Description                                                        |
 |:----------------------------|:-------------------------------------------------------------------|
 | constructor()               | Represents a Samsung Bracelet device extending the Device class.   |
-| getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.       |
-| generateDataForField(field) | Generates data for a specific field.                               |
+| getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.      |
 | getFields()                 | Returns an array of field names specific to the Samsung Bracelet.  |
 
 
@@ -399,8 +385,7 @@ XiaomiWatch:
 | Method                      | Description                                                        |
 |:----------------------------|:-------------------------------------------------------------------|
 | constructor()               | Represents a Xiaomi Watch device extending the Device class.       |
-| getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.       |
-| generateDataForField(field) | Generates data for a specific field.                               |
+| getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.      |
 | getFields()                 | Returns an array of field names specific to the Xiaomi Watch.      |
 
 XiaomiBracelet:
@@ -408,8 +393,7 @@ XiaomiBracelet:
 | Method                      | Description                                                        |
 |:----------------------------|:-------------------------------------------------------------------|
 | constructor()               | Represents a Xiaomi Bracelet device extending the Device class.    |
-| getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.       |
-| generateDataForField(field) | Generates data for a specific field.                               |
+| getFieldValue(entry, field) | Retrieves the value for a specific field from the data entry.      |
 | getFields()                 | Returns an array of field names specific to the Xiaomi Bracelet.   |
 
 
@@ -481,6 +465,8 @@ XiaomiBracelet:
 
 
 ## API Endpoints
+
+See Swagger API documentation at /api-docs route.
 
 ### Authentication
 
