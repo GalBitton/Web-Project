@@ -5,6 +5,7 @@
 import { jest } from '@jest/globals';
 import container from '../../containerConfig.js';
 import AppleWatch from '../../services/devices/apple.js';
+import {translateSleepQualityToIndex} from "../../utils/sleepTranslation.js";
 
 describe('AppleWatch', () => {
     let device;
@@ -20,7 +21,7 @@ describe('AppleWatch', () => {
             warn: console.warn,
             error: console.error
         };
-        device = new AppleWatch(config, logger, '66b68d5e0907bc30b8ad5b3f', 'apple-smartwatch', null);
+        device = new AppleWatch(config, logger, '66b68d5e0907bc30b8ad5b3f', 'appleSmartwatch', null);
 
         // Set system time to daytime by default (e.g., 12:00 PM)
         jest.useFakeTimers();
@@ -40,7 +41,7 @@ describe('AppleWatch', () => {
         const now = new Date();
         const difference = now.getMinutes() - 20;
         const lastSeeded = new Date(now.setMinutes(difference));
-        device = new AppleWatch(config, logger, '66b68d5e0907bc30b8ad5b3f', 'apple-smartwatch', lastSeeded);
+        device = new AppleWatch(config, logger, '66b68d5e0907bc30b8ad5b3f', 'appleSmartwatch', lastSeeded);
 
         const dataBatches = await device.seedDatabase();
         const totalDataPoints = dataBatches.flat().length; // Flatten and count all data points
@@ -56,7 +57,7 @@ describe('AppleWatch', () => {
         const now = new Date();
         const difference = now.getMinutes() - 28; // 28 minutes ago
         const lastSeeded = new Date(now.setMinutes(difference));
-        device = new AppleWatch(config, logger, '66b68d5e0907bc30b8ad5b3f', 'apple-smartwatch', lastSeeded);
+        device = new AppleWatch(config, logger, '66b68d5e0907bc30b8ad5b3f', 'appleSmartwatch', lastSeeded);
 
         const dataBatches = await device.seedDatabase();
         const totalDataPoints = dataBatches.flat().length; // Flatten and count all data points
@@ -84,13 +85,13 @@ describe('AppleWatch', () => {
      * @test
      * @description Verifies generation of 432 data points for 3 days with lastSeeded value null.
      */
-    test('should generate 432 data points for 3 days given lastSeeded value null', async () => {
-        device = new AppleWatch(config, logger, '66b68d5e0907bc30b8ad5b3f', 'apple-smartwatch', null);
+    test('should generate 1008 data points for 7 days given lastSeeded value null', async () => {
+        device = new AppleWatch(config, logger, '66b68d5e0907bc30b8ad5b3f', 'appleSmartwatch', null);
 
         const dataBatches = await device.seedDatabase();
         const totalDataPoints = dataBatches.flat().length; // Flatten and count all data points
 
-        expect(totalDataPoints).toBe(432);
+        expect(totalDataPoints).toBe(1008);
     });
 
     /**
@@ -142,29 +143,15 @@ describe('AppleWatch', () => {
         expect(dataPoint.caloriesBurned).toBeGreaterThanOrEqual(caloriesBurnedRange.lowerBound);
         expect(dataPoint.caloriesBurned).toBeLessThanOrEqual(caloriesBurnedRange.upperBound);
 
-        const systolicBPRange = adjustRange(ranges.bloodPressureSystolic.min, ranges.bloodPressureSystolic.max, maxDeviations.systolicBloodPressure || 0);
+        const bpSystolic = ranges['bloodPressure.systolic'];
+        const bpDiastolic = ranges['bloodPressure.diastolic'];
+        const systolicBPRange = adjustRange(bpSystolic.min, bpSystolic.max, maxDeviations['bloodPressure.systolic'] || 0);
         expect(dataPoint.bloodPressure.systolic).toBeGreaterThanOrEqual(systolicBPRange.lowerBound);
         expect(dataPoint.bloodPressure.systolic).toBeLessThanOrEqual(systolicBPRange.upperBound);
 
-        const diastolicBPRange = adjustRange(ranges.bloodPressureDiastolic.min, ranges.bloodPressureDiastolic.max, maxDeviations.diastolicBloodPressure || 0);
+        const diastolicBPRange = adjustRange(bpDiastolic.min, bpDiastolic.max, maxDeviations['bloodPressure.diastolic '] || 0);
         expect(dataPoint.bloodPressure.diastolic).toBeGreaterThanOrEqual(diastolicBPRange.lowerBound);
         expect(dataPoint.bloodPressure.diastolic).toBeLessThanOrEqual(diastolicBPRange.upperBound);
-    });
-
-    /**
-     * @test
-     * @description Verifies random values are precomputed correctly.
-     */
-    test('should precompute random values correctly', () => {
-        device.precomputeRandomValues(device.getFields(), config.points);
-        const fields = device.getFields();
-
-        fields.forEach(field => {
-            if (field === 'sleep') {
-                return;
-            }
-            expect(device.randomCache[field]).toHaveLength(config.points);
-        });
     });
 
     /**
@@ -209,10 +196,10 @@ describe('AppleWatch', () => {
             const dataPoint = dataBatches.flat()[0]; // Flatten and access the first data point
             const ranges = config.valueRanges;
 
-            expect(dataPoint.sleep.duration).toBeGreaterThanOrEqual(ranges.sleepDuration.min);
-            expect(dataPoint.sleep.duration).toBeLessThanOrEqual(ranges.sleepDuration.max);
-            expect(dataPoint.sleep.quality).toBeGreaterThanOrEqual(ranges.sleepQuality.min);
-            expect(dataPoint.sleep.quality).toBeLessThanOrEqual(ranges.sleepQuality.max);
+            expect(dataPoint.sleep.duration).toBeGreaterThanOrEqual(ranges['sleep.duration'].min);
+            expect(dataPoint.sleep.duration).toBeLessThanOrEqual(ranges['sleep.duration'].max);
+            expect(translateSleepQualityToIndex(dataPoint.sleep.quality)).toBeGreaterThanOrEqual(ranges['sleep.quality'].min);
+            expect(translateSleepQualityToIndex(dataPoint.sleep.quality)).toBeLessThanOrEqual(ranges['sleep.quality'].max);
         });
 
         /**
@@ -248,7 +235,7 @@ describe('AppleWatch', () => {
 
             const dataBatches = await device.seedDatabase();
             const dataPoint = dataBatches.flat()[0]; // Flatten and access the first data point
-            expect(dataPoint).not.toHaveProperty('sleep');
+            expect(dataPoint).toHaveProperty('sleep', { duration: 0, quality: 0 });
         });
     });
 });

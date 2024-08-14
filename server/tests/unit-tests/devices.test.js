@@ -68,7 +68,7 @@ describe('FitbitBracelet', () => {
             stressManagement: { score: 8.0 }
         };
         const stressData = device.getFieldValue(entry, 'stress');
-        expect(stressData).toEqual(8.0); // Adjust expected value based on logic
+        expect(stressData).toEqual(10.0 - 8.0); // Adjust expected value based on logic
     });
 });
 

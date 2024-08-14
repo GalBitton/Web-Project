@@ -37,15 +37,15 @@ describe('HealthStory', () => {
 
         const healthStory = new HealthStory(healthStats);
         const story = healthStory.createStory();
-        expect(story).toContain('heart rate');
-        expect(story).toContain('step count');
-        expect(story).toContain('sleep');
-        expect(story).toContain('stress');
-        expect(story).toContain('breathing');
-        expect(story).toContain('blood pressure');
-        expect(story).toContain('activity level');
-        expect(story).toContain('focus');
-        expect(story).toContain('EEG Analysis');
+        expect(story).toEqual(expect.arrayContaining([expect.stringMatching(/heart rate/)]));
+        expect(story).toEqual(expect.arrayContaining([expect.stringMatching(/step count/)]));
+        expect(story).toEqual(expect.arrayContaining([expect.stringMatching(/sleep/)]));
+        expect(story).toEqual(expect.arrayContaining([expect.stringMatching(/stress/)]));
+        expect(story).toEqual(expect.arrayContaining([expect.stringMatching(/breathing/)]));
+        expect(story).toEqual(expect.arrayContaining([expect.stringMatching(/blood pressure/)]));
+        expect(story).toEqual(expect.arrayContaining([expect.stringMatching(/activity level/)]));
+        expect(story).toEqual(expect.arrayContaining([expect.stringMatching(/focus/)]));
+        expect(story).toEqual(expect.arrayContaining([expect.stringMatching(/EEG Analysis/)]));
     });
 
     /**
@@ -74,15 +74,19 @@ describe('HealthStory', () => {
 
         const healthStory = new HealthStory(healthStats);
         const story = healthStory.createStory();
-        expect(story).toContain('heart rate');
-        expect(story).not.toContain('step count'); // Steps missing, should not appear
-        expect(story).toContain('sleep');
-        expect(story).toContain('stress');
-        expect(story).toContain('breathing');
-        expect(story).not.toContain('blood pressure'); // BP missing, should not appear
-        expect(story).toContain('activity level');
-        expect(story).toContain('focus');
-        expect(story).toContain('EEG Analysis');
+        // Phrases that should be present in the story
+        expect(story).toEqual(expect.arrayContaining([expect.stringMatching(/heart rate/)]));
+        expect(story).toEqual(expect.arrayContaining([expect.stringMatching(/sleep/)]));
+        expect(story).toEqual(expect.arrayContaining([expect.stringMatching(/stress/)]));
+        expect(story).toEqual(expect.arrayContaining([expect.stringMatching(/breathing/)]));
+        expect(story).toEqual(expect.arrayContaining([expect.stringMatching(/activity level/)]));
+        expect(story).toEqual(expect.arrayContaining([expect.stringMatching(/focus/)]));
+        expect(story).toEqual(expect.arrayContaining([expect.stringMatching(/EEG Analysis/)]));
+
+        // Phrases that should not be present in the story
+        expect(story).toEqual(expect.not.arrayContaining([expect.stringMatching(/step count/)]));
+        expect(story).toEqual(expect.not.arrayContaining([expect.stringMatching(/blood pressure/)]));
+
     });
 
     /**
@@ -96,7 +100,7 @@ describe('HealthStory', () => {
                 beta: 0.75,
                 gamma: 0.85,
                 delta: 0.35,
-                theta: 0.5,
+                theta: 0.4,
             }
         };
 

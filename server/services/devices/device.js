@@ -358,5 +358,4 @@ export default class Device {
 
         return processedData;
     }
-
 }
