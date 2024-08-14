@@ -1,3 +1,46 @@
+/**
+ * Dashboard component for displaying device data and charts.
+ *
+ * This component is responsible for fetching, managing, and displaying the health data from various devices linked to the user.
+ * It renders the data in multiple charts and provides an overview of the user's health metrics. The component also handles
+ * the linking and unlinking of devices, and provides detailed analytics through a health story feature.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered Dashboard component.
+ *
+ * @example
+ * // Example usage:
+ * <Dashboard />
+ *
+ * @remarks
+ * The component utilizes several hooks to manage state and data:
+ * - `useAuth` to get the user's identity.
+ * - `useAPIService` to fetch data for linked devices and average data.
+ * - `useLinkedDevices` to manage linking and unlinking devices.
+ * - `useChartData` to manage chart data for both specific and all devices.
+ *
+ * @hook {useAuth} - Provides user authentication and identity information.
+ * @hook {useAPIService} - Fetches data from the API for devices and averages.
+ * @hook {useLinkedDevices} - Manages linking and unlinking of devices.
+ * @hook {useChartData} - Manages and updates chart data for health metrics.
+ *
+ * @state {Array<Object>} linkedDevices - Array of devices linked to the user.
+ * @state {Object} currentDevice - The currently selected device.
+ * @state {Object} chartsData - Chart data for the current device.
+ * @state {Object} averageChartsData - Aggregated chart data for all linked devices.
+ * @state {Object} overallAverages - Overall averages for all devices.
+ * @state {string} healthStory - Health story generated from the current device's data.
+ *
+ * @function handleHealthStory - Fetches and updates the health story of the current device.
+ * @function handleLinkDevice - Handles linking a new device.
+ * @function handleUnlinkDevice - Handles unlinking an existing device.
+ *
+ * @prop {Object} supportedDevices - List of supported devices by brand and type.
+ * @prop {Array<Object>} specificDeviceGraphs - Array of chart configurations for specific devices.
+ * @prop {Array<Object>} allDevicesGraphs - Array of chart configurations for all devices.
+ *
+ * @returns {JSX.Element} The Dashboard component.
+ */
 import { useState, useEffect } from 'react';
 import useAPIService from "@/hooks/useAPIService";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,11 +63,6 @@ const supportedDevices = [
     { brand: 'Muse', type: 'Headband' }
 ];
 
-/**
- * Dashboard component for displaying device data and charts.
- * Fetches device data, manages state, and renders charts.
- * @returns {JSX.Element} The Dashboard component.
- */
 const Dashboard = () => {
     const { getIdentity } = useAuth();
     const [linkedDevices, setLinkedDevices] = useState([]);
@@ -46,9 +84,7 @@ const Dashboard = () => {
 
     const [unlinkedDevices, setUnlinkedDevices] = useState([]);
 
-
     // Pass `linkedDevices` to `useChartData` hook
-
     const { chartsData, averageChartsData, updateCharts } = useChartData(currentDevice, avgData, linkedDevices);
     const { handleLinkDevice, handleUnlinkDevice } = useLinkedDevices({
         devicesData,
@@ -91,13 +127,6 @@ const Dashboard = () => {
         }
     }, [avgData]);
 
-    /**
-     * Fetches the health story of the current device.
-     * Updates the state with the fetched health story.
-     * @async
-     * @function
-     * @returns {Promise<void>} Promise representing the completion of the operation.
-     */
     const handleHealthStory = async () => {
         if (currentDevice) {
             const story = await currentDevice.getHealthStory();
@@ -105,10 +134,6 @@ const Dashboard = () => {
         }
     };
 
-    /**
-     * Array of chart configurations for specific devices.
-     * @type {Array<Object>}
-     */
     const specificDeviceGraphs = [
         {
             title: `Heartrate BPM${selectedBrand && selectedType ? ` - (${selectedBrand} ${selectedType})` : ''}`,
@@ -276,10 +301,6 @@ const Dashboard = () => {
         }
     ];
 
-    /**
-     * Array of chart configurations for all devices.
-     * @type {Array<Object>}
-     */
     const allDevicesGraphs = [
         {
             title: "Average Heart Rate BPM - All Devices",
@@ -352,18 +373,10 @@ const Dashboard = () => {
         }
     ];
 
-    /**
-     * Filters out specific device graphs with data.
-     * @type {Array<Object>}
-     */
     const filteredSpecificDeviceGraphs = linkedDevices.length > 0 ? specificDeviceGraphs.filter(graph => {
         return graph.datasets?.some(dataset => dataset?.data?.length > 0);
     }) : [];
 
-    /**
-     * Filters out all devices graphs with data.
-     * @type {Array<Object>}
-     */
     const filteredAllDevicesGraphs = linkedDevices.length > 0 ? allDevicesGraphs.filter(graph => {
         return graph.datasets?.some(dataset => dataset?.data?.length > 0);
     }) : [];

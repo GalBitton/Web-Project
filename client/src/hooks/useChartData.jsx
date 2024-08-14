@@ -1,3 +1,26 @@
+/**
+ * useChartData is a custom hook that manages and updates chart data for various health metrics.
+ * It handles both individual device data and aggregated average data from linked devices.
+ *
+ * @hook
+ * @param {Object} currentDevice - The current device object to fetch data from.
+ * @param {Object} avgData - The average data for all linked devices.
+ * @param {Array} linkedDevices - An array of linked device objects.
+ * @returns {Object} An object containing the following:
+ * - `chartsData`: An object containing the health metrics data for the current device.
+ * - `averageChartsData`: An object containing the aggregated average health metrics data for all linked devices.
+ * - `updateCharts`: A function to manually trigger the update of chart data for the current device.
+ *
+ * @example
+ * // Example usage:
+ * const { chartsData, averageChartsData, updateCharts } = useChartData(currentDevice, avgData, linkedDevices);
+ *
+ * useEffect(() => {
+ *     if (currentDevice) {
+ *         updateCharts(currentDevice);
+ *     }
+ * }, [currentDevice]);
+ */
 import { useState, useEffect } from 'react';
 
 const useChartData = (currentDevice, avgData, linkedDevices) => {
@@ -18,15 +41,6 @@ const useChartData = (currentDevice, avgData, linkedDevices) => {
         calories: { labels: [], values: [] },
         sleep: { labels: [], values: [], valuesY1: [] }
     });
-
-    // useEffect(() => {
-    //     if (currentDevice) {
-    //         console.log("useChartData - updateCharts: currentDevice", currentDevice);
-    //         updateCharts(currentDevice);
-    //     } else {
-    //         resetCharts();
-    //     }
-    // }, [currentDevice]);
 
     useEffect(() => {
         if (avgData && linkedDevices.length > 0) {
@@ -67,12 +81,11 @@ const useChartData = (currentDevice, avgData, linkedDevices) => {
             });
         } catch (error) {
             console.error("Error fetching analysis data for the device:", error);
-            resetCharts(); // Optionally reset the charts if there's an error
+            resetCharts();
         }
     };
 
     const updateAllDevicesCharts = () => {
-        // Use avgData directly to set the aggregated data for all devices
         if (avgData) {
             setAverageChartsData({
                 heartRate: avgData.heartRateAverages || { labels: [], values: [] },
