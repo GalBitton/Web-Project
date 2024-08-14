@@ -409,7 +409,7 @@ const Dashboard = () => {
                 <div
                     className="col-span-12 lg:col-span-6 flex flex-col justify-center p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg w-full">
                     <div className="flex flex-col items-center max-w-full overflow-hidden">
-                        <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white">All Devices Data Overview</h2>
+                        <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white min-h-[5rem]">All Devices Data Overview</h2>
                         <LoadingErrorComponent loading={avgDataLoading} error={avgDataError} />
                         {filteredAllDevicesGraphs.length > 0 ? (
                             <ChartCarousel
@@ -427,7 +427,7 @@ const Dashboard = () => {
                 <div
                     className="col-span-12 lg:col-span-6 flex flex-col justify-center p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg w-full">
                     <div className="flex flex-col items-center max-w-full overflow-hidden">
-                        <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white">Device Data Overview</h2>
+                        <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white min-h-[5rem]">Device Data Overview</h2>
                         <LoadingErrorComponent loading={avgDataLoading} error={avgDataError} />
                         <ChartCarousel
                             graphs={filteredSpecificDeviceGraphs}

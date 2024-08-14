@@ -155,10 +155,11 @@ const ResponsiveChartComponent = ({ title, chartId, labels, datasets, summary })
     };
 
     return (
-        <div className="relative flex flex-col mb-20 w-full max-w-3xl h-96 mx-auto">
-            <h3 className="text-center mb-6">{title}</h3>
+        <div className="relative flex flex-col mb-40 md:mb-36 lg:mb-32 xl:mb-28 w-full max-w-3xl h-96 mx-auto">
+            
+            <h3 className="text-center mb-6 ">{title}</h3>
             <canvas id={chartId} ref={chartRef} className="block w-full h-full"></canvas>
-            <p className="text-center mt-4 min-h-[3rem]">{summary}</p>
+            <p className="text-center mt-4 sm:min-h-[10rem] md:min-h-[8rem] lg:min-h-[6rem] xl:min-h-[5rem]">{summary}</p>
 
             <div className="flex bottom-0 justify-center space-x-5 mt-6 mb-6"> {/* Added mb-6 for margin-bottom */}
                 <button
