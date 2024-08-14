@@ -26,7 +26,7 @@ NeuroSync is a modern web application designed to offer secure user authenticati
 - **Responsive Design**: Uses Tailwind CSS for a mobile-friendly and consistent UI.
 - **Dark Mode Support**: Enhances user experience in low-light environments.
 - **Data Visualization**: Interactive charts using Chart.js.
-- **PDF Export**: Generate PDF reports using jsPDF.
+- **File Export**: Generate PDF reports using jsPDF and CSV reports.
 - **Environment-Specific Configurations**: Handle different settings for development, testing, and production.
 - **Maintenance and Under Construction Pages**: Inform users about ongoing maintenance or development.
 
@@ -189,8 +189,8 @@ client/
 
 **src/app/App.js**
 
-| Method | Description |
-|:-------|:------------|
+| Method | Description                                                       |
+|:-------|:------------------------------------------------------------------|
 | App()  | App component that sets up the main structure of the application. |
 
 
@@ -353,7 +353,7 @@ client/
 
 
 
-**src/dashbocard/ChartCarousel.jsx**
+**src/dashboard/ChartCarousel.jsx**
 
 | Method              | Description                                      |
 |---------------------|--------------------------------------------------|
@@ -534,25 +534,26 @@ client/
 
 **src/services/DataAnalytics.js**
 
-| Method                                                     | Description                                      |
-|:-----------------------------------------------------------|:-------------------------------------------------|
-| constructor(data)                                          | Initializes with data.                           |
-| getFieldValue(entry, field)                                | Retrieves field value from an entry.             |
-| generateDataForField(field)                                | Generates data for the specified field.          |
-| getFields()                                                | Returns an array of field names.                 |
-| getAnalysisSummary(field, startTime, endTime)              | Summarizes data for a field within a time frame. |
-| _filterDataByTimeFrame(startTime, endTime, labels, values) | Filters values by time frame.                    |
+| Method                                                     | Description                                           |
+|:-----------------------------------------------------------|:------------------------------------------------------|
+| constructor(data)                                          | Initializes with data.                                |
+| hasData()                                                  | Returns true if any of the common field values exist. |
+| getAnalysisData(field)                                     | Retrieves the field values.                           |
+| analyzeData (field)                                        | Processes the data for the chartsData structure.      |
+| getAnalysisSummary(field, startTime, endTime)              | Summarizes data for a field within a time frame.      |
+| _filterDataByTimeFrame(startTime, endTime, labels, values) | Filters values by time frame.                         |
 
 
 
 **src/services/device.js**
 
-| Method                        | Description                                        |
-|:------------------------------|:---------------------------------------------------|
-| constructor(id)               | Initializes with a unique device ID.               |
-| fetchAnalyzeData()            | Fetches and analyzes data from the API.            |
-| getAnalysisData(field)        | Gets data for a specific field.                    |
-| getAnalysisSummary(field)     | Gets a summary of data for a field.                |
+| Method                    | Description                                                              |
+|:--------------------------|:-------------------------------------------------------------------------|
+| constructor(id)           | Initializes with a unique device ID.                                     |
+| fetchAnalyzeData()        | Fetches and analyzes data from the API.                                  |
+| getAnalysisData(field)    | Gets data for a specific field.                                          |
+| getAnalysisSummary(field) | Gets a summary of data for a field.                                      |
+| getHealthStory()          | Gets the health story narrative for the user based on all devices datas. |
 
 
 
@@ -579,19 +580,19 @@ client/
 
 **src/services/api/ControllerService.jsx**
 
-| Method                        | Description                                        |
-|:------------------------------|:---------------------------------------------------|
-| login(email, password)        | Logs in a user with email and password.           |
-| loginGoogle(idToken)          | Logs in a user with Google authentication.        |
-| register(email, password)     | Registers a new user with email and password.     |
-| logout()                      | Logs out the user and revokes Google token.       |
-| refreshToken()                | Refreshes the authentication token.               |
-| getLinkedDevices()            | Retrieves the list of linked devices.             |
-| getAverageDataAllDevices()    | Retrieves average data for all linked devices.    |
-| getDeviceData(deviceId)       | Retrieves data for a specific device.             |
-| linkDevice(brand, type)       | Links a new device to the user account.           |
-| unlinkDevice(deviceId)        | Unlinks a device from the user account.           |
-| getHealthStory()              | Retrieves the user's health story.                |
+| Method                     | Description                                    |
+|:---------------------------|:-----------------------------------------------|
+| login(email, password)     | Logs in a user with email and password.        |
+| loginGoogle(idToken)       | Logs in a user with Google authentication.     |
+| register(email, password)  | Registers a new user with email and password.  |
+| logout()                   | Logs out the user and revokes Google token.    |
+| refreshToken()             | Refreshes the authentication token.            |
+| getLinkedDevices()         | Retrieves the list of linked devices.          |
+| getAverageDataAllDevices() | Retrieves average data for all linked devices. |
+| getDeviceData(deviceId)    | Retrieves data for a specific device.          |
+| linkDevice(brand, type)    | Links a new device to the user account.        |
+| unlinkDevice(deviceId)     | Unlinks a device from the user account.        |
+| getHealthStory()           | Retrieves the user's health story.             |
 
 
 

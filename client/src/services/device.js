@@ -50,6 +50,11 @@ export default class Device {
         return this.analytics.getAnalysisSummary(field);
     }
 
+
+    /**
+     * Gets the health story for the user based on all the data from all devices. This is a summary of the user's health.
+     * @returns {Promise<*>}
+     */
     getHealthStory(){
         const apiService = new APIService({ action: 'getHealthStory' });
         return apiService.execute();
