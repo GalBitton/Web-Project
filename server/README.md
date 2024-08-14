@@ -493,6 +493,14 @@ See Swagger API documentation at /api-docs route.
 * GET /user/device-data/:deviceId
 : Retrieve the data for a specific device for the authenticated user.
 
+* POST /user/link-device
+: Link a device to the authenticated user.
+
+* POST /user/unlink-device
+: Unlink a device from the authenticated user.
+
+* GET /user/health-story
+: Generate a health story based on the device data for the authenticated user.
 
 ## Services
 
