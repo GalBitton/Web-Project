@@ -155,12 +155,12 @@ const ResponsiveChartComponent = ({ title, chartId, labels, datasets, summary })
     };
 
     return (
-        <div className="relative m-12 w-full max-w-3xl h-96 mx-auto">
-            <h3 className="text-center mb-4">{title}</h3>
+        <div className="relative flex flex-col mb-20 w-full max-w-3xl h-96 mx-auto">
+            <h3 className="text-center mb-6">{title}</h3>
             <canvas id={chartId} ref={chartRef} className="block w-full h-full"></canvas>
-            <p className="text-center mt-4">{summary}</p>
+            <p className="text-center mt-4 min-h-[3rem]">{summary}</p>
 
-            <div className="flex justify-center space-x-4 mt-4 mb-6"> {/* Added mb-6 for margin-bottom */}
+            <div className="flex bottom-0 justify-center space-x-5 mt-6 mb-6"> {/* Added mb-6 for margin-bottom */}
                 <button
                     className="bg-indigo-400 dark:bg-slate-600 hover:bg-indigo-700 dark:hover:bg-slate-700 text-white font-bold py-2 px-4 rounded transition duration-300"
                     onClick={() => exporter.exportToCSV(labels, datasets, title)}
