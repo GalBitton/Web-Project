@@ -467,6 +467,7 @@ XiaomiBracelet:
 ## API Endpoints
 
 See Swagger API documentation at /api-docs route.
+![swagger_img.png](swagger_img.png)
 
 ### Authentication
 
