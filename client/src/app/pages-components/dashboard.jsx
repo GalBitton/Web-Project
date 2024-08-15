@@ -385,7 +385,7 @@ const Dashboard = () => {
     return (
         <div className="w-full">
             <div className="mt-24 mb-2 p-4 items-center">
-                <h1 className="text-4xl">Welcome back, {getIdentity('emailPrefix')}</h1>
+                <h1 className="text-4xl">Welcome, {getIdentity('emailPrefix')}</h1>
                 <p className="text-gray-700 dark:text-slate-500">Inspect your health charts and analytics</p>
             </div>
 
