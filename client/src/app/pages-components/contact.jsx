@@ -37,7 +37,7 @@ const ContactUs = () => {
     };
 
     return (
-        <div className="mt-20 min-h-screen bg-indigo-100 dark:bg-slate-900 dark:from-gray-800 dark:via-gray-900 dark:to-black p-8">
+        <div className="mt-20 h-screen bg-indigo-100 dark:bg-slate-900 dark:from-gray-800 dark:via-gray-900 dark:to-black p-8">
             <div className="max-w-7xl mx-auto">
                 <div className="text-center">
                     <h1 className="text-5xl md:text-7xl font-bold mb-8 text-gradient bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text">
