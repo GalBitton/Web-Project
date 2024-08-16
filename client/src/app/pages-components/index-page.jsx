@@ -39,7 +39,7 @@ const IndexPage = () => {
     ];
 
     return (
-        <div className="mt-16 relative flex flex-col overflow-hidden justify-between h-screen bg-indigo-100 dark:bg-slate-800 dark:from-gray-800 dark:via-gray-900 dark:to-black">
+        <div className="mt-16 relative flex flex-col overflow-hidden justify-between min-h-screen bg-indigo-100 dark:bg-slate-800 dark:from-gray-800 dark:via-gray-900 dark:to-black">
             <BackgroundImage
                 src="/assets/backgrounds/logo2.png"
                 alt="Landing Page Image"
