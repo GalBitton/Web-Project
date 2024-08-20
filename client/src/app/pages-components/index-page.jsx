@@ -3,6 +3,16 @@ import serviceData from "../../../package.json";
 import TextCard from "../../components/cards/textcard.jsx";
 import styled from 'styled-components';
 
+/**
+ * The main landing page component of the application.
+ *
+ * This component renders the landing page with a background image, an introduction section
+ * with a call to action, informational cards, and a section showcasing logos of trusted companies.
+ * It uses styled-components for styling the background image and includes responsiveness and dark mode support.
+ *
+ * @component
+ * @returns {JSX.Element} The landing page content.
+ */
 const IndexPage = () => {
     const BackgroundImage = styled.img`
     position: fixed;

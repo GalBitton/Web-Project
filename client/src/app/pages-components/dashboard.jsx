@@ -98,6 +98,14 @@ const Dashboard = () => {
         updateCharts
     });
 
+    /**
+     * Effect hook that updates the selected item and device information based on the currently linked devices.
+     * It adjusts the selected item index, sets the selected device's brand, type, and device, and updates the charts accordingly.
+     * The `refetch` function is also triggered to refresh data.
+     *
+     * @function
+     * @name useEffect
+     */
     useEffect(() => {
         if (linkedDevices.length > 0) {
             const adjustedSelectedItem = Math.min(selectedItem, linkedDevices.length - 1);
@@ -111,6 +119,13 @@ const Dashboard = () => {
         }
     }, [selectedItem, linkedDevices]);
 
+    /**
+     * Effect hook that updates the selected type and current device based on the selected brand.
+     * If a brand is selected and linked devices of that brand are available, it sets the type and current device to the first available match.
+     *
+     * @function
+     * @name useEffect
+     */
     useEffect(() => {
         if (selectedBrand !== '') {
             const availableDevices = linkedDevices.filter(device => device.brand === selectedBrand && device.status === 'linked');
@@ -121,12 +136,27 @@ const Dashboard = () => {
         }
     }, [selectedBrand, linkedDevices]);
 
+    /**
+     * Effect hook that updates the overall averages when new average data (`avgData`) is available.
+     * It sets the `overallAverages` state based on the `avgData` retrieved from the API or other data source.
+     *
+     * @function
+     * @name useEffect
+     */
     useEffect(() => {
         if (avgData) {
             setOverallAverages(avgData.overallAverages || {});
         }
     }, [avgData]);
 
+    /**
+     * Handles fetching and updating the health story for the current device.
+     * The health story is generated based on the data of the currently selected device.
+     *
+     * @async
+     * @function handleHealthStory
+     * @returns {Promise<void>} A promise that resolves when the health story is fetched and updated.
+     */
     const handleHealthStory = async () => {
         if (currentDevice) {
             const story = await currentDevice.getHealthStory();
@@ -134,6 +164,21 @@ const Dashboard = () => {
         }
     };
 
+    /**
+     * @typedef {Object} DeviceGraph
+     * @property {string} title - The title of the graph.
+     * @property {string} chartId - The unique identifier for the chart.
+     * @property {Array<string>} labels - The labels for the chart's x-axis.
+     * @property {Array<Object>} datasets - The datasets used in the chart, including label, data, and styling.
+     * @property {string} summary - A brief summary of the analysis for the current graph.
+     */
+
+    /**
+     * Array of chart configurations for specific devices.
+     * Each object contains the title, chart ID, labels, datasets, and a summary for each specific device graph.
+     *
+     * @type {Array<DeviceGraph>}
+     */
     const specificDeviceGraphs = [
         {
             title: `Heartrate BPM${selectedBrand && selectedType ? ` - (${selectedBrand} ${selectedType})` : ''}`,
@@ -301,6 +346,12 @@ const Dashboard = () => {
         }
     ];
 
+    /**
+     * Array of chart configurations for all devices.
+     * Each object contains the title, chart ID, labels, datasets, and a summary for aggregated data across all linked devices.
+     *
+     * @type {Array<DeviceGraph>}
+     */
     const allDevicesGraphs = [
         {
             title: "Average Heart Rate BPM - All Devices",

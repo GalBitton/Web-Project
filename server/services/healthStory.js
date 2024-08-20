@@ -112,6 +112,14 @@ export default class HealthStory {
         return story;
     }
 
+    /**
+     * Analyzes EEG data and generates a summary of brainwave activity.
+     *
+     * The method checks the levels of various brainwaves (alpha, beta, gamma, delta, theta) 
+     * and provides an interpretation of the user's mental state based on the values.
+     *
+     * @returns {string|null} A string summarizing the EEG analysis, or null if no EEG data is present.
+     */
     analyzeEEG() {
         let eegStory = "";
         if (this.eeg !== null) {

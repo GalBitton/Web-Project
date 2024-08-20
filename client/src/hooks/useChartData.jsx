@@ -42,12 +42,24 @@ const useChartData = (currentDevice, avgData, linkedDevices) => {
         sleep: { labels: [], values: [], valuesY1: [] }
     });
 
+
+    /**
+     * Effect hook that updates the aggregated average charts data when new average data or linked devices are available.
+     * It triggers the `updateAllDevicesCharts` function to update the average data for all linked devices.
+     *
+     * @function
+     * @name useEffect
+     */
     useEffect(() => {
         if (avgData && linkedDevices.length > 0) {
             updateAllDevicesCharts();
         }
     }, [avgData, linkedDevices]);
 
+    /**
+     * Resets the charts data to empty values.
+     * This function is called when there's an error fetching analysis data for a device.
+     */
     const resetCharts = () => {
         setChartsData({
             heartRate: { labels: [], values: [] },
@@ -61,6 +73,14 @@ const useChartData = (currentDevice, avgData, linkedDevices) => {
         });
     };
 
+    /**
+     * Updates the charts data for the current device by fetching its analysis data.
+     * If the device is not available or there's an error, it resets the charts data.
+     *
+     * @async
+     * @function
+     * @param {Object} device - The device object to fetch data from.
+     */
     const updateCharts = async (device) => {
         if (!device) {
             console.warn("No device available to fetch data.");
@@ -85,6 +105,10 @@ const useChartData = (currentDevice, avgData, linkedDevices) => {
         }
     };
 
+    /**
+     * Updates the aggregated average charts data for all linked devices.
+     * This function is triggered when new average data is available.
+     */
     const updateAllDevicesCharts = () => {
         if (avgData) {
             setAverageChartsData({

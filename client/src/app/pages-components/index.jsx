@@ -1,3 +1,13 @@
+/**
+ * Exports all the main components of the application.
+ *
+ * This module provides named exports for various components representing different pages 
+ * and views of the application, including the index page, dashboard, login, and other 
+ * common pages like terms, privacy policy, and contact.
+ * 
+ * @module components
+ */
+
 import IndexPage from './index-page.jsx';
 import Dashboard from './dashboard.jsx';
 import Login from './login.jsx';

@@ -33,6 +33,11 @@ const useLinkedDevices = ({
                           }) => {
     const [internalLinkedDevices, setInternalLinkedDevices] = useState([]);
 
+
+    /**
+     * useEffect hook to fetch and initialize linked devices data.
+     * Updates linked and unlinked devices states based on provided device data.
+     */
     useEffect(() => {
         const getDevicesData = async () => {
             if (devicesData) {
@@ -46,6 +51,12 @@ const useLinkedDevices = ({
         getDevicesData();
     }, [devicesData]);
 
+    /**
+     * Creates an array of linked device objects, each with additional metadata.
+     *
+     * @param {Array} devices - Array of device objects to create linked devices.
+     * @returns {Promise<Array>} - A promise that resolves to an array of linked devices.
+     */
     const createAllDevices = async (devices) => {
         return Promise.all(devices.map(async (device) => ({
             ...device,
@@ -55,6 +66,11 @@ const useLinkedDevices = ({
         })));
     };
 
+    /**
+     * Updates the state of unlinked devices based on the current linked devices.
+     *
+     * @param {Array} linkedDevices - Array of currently linked devices.
+     */
     const updateAvailableDevices = (linkedDevices) => {
         const availableDevices = supportedDevices.filter(device =>
             !linkedDevices.some(linked => linked.brand === device.brand && linked.type === device.type)
@@ -62,6 +78,12 @@ const useLinkedDevices = ({
         setUnlinkedDevices(availableDevices);
     };
 
+    /**
+     * Links a new device by brand and type, and updates relevant states and UI elements.
+     *
+     * @param {string} brand - The brand of the device to link.
+     * @param {string} type - The type of the device to link.
+     */
     const handleLinkDevice = async (brand, type) => {
         const apiService = new APIService({ action: 'linkDevice', brand, type });
         const newDevice = await apiService.execute();
@@ -88,6 +110,11 @@ const useLinkedDevices = ({
         }
     };
 
+    /**
+     * Unlinks a device by its ID, and updates relevant states and UI elements.
+     *
+     * @param {string} deviceId - The ID of the device to unlink.
+     */
     const handleUnlinkDevice = async (deviceId) => {
         try {
             const apiService = new APIService({ action: 'unlinkDevice', deviceId });

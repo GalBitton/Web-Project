@@ -16,6 +16,10 @@ export const UseTheme = () => {
         return storedTheme ? storedTheme === "dark" : false;
     });
 
+    /**
+     * useEffect hook to initialize the theme based on `localStorage`.
+     * It updates the document's class to reflect the current theme.
+     */
     useEffect(() => {
         const storedTheme = localStorage.getItem("theme");
         if (storedTheme) {
@@ -24,6 +28,10 @@ export const UseTheme = () => {
         }
     }, []);
 
+    /**
+     * Handles the theme toggle between light and dark modes.
+     * Updates the `localStorage` and the document's class based on the new theme.
+     */
     const handleThemeChange = () => {
         const newTheme = isDarkMode ? "light" : "dark";
         document.documentElement.classList.toggle("dark", !isDarkMode);
