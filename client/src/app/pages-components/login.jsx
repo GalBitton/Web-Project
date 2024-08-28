@@ -75,7 +75,7 @@ const Login = () => {
     };
 
     return (
-        <div className="mr-4 ml-4">
+        <div className="mr-4 ml-4 pt-24 h-full">
         <Form
             title="Sign in to your account"
             submitHandler={handleSubmit}

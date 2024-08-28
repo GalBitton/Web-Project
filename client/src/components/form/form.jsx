@@ -18,7 +18,7 @@ import { GoogleLogin } from '@react-oauth/google';
  * @returns {React.ReactElement} The rendered component.
  */
 const Form = ({ title, submitHandler, children, googleSuccessHandler, googleFailureHandler, error, success, secondaryTitle = "", secondaryPath = "/" }) => (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-white to-gray-200 dark:from-gray-900 dark:to-slate-800">
+    <div className="flex items-center justify-center h-full bg-gradient-to-b from-white to-gray-200 dark:from-gray-900 dark:to-slate-800">
         <div className="w-full max-w-md p-8 space-y-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
             <div className="text-center">
                 <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">

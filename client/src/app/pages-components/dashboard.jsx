@@ -434,85 +434,87 @@ const Dashboard = () => {
 
 
     return (
-        <div className="w-full">
-            <div className="mt-24 mb-2 p-4 items-center">
-                <h1 className="text-4xl">Welcome, {getIdentity('emailPrefix')}</h1>
-                <p className="text-gray-700 dark:text-slate-500">Inspect your health charts and analytics</p>
-            </div>
+        <div className="w-full flex flex-col min-h-screen">
+            <div className="flex-grow">
+                <div className="mt-24 mb-2 p-4 items-center">
+                    <h1 className="text-4xl">Welcome, {getIdentity('emailPrefix')}</h1>
+                    <p className="text-gray-700 dark:text-slate-500">Inspect your health charts and analytics</p>
+                </div>
 
-            <div>
-                <LoadingErrorComponent loading={devicesLoading} error={devicesError} />
-                <DeviceList
-                    currentDevice={currentDevice}
-                    handleUnlinkDevice={handleUnlinkDevice}
-                    selectedBrand={selectedBrand}
-                    selectedType={selectedType}
-                    linkedDevices={linkedDevices}
-                    selectedItem={selectedItem}
-                    setSelectedItem={setSelectedItem}
-                    handleLinkDevice={handleLinkDevice}
-                    unlinkedDevices={unlinkedDevices}
-                />
-            </div>
+                <div>
+                    <LoadingErrorComponent loading={devicesLoading} error={devicesError} />
+                    <DeviceList
+                        currentDevice={currentDevice}
+                        handleUnlinkDevice={handleUnlinkDevice}
+                        selectedBrand={selectedBrand}
+                        selectedType={selectedType}
+                        linkedDevices={linkedDevices}
+                        selectedItem={selectedItem}
+                        setSelectedItem={setSelectedItem}
+                        handleLinkDevice={handleLinkDevice}
+                        unlinkedDevices={unlinkedDevices}
+                    />
+                </div>
 
-            <div className="grid grid-cols-12 gap-4 p-4">
-                {/* All Devices Graphs Carousel */}
-                <div
-                    className="col-span-12 lg:col-span-6 flex flex-col justify-center p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg w-full">
-                    <div className="flex flex-col items-center max-w-full overflow-hidden">
-                        <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white min-h-[5rem]">All Devices Data Overview</h2>
-                        <LoadingErrorComponent loading={avgDataLoading} error={avgDataError} />
-                        {filteredAllDevicesGraphs.length > 0 ? (
+                <div className="grid grid-cols-12 gap-4 p-4">
+                    {/* All Devices Graphs Carousel */}
+                    <div
+                        className="col-span-12 lg:col-span-6 flex flex-col justify-center p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg w-full">
+                        <div className="flex flex-col items-center max-w-full overflow-hidden">
+                            <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white min-h-[5rem]">All Devices Data Overview</h2>
+                            <LoadingErrorComponent loading={avgDataLoading} error={avgDataError} />
+                            {filteredAllDevicesGraphs.length > 0 ? (
+                                <ChartCarousel
+                                    graphs={filteredAllDevicesGraphs}
+                                    currentIndex={allDevicesCurrentIndex}
+                                    setCurrentIndex={setAllDevicesCurrentIndex}
+                                />
+                            ) : (
+                                <p className="text-gray-700 dark:text-slate-400">No data available for linked devices.</p>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Specific Device Graphs Carousel */}
+                    <div
+                        className="col-span-12 lg:col-span-6 flex flex-col justify-center p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg w-full">
+                        <div className="flex flex-col items-center max-w-full overflow-hidden">
+                            <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white min-h-[5rem]">Device Data Overview</h2>
+                            <LoadingErrorComponent loading={avgDataLoading} error={avgDataError} />
                             <ChartCarousel
-                                graphs={filteredAllDevicesGraphs}
-                                currentIndex={allDevicesCurrentIndex}
-                                setCurrentIndex={setAllDevicesCurrentIndex}
+                                graphs={filteredSpecificDeviceGraphs}
+                                currentIndex={specificDeviceCurrentIndex}
+                                setCurrentIndex={setSpecificDeviceCurrentIndex}
                             />
-                        ) : (
-                            <p className="text-gray-700 dark:text-slate-400">No data available for linked devices.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col ml-4 mr-4 justify-center items-center p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg ">
+                    {/* Button Section */}
+                    <div className="w-full flex justify-center mb-8">
+                        <button
+                            className="bg-green-600 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-400 text-white dark:text-black rounded w-full sm:w-[8rem] sm:h-[4rem]"
+                            onClick={handleHealthStory}
+                        >
+                            View Analysis
+                        </button>
+                    </div>
+
+                    {/* Health Story Section */}
+                    <div className="w-full">
+                        {healthStory && (
+                            <div className="flex flex-col space-y-4 justify-center items-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full">
+                                <ul className="list-disc list-inside text-lg text-gray-700 dark:text-slate-400 w-full">
+                                    {healthStory.map((paragraph, index) => (
+                                        <li key={index} className="mb-2">
+                                            {paragraph}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
                         )}
                     </div>
-                </div>
-
-                {/* Specific Device Graphs Carousel */}
-                <div
-                    className="col-span-12 lg:col-span-6 flex flex-col justify-center p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg w-full">
-                    <div className="flex flex-col items-center max-w-full overflow-hidden">
-                        <h2 className="text-4xl font-semibold mb-6 text-black dark:text-white min-h-[5rem]">Device Data Overview</h2>
-                        <LoadingErrorComponent loading={avgDataLoading} error={avgDataError} />
-                        <ChartCarousel
-                            graphs={filteredSpecificDeviceGraphs}
-                            currentIndex={specificDeviceCurrentIndex}
-                            setCurrentIndex={setSpecificDeviceCurrentIndex}
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex flex-col ml-4 mr-4 justify-center items-center p-8 bg-gray-100 dark:bg-slate-900 rounded-lg shadow-lg ">
-                {/* Button Section */}
-                <div className="w-full flex justify-center mb-8">
-                    <button
-                        className="bg-green-600 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-400 text-white dark:text-black rounded w-full sm:w-[8rem] sm:h-[4rem]"
-                        onClick={handleHealthStory}
-                    >
-                        View Analysis
-                    </button>
-                </div>
-
-                {/* Health Story Section */}
-                <div className="w-full">
-                    {healthStory && (
-                        <div className="flex flex-col space-y-4 justify-center items-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full">
-                            <ul className="list-disc list-inside text-lg text-gray-700 dark:text-slate-400 w-full">
-                                {healthStory.map((paragraph, index) => (
-                                    <li key={index} className="mb-2">
-                                        {paragraph}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
                 </div>
             </div>
         </div>
