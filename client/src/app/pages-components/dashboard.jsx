@@ -434,7 +434,7 @@ const Dashboard = () => {
 
 
     return (
-        <div className="w-full flex flex-col min-h-screen">
+        <div className="w-full flex flex-col">
             <div className="flex-grow">
                 <div className="mt-24 mb-2 p-4 items-center">
                     <h1 className="text-4xl">Welcome, {getIdentity('emailPrefix')}</h1>
